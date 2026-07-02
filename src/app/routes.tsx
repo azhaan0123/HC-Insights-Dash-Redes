@@ -77,21 +77,10 @@ export const router = createBrowserRouter([
     Component: Onboarding,
   },
   {
-<<<<<<< Updated upstream
-=======
     path: "/login",
     Component: Login,
   },
   {
-    path: "/action-centre-classic",
-    Component: ClassicActionCentreOverview,
-  },
-  {
-    path: "/action-centre-classic/:cohortId",
-    Component: ClassicActionCentreDetail,
-  },
-  {
->>>>>>> Stashed changes
     path: "/",
     Component: AppShell,
     children: [

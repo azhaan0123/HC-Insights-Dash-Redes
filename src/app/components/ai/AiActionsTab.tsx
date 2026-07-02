@@ -1,8 +1,5 @@
 import React from 'react';
-<<<<<<< Updated upstream
 import { ScrollArea } from "../ui/scroll-area";
-=======
->>>>>>> Stashed changes
 import { PenTool, BarChart3, Zap, Users, MessageSquare, FileText } from "lucide-react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
