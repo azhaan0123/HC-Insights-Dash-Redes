@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { AppShell } from "./components/layout/AppShell";
 import Onboarding from "./pages/auth/Onboarding";
+import Login from "./pages/auth/Login";
 import SupportPage from "./pages/Support";
 import Home from "./pages/Home";
 import EngagementOverview from "./pages/engagement/Overview";
@@ -76,6 +77,21 @@ export const router = createBrowserRouter([
     Component: Onboarding,
   },
   {
+<<<<<<< Updated upstream
+=======
+    path: "/login",
+    Component: Login,
+  },
+  {
+    path: "/action-centre-classic",
+    Component: ClassicActionCentreOverview,
+  },
+  {
+    path: "/action-centre-classic/:cohortId",
+    Component: ClassicActionCentreDetail,
+  },
+  {
+>>>>>>> Stashed changes
     path: "/",
     Component: AppShell,
     children: [
