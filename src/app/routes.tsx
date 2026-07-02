@@ -66,6 +66,8 @@ import LabTrends from "./pages/outcomes/LabTrends";
 import MedicationRefills from "./pages/outcomes/MedicationRefills";
 import LabCadence from "./pages/outcomes/LabCadence";
 import ReportBuilder from "./pages/outcomes/ReportBuilder";
+import ClassicActionCentreOverview from "./pages/action-centre-classic/ClassicActionCentreOverview";
+import ClassicActionCentreDetail from "./pages/action-centre-classic/ClassicActionCentreDetail";
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +77,14 @@ export const router = createBrowserRouter([
   {
     path: "/onboarding",
     Component: Onboarding,
+  },
+  {
+    path: "/action-centre-classic",
+    Component: ClassicActionCentreOverview,
+  },
+  {
+    path: "/action-centre-classic/:cohortId",
+    Component: ClassicActionCentreDetail,
   },
   {
     path: "/",

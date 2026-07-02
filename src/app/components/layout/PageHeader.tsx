@@ -12,6 +12,8 @@ type PageHeaderProps = {
   crumbs?: Crumb[];
   /** Optional control rendered next to the title (toggle group / tabs). */
   leading?: ReactNode;
+  /** Optional custom action elements rendered on the right side of header. */
+  actions?: ReactNode;
   showIconActions?: boolean;
   showGenerateReport?: boolean;
   showFilters?: boolean;
@@ -23,6 +25,7 @@ export function PageHeader({
   subtitle,
   crumbs,
   leading,
+  actions,
   showIconActions = true,
   showGenerateReport = true,
   showFilters = true,
@@ -66,6 +69,7 @@ export function PageHeader({
       </div>
 
       <div className="flex items-center gap-2">
+        {actions}
         {showFilters && (
           <Button id="tour-step-14" variant="outline" size="sm" className="gap-2" onClick={onFiltersClick}>
             <SlidersHorizontal className="size-3.5 text-muted-foreground" />

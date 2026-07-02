@@ -37,6 +37,7 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { key: "home", label: "Home", icon: Home, path: "/home" },
   { key: "action-centre", label: "Action Centre (Hub)", icon: Activity, path: "/action-centre", tourId: "tour-step-action-centre" },
+  { key: "action-centre-classic", label: "Action Centre (Classic UI)", icon: Layers, path: "/action-centre-classic" },
   { 
     key: "engagement", 
     label: "Engagement & Utilization", 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router";
 import {
   Activity,
   UserPlus,
@@ -100,6 +101,7 @@ const getMetricGraphData = (count: number, view: "WoW" | "MoM", isPositive: bool
 };
 
 export default function ActionCentreOverview() {
+  const navigate = useNavigate();
   const [activeCohort, setActiveCohort] = useState<CohortType | "all">("all");
   const [activeGapTier, setActiveGapTier] = useState<GapTier | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -228,6 +230,16 @@ export default function ActionCentreOverview() {
       subtitle="Phase 1: Operational Visibility — Replace passive reporting with daily actionable patient work queues."
       showFilters={false}
       showIconActions={false}
+      actions={
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/action-centre-classic")}
+          className="gap-1.5 border-rose-300 text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-300 dark:hover:bg-rose-950/40 font-semibold"
+        >
+          <span>Legacy UI</span>
+        </Button>
+      }
     >
       {/* 1. Engagement Overview Cards */}
       <div className="mb-8">
