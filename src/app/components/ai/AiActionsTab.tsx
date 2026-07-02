@@ -1,5 +1,6 @@
 import React from 'react';
-gimport { PenTool, BarChart3, Zap, Users, MessageSquare, FileText } from "lucide-react";
+import { ScrollArea } from "../ui/scroll-area";
+import { PenTool, BarChart3, Zap, Users, MessageSquare, FileText } from "lucide-react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
