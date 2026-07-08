@@ -35,8 +35,9 @@ import HccLayout from "./pages/hcc/HccLayout";
 import HccOverview from "./pages/hcc/Overview";
 import HccPatientList from "./pages/hcc/PatientList";
 import HccPreVisitPlan from "./pages/hcc/PreVisitPlan";
-import HccCodingQueue from "./pages/hcc/CodingQueue";
 import HccBulkAudit from "./pages/hcc/BulkAudit";
+import HccCodingQueue from "./pages/hcc/CodingQueue";
+import WikiPage from "./pages/Wiki";
 
 // Admin Imports
 import ManageUsers from "./pages/admin/ManageUsers";
@@ -93,6 +94,14 @@ export const router = createBrowserRouter([
   {
     path: "/utilization-gaps-classic",
     Component: ClassicUtilizationGaps,
+  },
+  {
+    path: "/wiki",
+    Component: WikiPage,
+  },
+  {
+    path: "/wiki/*",
+    Component: WikiPage,
   },
   {
     path: "/",

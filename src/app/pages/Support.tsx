@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, BookOpen, ExternalLink, Sparkles } from "lucide-react";
 
 export default function SupportPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,10 +54,10 @@ export default function SupportPage() {
         <h1 className="text-3xl font-bold tracking-tight text-foreground text-center mb-2">
           Health<span className="text-primary">Compiler</span> Support
         </h1>
-        <p className="text-muted-foreground text-center mb-8">
-          Submit a ticket and our team will help you get sorted.
+        <p className="text-muted-foreground text-center mb-6">
+          Submit a ticket or reach out to our clinical engineering support team.
         </p>
-        
+
         <Card className="shadow-xl border-border bg-card">
           <CardHeader className="border-b border-border pb-6 mb-6">
             <CardTitle className="text-xl font-bold text-foreground">New Support Request</CardTitle>

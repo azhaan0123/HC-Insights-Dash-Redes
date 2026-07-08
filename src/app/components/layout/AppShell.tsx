@@ -11,6 +11,7 @@ import {
 } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
+import { ContextualWikiButton } from "../wiki/ContextualWikiButton";
 
 import {
   Popover,
@@ -27,6 +28,7 @@ import {
   Users,
   Target,
   LayoutGrid,
+  BookOpen,
 } from "lucide-react";
 
 const APPS_MENU = [
@@ -37,7 +39,7 @@ const APPS_MENU = [
   { label: "Mips Nexus", icon: LineChart },
   { label: "Ask AI", icon: Sparkles },
   { label: "Employer Insights", icon: Users },
-  { label: "Outcome Predict AI", icon: Target },
+  { label: "Technical Specs (/wiki)", icon: BookOpen, to: "/wiki" },
 ];
 
 function TopBar({
@@ -101,6 +103,8 @@ function TopBar({
             </div>
           </PopoverContent>
         </Popover>
+
+        <ContextualWikiButton variant="outline" size="sm" className="h-9" showLabel={true} />
 
         <Button
           id="tour-step-17"

@@ -93,6 +93,7 @@ export const ACO_NAV_ITEMS: NavItem[] = [
 /** Secondary / system-level destinations shown in their own sidebar group. */
 export const SYSTEM_NAV_ITEMS: NavItem[] = [
   { key: "design-system", label: "Design System", icon: Palette, path: "/design-system" },
+  { key: "product-wiki", label: "Technical Specs (/wiki)", icon: ClipboardCheck, path: "/wiki" },
 ];
 
 export const OUTCOMES_NAV_ITEMS: NavItem[] = [

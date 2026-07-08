@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { Download, Share2, SlidersHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { ContextualWikiButton } from "../wiki/ContextualWikiButton";
 
 export type Crumb = { label: string; to?: string };
 
@@ -69,6 +70,7 @@ export function PageHeader({
       </div>
 
       <div className="flex items-center gap-2">
+        <ContextualWikiButton />
         {actions}
         {showFilters && (
           <Button id="tour-step-14" variant="outline" size="sm" className="gap-2" onClick={onFiltersClick}>
