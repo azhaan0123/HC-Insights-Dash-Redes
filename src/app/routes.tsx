@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { AppShell } from "./components/layout/AppShell";
 import Onboarding from "./pages/auth/Onboarding";
+import Login from "./pages/auth/Login";
 import SupportPage from "./pages/Support";
 import Home from "./pages/Home";
 import ActionCentreOverview from "./pages/action-centre/ActionCentreOverview";
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
   {
     path: "/onboarding",
     Component: Onboarding,
+  },
+  {
+    path: "/login",
+    Component: Login,
   },
   {
     path: "/action-centre-classic",
