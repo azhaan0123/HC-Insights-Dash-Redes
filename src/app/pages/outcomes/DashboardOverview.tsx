@@ -18,7 +18,7 @@ const kpiData = [
 
 const pieData = [
   { name: "Hypertension", value: 745, color: "#10b981" },
-  { name: "Vitamin D deficiency", value: 739, color: "#e32168" },
+  { name: "Vitamin D deficiency", value: 739, color: "#FF6B2B" },
   { name: "Vitamin B12 deficiency", value: 506, color: "#f59e0b" },
   { name: "Prediabetes", value: 391, color: "#8b5cf6" },
   { name: "Diabetes Mellitus Type 2", value: 222, color: "#06b6d4" },
@@ -27,7 +27,7 @@ const pieData = [
   { name: "Obesity", value: 34, color: "#f97316" },
   { name: "Anxiety disorder, unspecified", value: 33, color: "#0ea5e9" },
   { name: "Asthma, unspecified", value: 31, color: "#6366f1" },
-  { name: "Hormone Replacement Therapy", value: 18, color: "#e11d48" },
+  { name: "Hormone Replacement Therapy", value: 18, color: "#c2410c" },
 ];
 
 const CustomPieTooltip = ({ active, payload }: any) => {

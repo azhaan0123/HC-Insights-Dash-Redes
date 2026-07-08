@@ -12,7 +12,7 @@ import { KpiCardSkeleton, ChartSkeleton, TableSkeleton } from "../../components/
 const columns: Column<EncounterRow>[] = [
   { key: "id", header: "Patient ID", cell: (r) => <IdCell id={r.id} /> },
   { key: "name", header: "Patient Name" },
-  { key: "encounterId", header: "Encounter ID", cell: (r) => <span className="font-mono text-xs text-slate-500">{r.encounterId}</span> },
+  { key: "encounterId", header: "Encounter ID", cell: (r) => <span className="font-mono text-xs text-muted-foreground">{r.encounterId}</span> },
   { key: "type", header: "Encounter Type" },
   { key: "date", header: "Encounter Date Time" },
   { key: "employer", header: "Employer" },

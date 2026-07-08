@@ -14,9 +14,9 @@ const getStatusBadge = (status: PatientRow["status"]) => {
     case "Deferred":
       return <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">Deferred</span>;
     case "Rejected":
-      return <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">Rejected</span>;
+      return <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">Rejected</span>;
     default:
-      return <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">N/A</span>;
+      return <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">N/A</span>;
   }
 };
 
@@ -31,7 +31,7 @@ const getAwvBadge = (awv: string) => {
   if (awv === "Completed") {
     return <span className="inline-flex items-center rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-white">Completed</span>;
   }
-  return <span className="inline-flex items-center rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">Pending</span>;
+  return <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">Pending</span>;
 };
 
 import { Page } from "../../components/layout/Page";
@@ -53,7 +53,7 @@ export default function HccPatientList() {
       header: "Patient",
       cell: (row) => <span className="font-medium text-primary hover:underline cursor-pointer" onClick={() => setSelectedPatient(row)}>{row.name}</span>,
     },
-    { key: "mrn", header: "MRN", cell: (row) => <span className="text-slate-500">{row.mrn}</span> },
+    { key: "mrn", header: "MRN", cell: (row) => <span className="text-muted-foreground">{row.mrn}</span> },
     { key: "suspectedHcc", header: "Suspected HCC" },
     { key: "classification", header: "Classification", cell: (row) => getClassificationBadge(row.classification) },
     { key: "awvStatus", header: "AWV Status", cell: (row) => getAwvBadge(row.awvStatus) },
@@ -61,7 +61,7 @@ export default function HccPatientList() {
       key: "lastTrigger",
       header: "Last Trigger",
       cell: (row) => (
-        <div className="flex items-center gap-1.5 text-slate-600">
+        <div className="flex items-center gap-1.5 text-muted-foreground">
           {row.lastTrigger.type === "paperclip" ? <Paperclip className="size-3.5" /> : <Clock className="size-3.5" />}
           {row.lastTrigger.date}
         </div>
@@ -72,11 +72,11 @@ export default function HccPatientList() {
       key: "lastReviewed",
       header: "Last Reviewed",
       cell: (row) => {
-        if (!row.lastReviewed) return <span className="text-slate-400">N/A</span>;
+        if (!row.lastReviewed) return <span className="text-muted-foreground/70">N/A</span>;
         return (
           <div className="flex flex-col text-[13px]">
-            <span className="font-medium text-slate-700">{row.lastReviewed.doctor}</span>
-            <span className="text-slate-400">{row.lastReviewed.date}</span>
+            <span className="font-medium text-foreground/90">{row.lastReviewed.doctor}</span>
+            <span className="text-muted-foreground/70">{row.lastReviewed.date}</span>
           </div>
         );
       },
@@ -89,7 +89,7 @@ export default function HccPatientList() {
           variant="outline"
           size="sm"
           onClick={() => setSelectedPatient(row)}
-          className="h-8 gap-1.5 text-xs text-slate-600"
+          className="h-8 gap-1.5 text-xs text-muted-foreground"
         >
           <Eye className="size-3.5" />
           View Details

@@ -175,7 +175,7 @@ export default function ActionCentreOverview() {
     switch (priority) {
       case "High":
         return (
-          <Badge className="bg-rose-500/15 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 border border-rose-500/30 font-semibold px-2.5 py-0.5">
+          <Badge className="bg-red-500/15 text-red-600 dark:bg-red-500/20 dark:text-red-400 border border-red-500/30 font-semibold px-2.5 py-0.5">
             High Priority
           </Badge>
         );
@@ -195,7 +195,7 @@ export default function ActionCentreOverview() {
   };
 
   const getCohortIconBox = (id: string) => {
-    const baseClass = "flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400";
+    const baseClass = "flex size-7 shrink-0 items-center justify-center rounded-lg bg-secondary dark:bg-card text-muted-foreground dark:text-muted-foreground/70";
     switch (id) {
       case "new-activation":
         return (
@@ -226,7 +226,7 @@ export default function ActionCentreOverview() {
 
   return (
     <Page
-      title="Action Centre"
+      title="Utilization Gaps"
       subtitle="Phase 1: Operational Visibility — Replace passive reporting with daily actionable patient work queues."
       showFilters={false}
       showIconActions={false}
@@ -235,7 +235,7 @@ export default function ActionCentreOverview() {
           variant="outline"
           size="sm"
           onClick={() => navigate("/action-centre-classic")}
-          className="gap-1.5 border-rose-300 text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-300 dark:hover:bg-rose-950/40 font-semibold"
+          className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40 font-semibold"
         >
           <span>Legacy UI</span>
         </Button>
@@ -244,7 +244,7 @@ export default function ActionCentreOverview() {
       {/* 1. Engagement Overview Cards */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-200 uppercase">
+          <h2 className="text-sm font-semibold tracking-tight text-foreground dark:text-foreground/90 uppercase">
             Operational Summary Cards
           </h2>
           <span className="text-xs text-muted-foreground">
@@ -271,7 +271,7 @@ export default function ActionCentreOverview() {
                 <CardContent className="p-3.5 flex flex-col justify-between h-full">
                   <div>
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 line-clamp-1 leading-tight pt-0.5">
+                      <span className="text-xs font-semibold text-foreground/90 dark:text-foreground/90 line-clamp-1 leading-tight pt-0.5">
                         {card.title}
                       </span>
                       {getCohortIconBox(card.id)}
@@ -286,7 +286,7 @@ export default function ActionCentreOverview() {
                           "inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-medium tracking-tight",
                           card.wowPositive
                             ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                            : "bg-rose-500/10 text-rose-700 dark:text-rose-400"
+                            : "bg-red-500/10 text-red-700 dark:text-red-400"
                         )}
                         title="Week over Week Change"
                       >
@@ -324,7 +324,7 @@ export default function ActionCentreOverview() {
 
       {/* 2. Actionable Patient Cohorts Work Queue Controls */}
       <Card className="rounded-2xl border border-transparent bg-card shadow-sm transition-[box-shadow] duration-200 hover:shadow-md mb-6 overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="p-4 border-b border-border/50 bg-muted/50 dark:bg-card/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <span>Patient Work Queue</span>
@@ -461,8 +461,8 @@ export default function ActionCentreOverview() {
                 className={cn(
                   "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
                   activeGapTier === "all"
-                    ? "bg-pink-500/15 text-pink-700 dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
                 )}
               >
                 All Gaps
@@ -472,8 +472,8 @@ export default function ActionCentreOverview() {
                 className={cn(
                   "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
                   activeGapTier === "30-days"
-                    ? "bg-pink-500/15 text-pink-700 dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
                 )}
               >
                 30+ Days No Visit
@@ -483,8 +483,8 @@ export default function ActionCentreOverview() {
                 className={cn(
                   "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
                   activeGapTier === "60-days"
-                    ? "bg-pink-500/15 text-pink-700 dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
                 )}
               >
                 60+ Days No Visit
@@ -494,8 +494,8 @@ export default function ActionCentreOverview() {
                 className={cn(
                   "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
                   activeGapTier === "90-days"
-                    ? "bg-pink-500/15 text-pink-700 dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
                 )}
               >
                 90+ Days Critical Gap
@@ -505,8 +505,8 @@ export default function ActionCentreOverview() {
                 className={cn(
                   "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer flex items-center gap-1",
                   activeGapTier === "custom"
-                    ? "bg-pink-500/15 text-pink-700 dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
                 )}
               >
                 <Calendar className="size-3" />
@@ -529,7 +529,7 @@ export default function ActionCentreOverview() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-border/50 bg-slate-50/70 dark:bg-slate-900/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <tr className="border-b border-border/50 bg-muted/70 dark:bg-card/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 <th className="py-3 px-4">Patient Member</th>
                 <th className="py-3 px-4">Priority Level</th>
                 <th className="py-3 px-4">Reason for Inclusion</th>
@@ -543,7 +543,7 @@ export default function ActionCentreOverview() {
                 <tr>
                   <td colSpan={6} className="text-center py-12 text-muted-foreground">
                     <CheckCircle2 className="size-8 mx-auto text-emerald-500 mb-2 opacity-80" />
-                    <p className="font-semibold text-slate-700 dark:text-slate-300">
+                    <p className="font-semibold text-foreground/90 dark:text-muted-foreground/50">
                       No patients pending in this queue!
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -560,16 +560,16 @@ export default function ActionCentreOverview() {
                       onClick={() => setSelectedPatient(patient)}
                       className={cn(
                         "cursor-pointer transition-colors hover:bg-primary/[0.04] group",
-                        isDone && "opacity-60 bg-slate-50/50 dark:bg-slate-900/30"
+                        isDone && "opacity-60 bg-muted/50 dark:bg-card/30"
                       )}
                     >
                       <td className="py-3.5 px-4 font-medium text-foreground">
                         <div className="flex items-center gap-3">
-                          <div className="size-9 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold shrink-0 text-slate-700 dark:text-slate-300">
+                          <div className="size-9 rounded-full bg-muted dark:bg-card flex items-center justify-center text-xs font-bold shrink-0 text-foreground/90 dark:text-muted-foreground/50">
                             {patient.name.split(" ").map((n) => n[0]).join("")}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                            <div className="font-semibold text-foreground dark:text-foreground flex items-center gap-1.5">
                               <span>{patient.name}</span>
                               {isDone && (
                                 <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0">
@@ -589,7 +589,7 @@ export default function ActionCentreOverview() {
                       </td>
 
                       <td className="py-3.5 px-4 max-w-md">
-                        <div className="text-xs font-medium text-slate-800 dark:text-slate-200 leading-snug">
+                        <div className="text-xs font-medium text-foreground dark:text-foreground/90 leading-snug">
                           {patient.reason}
                         </div>
                         <div className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-2">
@@ -598,7 +598,7 @@ export default function ActionCentreOverview() {
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap text-xs text-slate-700 dark:text-slate-300 font-medium">
+                      <td className="py-3.5 px-4 whitespace-nowrap text-xs text-foreground/90 dark:text-muted-foreground/50 font-medium">
                         {patient.lastVisitText}
                       </td>
 
@@ -607,7 +607,7 @@ export default function ActionCentreOverview() {
                       </td>
 
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <div className="inline-flex items-center justify-end gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">
+                        <div className="inline-flex items-center justify-end gap-1.5 text-xs font-semibold text-foreground/90 dark:text-muted-foreground/50 group-hover:text-primary transition-colors">
                           {patient.suggestedActionType === "sms" && <MessageSquare className="size-3.5 shrink-0" />}
                           {patient.suggestedActionType === "email" && <Mail className="size-3.5 shrink-0" />}
                           {patient.suggestedActionType === "call" && <Phone className="size-3.5 shrink-0" />}
@@ -636,7 +636,7 @@ export default function ActionCentreOverview() {
         <SheetContent className="sm:max-w-xl w-full p-0 flex flex-col overflow-hidden bg-background">
           {selectedPatient && (
             <>
-              <SheetHeader className="p-6 border-b border-border bg-slate-50/80 dark:bg-slate-900/50 space-y-3">
+              <SheetHeader className="p-6 border-b border-border bg-muted/80 dark:bg-card/50 space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -655,19 +655,19 @@ export default function ActionCentreOverview() {
 
                 {/* Demographics Strip */}
                 <div className="grid grid-cols-2 gap-3 pt-2 text-xs border-t border-border/60">
-                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
                     <Phone className="size-3.5 text-muted-foreground" />
                     <span className="font-medium">{selectedPatient.contactPhone}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
                     <Mail className="size-3.5 text-muted-foreground" />
                     <span className="font-medium truncate">{selectedPatient.contactEmail}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
                     <Building2 className="size-3.5 text-muted-foreground" />
                     <span className="font-medium truncate">{selectedPatient.employer}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
                     <Stethoscope className="size-3.5 text-muted-foreground" />
                     <span className="font-medium truncate">{selectedPatient.physician}</span>
                   </div>
@@ -705,7 +705,7 @@ export default function ActionCentreOverview() {
 
                 {/* Tabs for Drawer Details */}
                 <Tabs defaultValue="history" className="w-full">
-                  <TabsList className="grid grid-cols-3 w-full bg-slate-100 dark:bg-slate-800">
+                  <TabsList className="grid grid-cols-3 w-full bg-secondary dark:bg-card">
                     <TabsTrigger value="history" className="text-xs">
                       Engagement History
                     </TabsTrigger>
@@ -730,12 +730,12 @@ export default function ActionCentreOverview() {
                             <div className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 z-10 text-[10px] font-bold">
                               {ev.type[0]}
                             </div>
-                            <div className="flex-1 bg-slate-50/70 dark:bg-slate-900/50 p-3 rounded-xl border border-transparent shadow-sm text-xs space-y-1">
+                            <div className="flex-1 bg-muted/70 dark:bg-card/50 p-3 rounded-xl border border-transparent shadow-sm text-xs space-y-1">
                               <div className="flex items-center justify-between font-semibold">
                                 <span>{ev.type} Outreach</span>
                                 <span className="text-muted-foreground font-normal">{ev.date}</span>
                               </div>
-                              <p className="text-slate-700 dark:text-slate-300">{ev.description}</p>
+                              <p className="text-foreground/90 dark:text-muted-foreground/50">{ev.description}</p>
                               {ev.outcome && (
                                 <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium pt-1">
                                   Outcome: {ev.outcome}
@@ -767,7 +767,7 @@ export default function ActionCentreOverview() {
                             <span className="text-muted-foreground font-normal">{enc.date}</span>
                           </div>
                           <div className="text-[11px] text-muted-foreground">Provider: {enc.provider}</div>
-                          <p className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-2 rounded">
+                          <p className="text-foreground/90 dark:text-muted-foreground/50 bg-muted dark:bg-card p-2 rounded">
                             {enc.notes}
                           </p>
                         </div>
@@ -787,7 +787,7 @@ export default function ActionCentreOverview() {
                           </span>
                           <span className="font-mono text-purple-700 dark:text-purple-400 font-bold">{cl.amount}</span>
                         </div>
-                        <div className="text-slate-700 dark:text-slate-300 font-medium">
+                        <div className="text-foreground/90 dark:text-muted-foreground/50 font-medium">
                           Diagnosis: {cl.diagnosis}
                         </div>
                         <div className="text-[11px] text-muted-foreground">Claim Date: {cl.date}</div>
@@ -797,7 +797,7 @@ export default function ActionCentreOverview() {
                 </Tabs>
               </div>
 
-              <SheetFooter className="p-4 border-t border-border bg-slate-50/50 dark:bg-slate-900/50 flex flex-row justify-between items-center">
+              <SheetFooter className="p-4 border-t border-border bg-muted/50 dark:bg-card/50 flex flex-row justify-between items-center">
                 <Button variant="outline" size="sm" onClick={() => setSelectedPatient(null)}>
                   Close Drawer
                 </Button>
@@ -836,28 +836,28 @@ export default function ActionCentreOverview() {
 
               {/* Metric Summary Grid */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-xl border bg-slate-50/70 dark:bg-slate-900/40 space-y-1">
+                <div className="p-3.5 rounded-xl border bg-muted/70 dark:bg-card/40 space-y-1">
                   <span className="text-[11px] font-medium text-muted-foreground">Current Volume</span>
                   <div className="text-2xl font-bold text-foreground tabular-nums">{selectedMetricOverlay.count}</div>
                   <span className="text-[10px] text-muted-foreground">Active in queue today</span>
                 </div>
 
-                <div className="p-3.5 rounded-xl border bg-slate-50/70 dark:bg-slate-900/40 space-y-1">
+                <div className="p-3.5 rounded-xl border bg-muted/70 dark:bg-card/40 space-y-1">
                   <span className="text-[11px] font-medium text-muted-foreground">WoW Trend</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xl font-bold text-foreground tabular-nums">{selectedMetricOverlay.wowChange}</span>
-                    <Badge className={cn("text-[10px] px-1.5 py-0 border-none", selectedMetricOverlay.wowPositive ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600")}>
+                    <Badge className={cn("text-[10px] px-1.5 py-0 border-none", selectedMetricOverlay.wowPositive ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600")}>
                       {selectedMetricOverlay.wowPositive ? "Improving" : "Elevated"}
                     </Badge>
                   </div>
                   <span className="text-[10px] text-muted-foreground">Vs. previous 7 days</span>
                 </div>
 
-                <div className="p-3.5 rounded-xl border bg-slate-50/70 dark:bg-slate-900/40 space-y-1">
+                <div className="p-3.5 rounded-xl border bg-muted/70 dark:bg-card/40 space-y-1">
                   <span className="text-[11px] font-medium text-muted-foreground">MoM Trend</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xl font-bold text-foreground tabular-nums">{selectedMetricOverlay.momChange}</span>
-                    <Badge className={cn("text-[10px] px-1.5 py-0 border-none", selectedMetricOverlay.momPositive ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600")}>
+                    <Badge className={cn("text-[10px] px-1.5 py-0 border-none", selectedMetricOverlay.momPositive ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600")}>
                       {selectedMetricOverlay.momPositive ? "Improving" : "Elevated"}
                     </Badge>
                   </div>
@@ -938,7 +938,7 @@ export default function ActionCentreOverview() {
                         type="monotone"
                         dataKey="benchmark"
                         name="Target Threshold"
-                        stroke="#94a3b8"
+                        stroke="var(--muted-foreground)"
                         strokeDasharray="4 4"
                         strokeWidth={1.5}
                         fill="none"

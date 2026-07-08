@@ -14,15 +14,15 @@ const columns: Column<PatientRow>[] = [
     header: "Patient",
     cell: (row) => (
       <div className="flex flex-col">
-        <span className="font-medium text-slate-800">{row.name}</span>
-        <span className="text-[13px] text-slate-400">{row.mrn}</span>
+        <span className="font-medium text-foreground">{row.name}</span>
+        <span className="text-[13px] text-muted-foreground/70">{row.mrn}</span>
       </div>
     ),
   },
   {
     key: "appointment",
     header: "Appointment",
-    cell: (row) => <span className="text-slate-600">{row.appointment}</span>,
+    cell: (row) => <span className="text-muted-foreground">{row.appointment}</span>,
   },
   {
     key: "risks",
@@ -32,7 +32,7 @@ const columns: Column<PatientRow>[] = [
         {row.risks.map((risk, i) => (
           <span 
             key={i} 
-            className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
+            className="inline-flex items-center rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground"
           >
             {risk}
           </span>
@@ -43,13 +43,13 @@ const columns: Column<PatientRow>[] = [
   {
     key: "lastReview",
     header: "Last HCC Review",
-    cell: (row) => <span className="text-slate-500">{row.lastReview}</span>,
+    cell: (row) => <span className="text-muted-foreground">{row.lastReview}</span>,
   },
   {
     key: "aiNotes",
     header: "AI Prep Notes",
     cell: (row) => (
-      <p className="text-sm text-slate-600 leading-relaxed min-w-[200px] max-w-[450px] whitespace-normal line-clamp-3" title={row.aiNotes}>
+      <p className="text-sm text-muted-foreground leading-relaxed min-w-[200px] max-w-[450px] whitespace-normal line-clamp-3" title={row.aiNotes}>
         {row.aiNotes}
       </p>
     ),
@@ -58,7 +58,7 @@ const columns: Column<PatientRow>[] = [
     key: "actions",
     header: "Actions",
     cell: () => (
-      <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs text-slate-600">
+      <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs text-muted-foreground">
         <Eye className="size-3.5" />
         View Chart
       </Button>
@@ -80,7 +80,7 @@ export default function PreVisitPlan() {
   return (
     <Page title="Pre-visit Planning Queue" crumbs={[{ label: "HCC Insights" }]} chips={hccChips}>
       <div className="space-y-4">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           Patients with upcoming appointments. Review potential HCC opportunities and ensure documentation readiness.
         </p>
         

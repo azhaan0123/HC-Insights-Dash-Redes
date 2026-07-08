@@ -23,10 +23,10 @@ const barColors = [
 ];
 
 const PIE_COLORS = [
-  "#e91e8c", // hot pink — Covered Visit
+  "#FF6B2B", // primary orange — Covered Visit
   "#22a952", // green — Covered Procedures
   "#f5a623", // orange — Low Cost Labs
-  "#e91e63", // rose — Free Rx
+  "#f97316", // secondary orange — Free Rx
   "#d32f2f", // red — Medication Management
   "#f97316", // tangerine — Quality Measures
   "#7c3aed", // violet — Messaging

@@ -124,8 +124,8 @@ export default function HccBulkAudit() {
       header: "Patient",
       cell: (row) => (
         <div className="flex flex-col">
-          <span className="font-medium text-slate-800">{row.patient.name}</span>
-          <span className="text-[13px] text-slate-400">{row.patient.mrn}</span>
+          <span className="font-medium text-foreground">{row.patient.name}</span>
+          <span className="text-[13px] text-muted-foreground/70">{row.patient.mrn}</span>
         </div>
       ),
     },
@@ -135,7 +135,7 @@ export default function HccBulkAudit() {
       cell: (row) => (
         <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
           row.findingType === "Gap" 
-            ? "bg-pink-100 text-pink-700" 
+            ? "bg-primary/15 text-primary" 
             : "bg-emerald-100 text-emerald-700"
         }`}>
           {row.findingType}
@@ -145,7 +145,7 @@ export default function HccBulkAudit() {
     {
       key: "description",
       header: "Description",
-      cell: (row) => <span className="text-[13px] text-slate-600">{row.description}</span>,
+      cell: (row) => <span className="text-[13px] text-muted-foreground">{row.description}</span>,
     },
     {
       key: "rationale",
@@ -178,10 +178,10 @@ export default function HccBulkAudit() {
       <div className="relative h-full min-h-[500px] space-y-6">
         
         {/* Intro Message */}
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <Layers className="size-4 text-pink-500" />
-          <span className="font-semibold text-slate-800">Bulk HCC Audit</span>
-          <span className="mx-1 text-slate-300">|</span>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Layers className="size-4 text-primary" />
+          <span className="font-semibold text-foreground">Bulk HCC Audit</span>
+          <span className="mx-1 text-muted-foreground/50">|</span>
           <span>Define criteria to audit patient cohorts for HCC coding accuracy, completeness, and compliance.</span>
         </div>
 
@@ -197,15 +197,15 @@ export default function HccBulkAudit() {
                 onChange={(e) => setCriteria(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') startAudit(); }}
                 disabled={isAuditing}
-                className="w-full rounded-md border bg-slate-50/50 px-3 py-2 text-sm outline-none transition-colors placeholder:text-slate-400 focus:border-primary/40 focus:bg-background disabled:opacity-50"
+                className="w-full rounded-md border bg-muted/50 px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/40 focus:bg-background disabled:opacity-50"
               />
-              <p className="text-[13px] text-slate-400">
+              <p className="text-[13px] text-muted-foreground/70">
                 Describe the patient cohort and conditions for this audit.
               </p>
             </div>
             <Button 
               size="sm" 
-              className="h-9 gap-1.5 bg-pink-600 hover:bg-pink-700 text-white px-4 shadow-none disabled:opacity-50"
+              className="h-9 gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-4 shadow-none disabled:opacity-50"
               onClick={startAudit}
               disabled={isAuditing}
             >
@@ -226,12 +226,12 @@ export default function HccBulkAudit() {
 
         {/* Dynamic Content: Empty State vs Results */}
         {!auditResult ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-slate-50/50 py-16 text-center">
-            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-slate-100">
-              <History className="size-6 text-slate-400" />
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/50 py-16 text-center">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-secondary">
+              <History className="size-6 text-muted-foreground/70" />
             </div>
             <h3 className="mb-1 text-sm font-semibold text-foreground">No Audits Running</h3>
-            <p className="max-w-xs text-[13px] leading-relaxed text-slate-500">
+            <p className="max-w-xs text-[13px] leading-relaxed text-muted-foreground">
               Enter your criteria above and click "Start Audit" to begin generating a new report for your patient cohort.
             </p>
           </div>
@@ -239,31 +239,31 @@ export default function HccBulkAudit() {
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <FileTextIcon className="size-4 text-pink-600" />
-                <h3 className="text-sm font-semibold text-slate-800">Audit Report: {auditResult.id}</h3>
+                <FileTextIcon className="size-4 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">Audit Report: {auditResult.id}</h3>
               </div>
-              <p className="text-[13px] text-slate-500">Generated on {auditResult.timestamp}. Criteria: {auditResult.criteria}</p>
+              <p className="text-[13px] text-muted-foreground">Generated on {auditResult.timestamp}. Criteria: {auditResult.criteria}</p>
             </div>
 
             {/* KPI Cards */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col gap-1 rounded-xl border bg-slate-50 p-4 shadow-xs">
-                <span className="text-[13px] font-medium text-slate-500">Patients Audited</span>
-                <span className="text-2xl font-bold text-slate-800">{auditResult.patientsAudited}</span>
+              <div className="flex flex-col gap-1 rounded-xl border bg-muted p-4 shadow-xs">
+                <span className="text-[13px] font-medium text-muted-foreground">Patients Audited</span>
+                <span className="text-2xl font-bold text-foreground">{auditResult.patientsAudited}</span>
               </div>
-              <div className="flex flex-col gap-1 rounded-xl border border-pink-100 bg-pink-50 p-4 shadow-xs">
-                <span className="text-[13px] font-medium text-pink-600/70">Potential Gaps</span>
-                <span className="text-2xl font-bold text-pink-700">{auditResult.potentialGaps}</span>
+              <div className="flex flex-col gap-1 rounded-xl border border-primary/20 bg-primary/5 p-4 shadow-xs">
+                <span className="text-[13px] font-medium text-muted-foreground">Potential Gaps</span>
+                <span className="text-2xl font-bold text-primary">{auditResult.potentialGaps}</span>
               </div>
               <div className="flex flex-col gap-1 rounded-xl border border-red-50 bg-red-50/50 p-4 shadow-xs">
-                <span className="text-[13px] font-medium text-slate-500">Potential Overcodes/Compliance</span>
-                <span className="text-2xl font-bold text-slate-800">{auditResult.potentialCompliance}</span>
+                <span className="text-[13px] font-medium text-muted-foreground">Potential Overcodes/Compliance</span>
+                <span className="text-2xl font-bold text-foreground">{auditResult.potentialCompliance}</span>
               </div>
             </div>
 
             {/* Detailed Findings */}
             <div className="pt-2">
-              <h4 className="mb-3 text-[13px] font-semibold text-slate-800">Detailed Findings:</h4>
+              <h4 className="mb-3 text-[13px] font-semibold text-foreground">Detailed Findings:</h4>
               <DataTable
                 columns={columns}
                 rows={auditResult.findings}
@@ -276,7 +276,7 @@ export default function HccBulkAudit() {
 
         {/* Error Toast */}
         {showError && (
-          <div className="fixed bottom-6 right-6 z-50 flex w-[320px] flex-col gap-1 rounded-xl border-l-4 border-l-red-500 bg-white p-4 shadow-lg ring-1 ring-slate-200/50 animate-in slide-in-from-right-8">
+          <div className="fixed bottom-6 right-6 z-50 flex w-[320px] flex-col gap-1 rounded-xl border-l-4 border-l-red-500 bg-white p-4 shadow-lg ring-1 ring-border/50 animate-in slide-in-from-right-8">
             <span className="text-sm font-semibold">Missing Criteria</span>
             <span className="text-[13px] opacity-90">Please enter audit criteria before starting.</span>
           </div>
@@ -284,13 +284,13 @@ export default function HccBulkAudit() {
 
         {/* Success Toast */}
         {showSuccessToast && auditResult && (
-          <div className="fixed bottom-6 right-6 z-50 flex w-[340px] items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in slide-in-from-right-8 fade-in">
+          <div className="fixed bottom-6 right-6 z-50 flex w-[340px] items-start gap-3 rounded-xl border border-border bg-white p-4 shadow-xl animate-in slide-in-from-right-8 fade-in">
             <div className="mt-0.5 rounded-full bg-emerald-100 p-1 text-emerald-600">
               <CheckCircle2 className="size-4" />
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-slate-800">Audit Completed</span>
-              <span className="text-[13px] leading-snug text-slate-500">
+              <span className="text-sm font-semibold text-foreground">Audit Completed</span>
+              <span className="text-[13px] leading-snug text-muted-foreground">
                 Audit {auditResult.id} has finished processing.
               </span>
             </div>
@@ -328,7 +328,7 @@ function RationaleCell({ rationale, recommendation }: { rationale: string; recom
     <div className="flex flex-col gap-2 min-w-[350px] w-full max-w-[450px] py-1">
       <button 
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1 text-[13px] font-medium text-pink-600 hover:text-pink-700 transition-colors w-fit"
+        className="flex items-center gap-1 text-[13px] font-medium text-primary hover:text-primary/90 transition-colors w-fit"
       >
         View AI Rationale
         <ChevronDown className={`size-3 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
@@ -336,13 +336,13 @@ function RationaleCell({ rationale, recommendation }: { rationale: string; recom
       
       <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
         <div className="overflow-hidden">
-          <div className="flex flex-col gap-2 text-[13px] text-slate-600 pb-2 pt-1">
+          <div className="flex flex-col gap-2 text-[13px] text-muted-foreground pb-2 pt-1">
             <div>
-              <span className="font-semibold text-slate-700 block mb-0.5">Rationale:</span>
+              <span className="font-semibold text-foreground/90 block mb-0.5">Rationale:</span>
               <span className="leading-relaxed">{rationale}</span>
             </div>
             <div>
-              <span className="font-semibold text-slate-700 block mb-0.5">Recommendation:</span>
+              <span className="font-semibold text-foreground/90 block mb-0.5">Recommendation:</span>
               <span className="leading-relaxed">{recommendation}</span>
             </div>
           </div>

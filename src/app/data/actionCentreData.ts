@@ -1,11 +1,12 @@
-import { pick, rand, fullName, phone, email, EMPLOYERS, PHYSICIANS, patientId } from "./options";
+import { pick, rand, fullName, phone, email, EMPLOYERS, PHYSICIANS, patientId, MEDICAL_CONDITIONS } from "./options";
 
 export type PriorityLevel = "High" | "Medium" | "Low";
 
 export type CohortType = 
   | "new-activation"
   | "engagement-gap"
-  | "low-response";
+  | "low-response"
+  | "external-leakage";
 
 export type GapTier = "30-days" | "60-days" | "90-days" | "custom";
 
@@ -38,6 +39,8 @@ export interface ActionCentrePatientRow {
   name: string;
   age: number;
   gender: "M" | "F";
+  condition: string;
+  spruce: "Yes" | "No";
   priority: PriorityLevel;
   cohort: CohortType;
   gapTier?: GapTier;
@@ -72,7 +75,7 @@ export const COHORT_SUMMARIES: CohortSummaryCard[] = [
   {
     id: "all",
     title: "Total Requiring Attention",
-    count: 98,
+    count: 118,
     wowChange: "+12.4%",
     wowPositive: false, // More patients needing attention is an operational alert
     momChange: "-4.1%",
@@ -109,6 +112,16 @@ export const COHORT_SUMMARIES: CohortSummaryCard[] = [
     momPositive: true,
     description: "Patients with 3+ unreturned outreach attempts requiring channel escalation.",
   },
+  {
+    id: "external-leakage",
+    title: "External Care Leakage",
+    count: 20,
+    wowChange: "+15.3%",
+    wowPositive: false,
+    momChange: "+8.7%",
+    momPositive: false,
+    description: "Members seeking out-of-network urgent care or labs instead of utilizing DPC.",
+  },
 ];
 
 const REASONS_BY_COHORT: Record<CohortType, string[]> = {
@@ -130,6 +143,12 @@ const REASONS_BY_COHORT: Record<CohortType, string[]> = {
     "No response to Care Coordinator voicemail left 10 days ago",
     "Failed appointment confirmation twice • Require alternate phone contact",
   ],
+  "external-leakage": [
+    "Out-of-network urgent care claim ($340) • Needs DPC walk-in education",
+    "External lab workup billed ($185) • Route future labs through DPC wholesale",
+    "ER visit for uncomplicated sinusitis • Schedule follow-up & Spruce guide",
+    "Specialist referral without PCP consult • Review care coordination protocol",
+  ],
 };
 
 const ACTIONS_BY_COHORT: Record<CohortType, { text: string; type: "email" | "sms" | "call" | "appt" }[]> = {
@@ -150,15 +169,22 @@ const ACTIONS_BY_COHORT: Record<CohortType, { text: string; type: "email" | "sms
     { text: "Switch to Spruce Direct Secure Message", type: "sms" },
     { text: "Flag for Front Desk In-Person Notification", type: "call" },
   ],
+  "external-leakage": [
+    { text: "Send DPC Zero-Copay Benefits Reminder SMS", type: "sms" },
+    { text: "Call to Explain Wholesale Lab & Urgent Care Access", type: "call" },
+    { text: "Email Care Coordination & 24/7 Spruce Guide", type: "email" },
+    { text: "Schedule Post-ER/Urgent Care Follow-up", type: "appt" },
+  ],
 };
 
-// Generate deterministic list of 98 patients
-export const ACTION_CENTRE_PATIENTS: ActionCentrePatientRow[] = Array.from({ length: 98 }, (_, idx) => {
+// Generate deterministic list of 118 patients
+export const ACTION_CENTRE_PATIENTS: ActionCentrePatientRow[] = Array.from({ length: 118 }, (_, idx) => {
   const name = fullName();
   let cohort: CohortType;
   if (idx < 28) cohort = "new-activation";
   else if (idx < 82) cohort = "engagement-gap";
-  else cohort = "low-response";
+  else if (idx < 98) cohort = "low-response";
+  else cohort = "external-leakage";
 
   let priority: PriorityLevel = "Medium";
   if (cohort === "engagement-gap") {
@@ -194,6 +220,8 @@ export const ACTION_CENTRE_PATIENTS: ActionCentrePatientRow[] = Array.from({ len
     name,
     age: Math.floor(rand() * 50) + 22,
     gender: rand() > 0.5 ? "F" : "M",
+    condition: pick(MEDICAL_CONDITIONS),
+    spruce: rand() > 0.5 ? "Yes" : "No",
     priority,
     cohort,
     gapTier,
@@ -224,7 +252,7 @@ export const ACTION_CENTRE_PATIENTS: ActionCentrePatientRow[] = Array.from({ len
         outcome: "Opened",
       },
     ],
-    recentClaims: cohort === "utilization-leakage" ? [
+    recentClaims: cohort === "external-leakage" ? [
       {
         id: "cl-1",
         date: "06/18/2026",

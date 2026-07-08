@@ -42,7 +42,7 @@ const RISK_SCORE_DATA = [
 ];
 
 const DEMOGRAPHICS_DATA = [
-  { name: "Male", value: 33, count: 167, color: "#e32168" }, // Primary
+  { name: "Male", value: 33, count: 167, color: "#FF6B2B" }, // Primary
   { name: "Female", value: 33, count: 167, color: "#3b82f6" }, // Blue
   { name: "Other", value: 34, count: 172, color: "#f59e0b" }, // Orange
 ];
@@ -54,9 +54,9 @@ const CustomPieTooltip = ({ active, payload }: any) => {
       <div className="flex items-center justify-between gap-6 rounded-lg border bg-white px-3 py-2 shadow-md">
         <div className="flex items-center gap-2">
           <div className="size-3.5 rounded-[3px]" style={{ backgroundColor: data.payload.color }} />
-          <span className="text-[13px] font-medium text-slate-500">{data.name}</span>
+          <span className="text-[13px] font-medium text-muted-foreground">{data.name}</span>
         </div>
-        <span className="text-[13px] text-slate-800">{data.payload.count}</span>
+        <span className="text-[13px] text-foreground">{data.payload.count}</span>
       </div>
     );
   }
@@ -161,7 +161,7 @@ export default function HccOverview() {
               <BarChart2 className="size-4 text-primary" />
               Risk Score Distribution
             </CardTitle>
-            <p className="text-xs text-slate-500">Distribution of HCC risk scores across patients.</p>
+            <p className="text-xs text-muted-foreground">Distribution of HCC risk scores across patients.</p>
           </CardHeader>
           <CardContent>
             <div className="h-[250px] w-full pt-4">
@@ -184,7 +184,7 @@ export default function HccOverview() {
                     cursor={{ fill: "transparent" }}
                     contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
                   />
-                  <Bar dataKey="count" fill="#e32168" radius={[4, 4, 0, 0]} barSize={40} />
+                  <Bar dataKey="count" fill="#FF6B2B" radius={[4, 4, 0, 0]} barSize={40} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -199,10 +199,10 @@ export default function HccOverview() {
                 <PieChartIcon className="size-4 text-primary" />
                 Patient Demographics (Gender)
               </CardTitle>
-              <p className="text-xs text-slate-500 mt-1">Breakdown of patients by selected demographic.</p>
+              <p className="text-xs text-muted-foreground mt-1">Breakdown of patients by selected demographic.</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500 font-medium">Breakdown:</span>
+              <span className="text-xs text-muted-foreground font-medium">Breakdown:</span>
               <Select defaultValue="gender">
                 <SelectTrigger className="h-8 w-28 text-xs bg-muted/30 border-transparent shadow-none hover:bg-muted/50">
                   <SelectValue />
@@ -242,7 +242,7 @@ export default function HccOverview() {
               {DEMOGRAPHICS_DATA.map((entry) => (
                 <div key={entry.name} className="flex items-center gap-1.5">
                   <span className="size-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                  <span className="text-xs text-slate-500">{entry.name}</span>
+                  <span className="text-xs text-muted-foreground">{entry.name}</span>
                 </div>
               ))}
             </div>

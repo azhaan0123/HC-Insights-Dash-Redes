@@ -159,7 +159,7 @@ export function ClassicActionCentreOverview() {
 
   return (
     <ClassicLayout
-      title="Action Centre"
+      title="Utilization Gaps"
       subtitleNote="Note: Click a card to view details, cards without data are not clickable."
     >
       {/* SECTION 1: OPERATIONAL SUMMARY CARDS */}
@@ -294,7 +294,7 @@ export function ClassicActionCentreOverview() {
                 className={`px-3 py-1 rounded text-xs font-semibold cursor-pointer border ${
                   activeGapTier === sub.id
                     ? "bg-[#fff0f4] text-[#e61952] border-[#e61952]"
-                    : "bg-white text-[#495057] border-[#dee2e6] hover:bg-slate-50"
+                    : "bg-white text-[#495057] border-[#dee2e6] hover:bg-muted"
                 }`}
               >
                 {sub.label}
@@ -472,7 +472,7 @@ export function ClassicActionCentreOverview() {
               </div>
 
               <div className="flex items-center gap-1.5 border-l border-[#dee2e6] pl-3">
-                <button className="px-2.5 py-1 rounded border border-[#dee2e6] bg-white hover:bg-slate-50 text-[#495057]">
+                <button className="px-2.5 py-1 rounded border border-[#dee2e6] bg-white hover:bg-muted text-[#495057]">
                   Page
                 </button>
                 <input

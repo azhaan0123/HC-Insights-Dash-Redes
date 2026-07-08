@@ -97,7 +97,7 @@ export function DataTable<T>({
 
   return (
     <div className={cn(
-      "overflow-hidden flex flex-col w-full min-w-0 h-full flex-1 bg-card",
+      "overflow-hidden flex flex-col w-full min-w-0 bg-card",
       attached ? "border-transparent shadow-none" : "rounded-xl border border-border/60 shadow-sm"
     )}>
       {showFilterBar && (
@@ -141,8 +141,8 @@ export function DataTable<T>({
           </div>
         </div>
       )}
-      <div className="overflow-auto w-full min-w-0 flex-1 flex flex-col">
-        <Table className="flex-1">
+      <div className="overflow-auto w-full min-w-0 flex flex-col">
+        <Table className="w-full">
           <TableHeader className="sticky top-0 z-10">
             <TableRow className="border-b bg-muted hover:bg-muted">
               {columns.map((c) => {
@@ -153,7 +153,7 @@ export function DataTable<T>({
                   <TableHead
                     key={c.key}
                     className={cn(
-                      "h-11 whitespace-nowrap bg-muted text-sm font-medium tracking-wide text-slate-500 uppercase select-none cursor-pointer hover:bg-muted/80 hover:text-foreground transition-colors group/th",
+                      "h-11 whitespace-nowrap bg-muted text-sm font-medium tracking-wide text-muted-foreground uppercase select-none cursor-pointer hover:bg-muted/80 hover:text-foreground transition-colors group/th",
                       alignClass(c.align),
                       c.className,
                     )}
@@ -180,7 +180,7 @@ export function DataTable<T>({
                         ) : dir === "desc" ? (
                           <ArrowDown className="size-3 text-primary font-bold" />
                         ) : (
-                          <ArrowUpDown className="size-3 text-slate-400 opacity-40 group-hover/th:opacity-100 transition-opacity" />
+                          <ArrowUpDown className="size-3 text-muted-foreground/70 opacity-40 group-hover/th:opacity-100 transition-opacity" />
                         )}
                       </span>
                     </div>
@@ -192,7 +192,7 @@ export function DataTable<T>({
           <TableBody>
             {visible.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-12 text-center text-slate-400">
+                <TableCell colSpan={columns.length} className="py-12 text-center text-muted-foreground/70">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -218,34 +218,12 @@ export function DataTable<T>({
                 </TableRow>
               ))
             )}
-            {visible.length > 0 && visible.length < pageSize && (
-              <>
-                <TableRow className="border-b border-border/60">
-                  <TableCell
-                    colSpan={columns.length}
-                    className={cn(dense ? "py-2" : "py-3", "text-center text-muted-foreground text-sm")}
-                  >
-                    End of entries
-                  </TableCell>
-                </TableRow>
-                {Array.from({ length: pageSize - visible.length - 1 }).map((_, i) => (
-                  <TableRow key={`empty-${i}`} className="border-b border-border/60">
-                    <TableCell
-                      colSpan={columns.length}
-                      className={cn(dense ? "py-2" : "py-3", "text-[15px]")}
-                    >
-                      &nbsp;
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </>
-            )}
           </TableBody>
         </Table>
       </div>
 
       {/* Footer / pagination */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-2.5 text-sm text-slate-500">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-2.5 text-sm text-muted-foreground">
         <span>
           Showing <span className="text-foreground tabular-nums">{filteredRows.length === 0 ? 0 : start + 1}</span> to{" "}
           <span className="text-foreground tabular-nums">{Math.min(start + pageSize, filteredRows.length)}</span> of{" "}

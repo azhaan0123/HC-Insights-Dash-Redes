@@ -26,8 +26,8 @@ export default function HccCodingQueue() {
       header: "Patient",
       cell: (row) => (
         <div className="flex flex-col">
-          <span className="font-medium text-slate-800">{row.name}</span>
-          <span className="text-[13px] text-slate-400">{row.mrn}</span>
+          <span className="font-medium text-foreground">{row.name}</span>
+          <span className="text-[13px] text-muted-foreground/70">{row.mrn}</span>
         </div>
       ),
     },
@@ -36,15 +36,15 @@ export default function HccCodingQueue() {
       header: "Encounter",
       cell: (row) => (
         <div className="flex flex-col">
-          <span className="text-slate-600">{row.encounterId}</span>
-          <span className="text-[13px] text-slate-400">{row.encounterDate}</span>
+          <span className="text-muted-foreground">{row.encounterId}</span>
+          <span className="text-[13px] text-muted-foreground/70">{row.encounterDate}</span>
         </div>
       ),
     },
     {
       key: "diagnosis",
       header: "Primary Diagnosis",
-      cell: (row) => <span className="text-slate-600">{row.diagnosis}</span>,
+      cell: (row) => <span className="text-muted-foreground">{row.diagnosis}</span>,
     },
     {
       key: "suggestions",
@@ -56,13 +56,13 @@ export default function HccCodingQueue() {
               <Icd10Code
                 key={i} 
                 code={sug.code}
-                className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
+                className="inline-flex items-center rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
               >
                 {sug.code} <span className="ml-1 opacity-70">({sug.score})</span>
               </Icd10Code>
             ))
           ) : (
-            <span className="text-slate-400 text-xs italic">None</span>
+            <span className="text-muted-foreground/70 text-xs italic">None</span>
           )}
         </div>
       ),
@@ -73,7 +73,7 @@ export default function HccCodingQueue() {
       cell: (row) => {
         if (row.codingStatus === "Reviewed") {
           return (
-            <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700">
+            <span className="inline-flex items-center rounded-full border border-border bg-white px-2.5 py-0.5 text-xs font-medium text-foreground/90">
               Reviewed
             </span>
           );
@@ -101,15 +101,15 @@ export default function HccCodingQueue() {
           <div className="group relative flex justify-center">
             <button 
               onClick={() => setSelectedPatientId(row.id)}
-              className="grid size-8 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+              className="grid size-8 place-items-center rounded-full text-muted-foreground/70 hover:bg-secondary hover:text-muted-foreground transition-colors"
             >
               <ClipboardList className="size-[18px]" />
             </button>
             <div className="pointer-events-none absolute bottom-full mb-1.5 z-50 flex flex-col items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="whitespace-nowrap rounded bg-slate-800 px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+              <span className="whitespace-nowrap rounded bg-card px-2.5 py-1 text-xs font-medium text-white shadow-sm">
                 Review Patient Chart / Edit Codes
               </span>
-              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-slate-800" />
+              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
             </div>
           </div>
 
@@ -123,10 +123,10 @@ export default function HccCodingQueue() {
               <CheckCircle2 className="size-[18px]" />
             </button>
             <div className="pointer-events-none absolute bottom-full mb-1.5 z-50 flex flex-col items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="whitespace-nowrap rounded bg-slate-800 px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+              <span className="whitespace-nowrap rounded bg-card px-2.5 py-1 text-xs font-medium text-white shadow-sm">
                 Accept AI Suggestions
               </span>
-              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-slate-800" />
+              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
             </div>
           </div>
 
@@ -140,10 +140,10 @@ export default function HccCodingQueue() {
               <XCircle className="size-[18px]" />
             </button>
             <div className="pointer-events-none absolute bottom-full mb-1.5 z-50 flex flex-col items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="whitespace-nowrap rounded bg-slate-800 px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+              <span className="whitespace-nowrap rounded bg-card px-2.5 py-1 text-xs font-medium text-white shadow-sm">
                 Flag for Deeper Review
               </span>
-              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-slate-800" />
+              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
             </div>
           </div>
         </div>

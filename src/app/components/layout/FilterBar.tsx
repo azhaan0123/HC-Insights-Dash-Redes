@@ -25,9 +25,9 @@ function Chip({ chip, onOptionSelect }: { chip: FilterChip; onOptionSelect?: (va
         hasOptions ? "hover:border-primary/40 hover:bg-accent/50 cursor-pointer" : "",
       ].join(" ")}
     >
-      <span className="text-slate-400">{chip.label}</span>
+      <span className="text-muted-foreground/70">{chip.label}</span>
       <span className="text-foreground">{chip.value}</span>
-      {hasOptions && <ChevronDown className="size-3 text-slate-400" />}
+      {hasOptions && <ChevronDown className="size-3 text-muted-foreground/70" />}
     </div>
   );
 
@@ -93,7 +93,7 @@ export function FilterBar({ chips, onChipsChange, onFiltersClick }: { chips: Fil
       <button
         type="button"
         onClick={onFiltersClick}
-        className="flex items-center gap-1.5 text-xs font-medium text-slate-500 rounded-full border border-slate-300 bg-slate-50 px-3 py-1.5 hover:bg-slate-200 hover:text-slate-700 hover:border-slate-400 transition-all duration-150 active:scale-[0.97] cursor-pointer"
+        className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground rounded-full border border-border bg-muted px-3 py-1.5 hover:bg-muted hover:text-foreground/90 hover:border-border transition-all duration-150 active:scale-[0.97] cursor-pointer"
       >
         <Filter className="size-3.5" />
         Filters
@@ -104,7 +104,7 @@ export function FilterBar({ chips, onChipsChange, onFiltersClick }: { chips: Fil
         if (isDate) {
           const content = (
             <div className="flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs transition-colors hover:border-primary/40 hover:bg-accent/50 cursor-pointer">
-              <span className="text-slate-400">{chip.label}</span>
+              <span className="text-muted-foreground/70">{chip.label}</span>
               <span className="text-foreground">{chip.value}</span>
             </div>
           );

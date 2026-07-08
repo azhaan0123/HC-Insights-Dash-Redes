@@ -98,8 +98,8 @@ export function ClassicActionCentreDetail() {
   return (
     <ClassicLayout
       title={currentTitle}
-      onBack={() => navigate("/action-centre-classic")}
-      backTitle="Action Centre"
+      onBack={() => navigate("/utilization-gaps-classic")}
+      backTitle="Utilization Gaps"
       subtitleNote=""
     >
       {/* Summary Cards Row */}
@@ -411,7 +411,7 @@ export function ClassicActionCentreDetail() {
             </div>
 
             <div className="flex items-center gap-1.5 border-l border-[#dee2e6] pl-3">
-              <button className="px-2.5 py-1 rounded border border-[#dee2e6] bg-white hover:bg-slate-50 text-[#495057]">
+              <button className="px-2.5 py-1 rounded border border-[#dee2e6] bg-white hover:bg-muted text-[#495057]">
                 Page
               </button>
               <input

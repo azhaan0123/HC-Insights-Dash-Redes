@@ -66,8 +66,7 @@ import LabTrends from "./pages/outcomes/LabTrends";
 import MedicationRefills from "./pages/outcomes/MedicationRefills";
 import LabCadence from "./pages/outcomes/LabCadence";
 import ReportBuilder from "./pages/outcomes/ReportBuilder";
-import ClassicActionCentreOverview from "./pages/action-centre-classic/ClassicActionCentreOverview";
-import ClassicActionCentreDetail from "./pages/action-centre-classic/ClassicActionCentreDetail";
+import { ClassicUtilizationGaps } from "./pages/action-centre-classic/ClassicUtilizationGaps";
 
 export const router = createBrowserRouter([
   {
@@ -80,11 +79,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/action-centre-classic",
-    Component: ClassicActionCentreOverview,
+    element: <Navigate to="/utilization-gaps-classic" replace />,
   },
   {
     path: "/action-centre-classic/:cohortId",
-    Component: ClassicActionCentreDetail,
+    element: <Navigate to="/utilization-gaps-classic" replace />,
+  },
+  {
+    path: "/utilization-gaps-classic",
+    Component: ClassicUtilizationGaps,
   },
   {
     path: "/",
@@ -92,7 +95,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
       { path: "home", Component: Home },
-      { path: "action-centre", Component: ActionCentreOverview },
+      { path: "action-centre", element: <Navigate to="/utilization-gaps" replace /> },
       { path: "engagement", Component: EngagementOverview },
       { path: "engagement/active-patients", Component: ActivePatients },
       { path: "engagement/total-active-patients", Component: TotalActivePatients },

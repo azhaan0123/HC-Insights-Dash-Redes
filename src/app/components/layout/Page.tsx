@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import { FilterBar, type FilterChip } from "./FilterBar";
 import { PageHeader, type Crumb } from "./PageHeader";
 import { ManageFiltersSidebar } from "./ManageFiltersSidebar";

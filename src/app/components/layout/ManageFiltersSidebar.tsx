@@ -103,7 +103,7 @@ export function ManageFiltersSidebar({ open, onOpenChange, chips, onApply }: Man
         </div>
 
         <SheetFooter className="flex flex-col gap-3 sm:flex-col sm:space-x-0 mt-auto pt-6 pb-2 border-t">
-          <SheetDescription className="text-[11px] text-slate-500">
+          <SheetDescription className="text-[11px] text-muted-foreground">
             Note: After changing any filters, click Apply to update the results.
           </SheetDescription>
           <div className="flex gap-4 w-full">

@@ -53,6 +53,12 @@ const getContrastText = (hex: string) => {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [primaryColor, setPrimaryColorState] = useState(() => {
+    const hasReset = localStorage.getItem("hc-theme-reset-pink-v1");
+    if (!hasReset) {
+      localStorage.setItem("hc-theme-reset-pink-v1", "true");
+      localStorage.setItem("hc-theme-color", "#e32168");
+      return "#e32168";
+    }
     return localStorage.getItem("hc-theme-color") || "#e32168";
   });
 

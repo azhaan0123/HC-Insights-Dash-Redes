@@ -80,15 +80,15 @@ export default function SurveyTemplates() {
   };
 
   const leadingTabs = (
-    <div className="inline-flex rounded-md border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-muted p-1">
+    <div className="inline-flex rounded-md border border-border dark:border-border bg-secondary dark:bg-muted p-1">
       {(["CSAT", "NPS", "Text"] as const).map((tab) => (
         <button
           key={tab}
           onClick={() => setActiveTab(tab)}
           className={`px-4 py-1.5 text-xs font-semibold rounded transition-all ${
             activeTab === tab
-              ? "bg-white dark:bg-card text-[#e32168] shadow-2xs"
-              : "text-slate-600 dark:text-slate-400 hover:text-foreground"
+              ? "bg-white dark:bg-card text-primary shadow-2xs"
+              : "text-muted-foreground dark:text-muted-foreground/70 hover:text-foreground"
           }`}
         >
           {tab}
@@ -109,7 +109,7 @@ export default function SurveyTemplates() {
       <div className="flex justify-end mb-4 max-w-[1600px] mx-auto w-full">
         <Button
           onClick={handleOpenCreate}
-          className="h-9 px-4 bg-[#e32168] hover:bg-[#c9185a] text-white text-xs font-semibold shadow-2xs gap-1.5 transition-colors inline-flex items-center"
+          className="h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-2xs gap-1.5 transition-colors inline-flex items-center"
         >
           <Plus className="size-4" />
           <span>Create Template</span>
@@ -123,8 +123,8 @@ export default function SurveyTemplates() {
             onClick={() => setDefault(item.id)}
             className={`rounded-lg bg-card p-4 shadow-sm flex flex-col transition-all cursor-pointer ${
               item.isDefault
-                ? "border-2 border-[#e32168]"
-                : "border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                ? "border-2 border-primary"
+                : "border border-border dark:border-border hover:border-border dark:hover:border-border"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -133,40 +133,40 @@ export default function SurveyTemplates() {
               </span>
               <button
                 onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
-                className="text-slate-400 hover:text-red-600 transition-colors p-1"
+                className="text-muted-foreground/70 hover:text-red-600 transition-colors p-1"
                 title="Delete template"
               >
                 <Trash2 className="size-3.5" />
               </button>
             </div>
 
-            <div className="mt-3 bg-slate-100/80 dark:bg-muted/30 rounded p-4 flex-1 flex flex-col min-h-[180px] relative overflow-hidden border border-slate-200/50 dark:border-slate-800/50">
-              <div className="space-y-1.5 w-full mb-auto text-[10px] text-slate-400 font-mono">
+            <div className="mt-3 bg-secondary/80 dark:bg-muted/30 rounded p-4 flex-1 flex flex-col min-h-[180px] relative overflow-hidden border border-border/50 dark:border-border/50">
+              <div className="space-y-1.5 w-full mb-auto text-[10px] text-muted-foreground/70 font-mono">
                 <div className="flex items-center gap-2">
                   <span className="w-10 text-right">From</span>
-                  <div className="h-4 bg-white dark:bg-card border rounded w-32 px-1 flex items-center truncate text-[9px] text-slate-600 dark:text-slate-400">
+                  <div className="h-4 bg-white dark:bg-card border rounded w-32 px-1 flex items-center truncate text-[9px] text-muted-foreground dark:text-muted-foreground/70">
                     {item.from}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-10 text-right">Subject</span>
-                  <div className="h-4 bg-white dark:bg-card border rounded w-44 px-1 flex items-center truncate text-[9px] text-slate-600 dark:text-slate-400">
+                  <div className="h-4 bg-white dark:bg-card border rounded w-44 px-1 flex items-center truncate text-[9px] text-muted-foreground dark:text-muted-foreground/70">
                     {item.subject}
                   </div>
                 </div>
               </div>
 
               <div className="my-auto text-center">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <span className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground/70">
                   Template preview not available
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3" onClick={(e) => e.stopPropagation()}>
+            <div className="mt-4 flex items-center justify-between border-t border-border/50 dark:border-border pt-3" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => setPreviewTemplate(item)}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-foreground font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground dark:text-muted-foreground/70 hover:text-foreground font-medium transition-colors"
               >
                 <Eye className="size-3.5" />
                 <span>Preview</span>
@@ -174,9 +174,9 @@ export default function SurveyTemplates() {
 
               <button
                 onClick={() => handleOpenEdit(item)}
-                className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-muted hover:bg-slate-100 dark:hover:bg-muted/80 font-medium transition-colors text-foreground"
+                className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded border border-border dark:border-border bg-muted dark:bg-muted hover:bg-secondary dark:hover:bg-muted/80 font-medium transition-colors text-foreground"
               >
-                <Pencil className="size-3.2 text-slate-500" />
+                <Pencil className="size-3.2 text-muted-foreground" />
                 <span>Edit</span>
               </button>
             </div>
@@ -188,25 +188,25 @@ export default function SurveyTemplates() {
       <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle className="text-[#e32168] flex items-center gap-2">
+            <DialogTitle className="text-primary flex items-center gap-2 font-bold">
               <Mail className="size-5" />
               <span>Preview: {previewTemplate?.name}</span>
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4 text-sm">
-            <div className="rounded border p-3 bg-slate-50 dark:bg-muted/30 space-y-1 text-xs">
-              <div><span className="text-slate-400">Type:</span> <strong className="text-foreground">{previewTemplate?.type} Survey</strong></div>
-              <div><span className="text-slate-400">From:</span> <span className="text-foreground">{previewTemplate?.from}</span></div>
-              <div><span className="text-slate-400">Subject:</span> <span className="text-foreground font-medium">{previewTemplate?.subject}</span></div>
+            <div className="rounded border p-3 bg-muted dark:bg-muted/30 space-y-1 text-xs">
+              <div><span className="text-muted-foreground/70">Type:</span> <strong className="text-foreground">{previewTemplate?.type} Survey</strong></div>
+              <div><span className="text-muted-foreground/70">From:</span> <span className="text-foreground">{previewTemplate?.from}</span></div>
+              <div><span className="text-muted-foreground/70">Subject:</span> <span className="text-foreground font-medium">{previewTemplate?.subject}</span></div>
             </div>
             <div className="border rounded-lg p-6 bg-card text-center space-y-4 shadow-2xs">
               <h3 className="text-lg font-bold text-foreground">{previewTemplate?.subject}</h3>
-              <p className="text-slate-500 text-xs max-w-sm mx-auto">
+              <p className="text-muted-foreground text-xs max-w-sm mx-auto">
                 Hi [Patient Name], thank you for choosing ACME Health! We would love to hear your feedback on your visit with Dr. Smith.
               </p>
               <div className="flex justify-center gap-2 pt-2">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <button key={n} className="size-8 rounded-full border border-[#e32168] text-[#e32168] text-xs font-bold flex items-center justify-center">
+                  <button key={n} className="size-8 rounded-full border border-primary text-primary text-xs font-bold flex items-center justify-center">
                     {n}
                   </button>
                 ))}
@@ -214,7 +214,7 @@ export default function SurveyTemplates() {
             </div>
           </div>
           <DialogFooter>
-            <Button className="bg-[#e32168] text-white" onClick={() => setPreviewTemplate(null)}>Close</Button>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setPreviewTemplate(null)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -223,7 +223,7 @@ export default function SurveyTemplates() {
       <Dialog open={isCreating || !!editingTemplate} onOpenChange={() => { setIsCreating(false); setEditingTemplate(null); }}>
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
-            <DialogTitle className="text-[#e32168]">
+            <DialogTitle className="text-primary font-bold">
               {isCreating ? `Create ${activeTab} Template` : "Edit Template"}
             </DialogTitle>
           </DialogHeader>
@@ -243,7 +243,7 @@ export default function SurveyTemplates() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setIsCreating(false); setEditingTemplate(null); }}>Cancel</Button>
-            <Button className="bg-[#e32168] text-white" onClick={handleSave}>Save Template</Button>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleSave}>Save Template</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

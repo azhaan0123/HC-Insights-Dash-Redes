@@ -20,10 +20,10 @@ export function BoolBadge({ value }: { value: boolean | string }) {
     <span
       className={cn(
         "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs",
-        yes ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-500",
+        yes ? "bg-green-50 text-green-700" : "bg-secondary text-muted-foreground",
       )}
     >
-      <span className={cn("size-1.5 rounded-full", yes ? "bg-green-500" : "bg-slate-400")} />
+      <span className={cn("size-1.5 rounded-full", yes ? "bg-green-500" : "bg-muted-foreground/50")} />
       {typeof value === "boolean" ? (yes ? "Yes" : "No") : value}
     </span>
   );
@@ -31,5 +31,5 @@ export function BoolBadge({ value }: { value: boolean | string }) {
 
 /** Muted placeholder for empty cells. */
 export function Muted({ children }: { children: ReactNode }) {
-  return <span className="text-slate-400">{children}</span>;
+  return <span className="text-muted-foreground/70">{children}</span>;
 }

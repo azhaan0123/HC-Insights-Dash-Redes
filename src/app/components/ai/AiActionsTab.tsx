@@ -29,7 +29,7 @@ export function AiActionsTab() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-1.5 bg-slate-500/10 text-slate-600 dark:text-slate-400 px-3 py-1.5 rounded-md text-xs font-medium w-fit border border-transparent">
+              <div className="flex items-center gap-1.5 bg-muted0/10 text-muted-foreground dark:text-muted-foreground/70 px-3 py-1.5 rounded-md text-xs font-medium w-fit border border-transparent">
                 <FileText className="size-3.5" />
                 Draft Message
               </div>

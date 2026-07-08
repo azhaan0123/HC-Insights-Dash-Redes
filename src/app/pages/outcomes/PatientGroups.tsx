@@ -50,7 +50,7 @@ const columns: Column<PatientGroupRow>[] = [
   {
     key: "icd10",
     header: "ICD-10",
-    cell: (row) => <Icd10Code code={row.icd10} className="text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-slate-700 transition-colors" />,
+    cell: (row) => <Icd10Code code={row.icd10} className="text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground/90 transition-colors" />,
   },
   {
     key: "status",
