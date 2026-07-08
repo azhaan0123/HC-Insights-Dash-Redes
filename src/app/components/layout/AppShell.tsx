@@ -51,16 +51,16 @@ function TopBar({
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-card px-4">
-      <SidebarTrigger className="text-slate-500" />
+      <SidebarTrigger className="text-muted-foreground" />
       <Separator orientation="vertical" className="!h-5" />
 
       {/* Search */}
       <div className="relative hidden max-w-md flex-1 sm:block">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70" />
         <input
           type="text"
           placeholder="Search patients, claims, reports…"
-          className="h-9 w-full rounded-md border bg-background pl-9 pr-3 text-sm outline-none placeholder:text-slate-400 transition-[border-color] duration-150 focus:border-primary/40"
+          className="h-9 w-full rounded-md border bg-background pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground/70 transition-[border-color] duration-150 focus:border-primary/40"
         />
       </div>
 
@@ -120,12 +120,12 @@ function TopBar({
 
 function Footer() {
   return (
-    <footer className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t bg-card px-6 py-4 text-xs text-slate-500">
+    <footer className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t bg-card px-6 py-4 text-xs text-muted-foreground">
       <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-full border text-[8px] font-semibold text-slate-400">
+        <span className="grid size-9 place-items-center rounded-full border text-[8px] font-semibold text-muted-foreground/70">
           SOC 2
         </span>
-        <span className="grid size-9 place-items-center rounded-full border text-[8px] font-semibold text-slate-400">
+        <span className="grid size-9 place-items-center rounded-full border text-[8px] font-semibold text-muted-foreground/70">
           HIPAA
         </span>
       </div>
@@ -136,7 +136,7 @@ function Footer() {
         <span className="text-border">·</span>
         <a className="hover:text-primary" href="#">Terms of Service</a>
         <span className="text-border">·</span>
-        <a className="hover:text-primary" href="#">Help</a>
+        <a className="hover:text-primary" href="https://intercom.help/health-compiler-inc/en" target="_blank" rel="noopener noreferrer">Help</a>
       </div>
       <div className="flex items-center gap-1.5">
         <span>Powered by</span>

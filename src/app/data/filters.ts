@@ -46,8 +46,7 @@ export const utilizationGapsChips: FilterChip[] = [
   { label: "Division", value: "All Divisions", options: ["All Divisions", "Clinical", "Operations"] },
   { label: "DPC", value: "All DPCs", options: dpcOptions },
   { label: "Physician", value: "All Physicians", options: physicianOptions },
-  { label: "Show Patients With", value: "No Encounters", options: ["No Encounters", "No Messages", "No Activity"] },
-  { label: "Inactivity Period", value: "Last 90 Days", options: ["Last 90 Days", "Last 180 Days", "Last 365 Days", "All Time", "Custom Inactivity Period"] },
+  { label: "Inactivity Period", value: "30+ Days Inactive", options: ["30+ Days Inactive", "60+ Days Inactive", "90+ Days Inactive"] },
 ];
 
 export const hccChips: FilterChip[] = [

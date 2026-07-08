@@ -156,9 +156,9 @@ const columns: Column<PatientMeasureRow>[] = [
 ];
 
 const COLORS = {
-  Met: "#e32168", // primary
-  "Not Met": "#94a3b8", // slate-400
-  Excluded: "#cbd5e1", // slate-300
+  Met: "#FF6B2B", // primary
+  "Not Met": "var(--muted-foreground)", // slate-400
+  Excluded: "var(--muted-foreground)", // slate-300
 };
 
 export default function AcoOverview() {
@@ -272,8 +272,8 @@ export default function AcoOverview() {
                     <AreaChart data={lineChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorMet" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#e32168" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#e32168" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#FF6B2B" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#FF6B2B" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -295,7 +295,7 @@ export default function AcoOverview() {
                       <Area 
                         type="monotone" 
                         dataKey="met" 
-                        stroke="#e32168" 
+                        stroke="#FF6B2B" 
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorMet)"

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import { FilterBar, type FilterChip } from "./FilterBar";
 import { PageHeader, type Crumb } from "./PageHeader";
 import { ManageFiltersSidebar } from "./ManageFiltersSidebar";
@@ -8,6 +8,7 @@ type PageProps = {
   subtitle?: string;
   crumbs?: Crumb[];
   leading?: ReactNode;
+  actions?: ReactNode;
   chips?: FilterChip[];
   children: ReactNode;
   showGenerateReport?: boolean;
@@ -21,6 +22,7 @@ export function Page({
   subtitle,
   crumbs,
   leading,
+  actions,
   chips: initialChips,
   children,
   showGenerateReport = true,
@@ -37,6 +39,7 @@ export function Page({
         subtitle={subtitle}
         crumbs={crumbs}
         leading={leading}
+        actions={actions}
         showGenerateReport={showGenerateReport}
         showIconActions={showIconActions}
         showFilters={showFilters}

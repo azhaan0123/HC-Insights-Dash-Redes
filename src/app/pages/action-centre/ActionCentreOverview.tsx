@@ -6,6 +6,7 @@ import {
   Clock,
   MessageSquareOff,
   Search,
+  Filter,
   ArrowUpRight,
   ArrowDownRight,
   ChevronRight,
@@ -15,30 +16,29 @@ import {
   Calendar,
   CheckCircle2,
   AlertCircle,
+  FileText,
   ShieldAlert,
   Send,
+  UserCheck,
   Building2,
   Stethoscope,
-  SlidersHorizontal,
-  Info,
-  AlertTriangle,
-  Layers,
   ExternalLink,
+  SlidersHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Page } from "../components/layout/Page";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Badge } from "../components/ui/badge";
-import { Card, CardContent } from "../components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
+import { Page } from "../../components/layout/Page";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Badge } from "../../components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "../../components/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -46,54 +46,33 @@ import {
   SheetTitle,
   SheetDescription,
   SheetFooter,
-} from "../components/ui/sheet";
+} from "../../components/ui/sheet";
+import { IdCell } from "../../components/dashboard/cells";
+import {
+  ACTION_CENTRE_PATIENTS,
+  COHORT_SUMMARIES,
+  type ActionCentrePatientRow,
+  type CohortType,
+  type GapTier,
+} from "../../data/actionCentreData";
+import { cn } from "../../components/ui/utils";
+import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../components/ui/dialog";
+} from "../../components/ui/dialog";
 import {
   AreaChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip as RechartsTooltip,
+  Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { IdCell, BoolBadge } from "../components/dashboard/cells";
-import {
-  ACTION_CENTRE_PATIENTS,
-  COHORT_SUMMARIES,
-  type ActionCentrePatientRow,
-  type CohortType,
-} from "../data/actionCentreData";
-import { cn } from "../components/ui/utils";
-import { motion } from "framer-motion";
-import { Tooltip, TooltipTrigger, TooltipContent } from "../components/ui/tooltip";
-import { utilizationGapsChips } from "../data/filters";
-import { usePageLoading } from "../hooks/usePageLoading";
-import { KpiCardSkeleton, TableSkeleton } from "../components/dashboard/SkeletonPrimitives";
-
-const DIAGNOSIS_MAP: Record<string, string> = {
-  "E78.5": "Hyperlipidemia, unspecified",
-  "I10": "Essential (primary) hypertension",
-  "E11.9": "Type 2 diabetes mellitus without complications",
-  "E78.2": "Mixed hyperlipidemia",
-  "J45.909": "Unspecified asthma, uncomplicated",
-  "M54.5": "Low back pain",
-  "E66.01": "Morbid (severe) obesity due to excess calories",
-  "F41.1": "Generalized anxiety disorder",
-  "J44.9": "Chronic obstructive pulmonary disease, unspecified",
-  "K21.9": "Gastro-esophageal reflux disease without esophagitis",
-  "E03.9": "Hypothyroidism, unspecified",
-  "M19.90": "Unspecified osteoarthritis, unspecified site",
-  "G43.909": "Migraine, unspecified, not intractable",
-  "N18.3": "Chronic kidney disease, stage 3 (moderate)",
-  "—": "No diagnosis provided",
-};
 
 const getMetricGraphData = (count: number, view: "WoW" | "MoM", isPositive: boolean) => {
   if (view === "WoW") {
@@ -121,40 +100,28 @@ const getMetricGraphData = (count: number, view: "WoW" | "MoM", isPositive: bool
   }
 };
 
-const getDiagnosisDesc = (code: string) => DIAGNOSIS_MAP[code] || "General primary care screening / follow-up";
-
-const getCohortIcon = (id: string) => {
-  switch (id) {
-    case "new-activation":
-      return <UserPlus className="size-4 shrink-0 text-muted-foreground/70" />;
-    case "engagement-gap":
-      return <Clock className="size-4 shrink-0 text-muted-foreground/70" />;
-    case "low-response":
-      return <MessageSquareOff className="size-4 shrink-0 text-muted-foreground/70" />;
-    case "external-leakage":
-      return <ShieldAlert className="size-4 shrink-0 text-muted-foreground/70" />;
-    default:
-      return <Activity className="size-4 shrink-0 text-muted-foreground/70" />;
-  }
-};
-
-export default function UtilizationGaps() {
+export default function ActionCentreOverview() {
   const navigate = useNavigate();
-  const isLoading = usePageLoading();
   const [activeCohort, setActiveCohort] = useState<CohortType | "all">("all");
+  const [activeGapTier, setActiveGapTier] = useState<GapTier | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("highest-risk");
   const [selectedPatient, setSelectedPatient] = useState<ActionCentrePatientRow | null>(null);
   const [completedPatientIds, setCompletedPatientIds] = useState<Set<string>>(new Set());
-  const [selectedMetricOverlay, setSelectedMetricOverlay] = useState<any | null>(null);
+  const [selectedMetricOverlay, setSelectedMetricOverlay] = useState<typeof COHORT_SUMMARIES[number] | null>(null);
   const [metricGraphView, setMetricGraphView] = useState<"WoW" | "MoM">("WoW");
 
   // Filter patients
   const filteredPatients = useMemo(() => {
     let list = [...ACTION_CENTRE_PATIENTS];
 
+    // Exclude completed/handled patients from immediate active list if needed or mark them
     if (activeCohort !== "all") {
       list = list.filter((p) => p.cohort === activeCohort);
+    }
+
+    if (activeCohort === "engagement-gap" && activeGapTier !== "all") {
+      list = list.filter((p) => p.gapTier === activeGapTier);
     }
 
     if (searchQuery.trim()) {
@@ -164,8 +131,7 @@ export default function UtilizationGaps() {
           p.name.toLowerCase().includes(q) ||
           p.reason.toLowerCase().includes(q) ||
           p.employer.toLowerCase().includes(q) ||
-          p.physician.toLowerCase().includes(q) ||
-          p.condition.toLowerCase().includes(q)
+          p.physician.toLowerCase().includes(q)
       );
     }
 
@@ -191,7 +157,7 @@ export default function UtilizationGaps() {
     });
 
     return list;
-  }, [activeCohort, searchQuery, sortBy]);
+  }, [activeCohort, activeGapTier, searchQuery, sortBy]);
 
   const handleTriggerAction = (patient: ActionCentrePatientRow, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -209,109 +175,115 @@ export default function UtilizationGaps() {
     switch (priority) {
       case "High":
         return (
-          <Badge className="bg-red-500/15 text-red-600 dark:bg-red-500/20 dark:text-red-400 border border-red-500/30 font-semibold px-2 py-0.5 text-[11px]">
-            High
+          <Badge className="bg-red-500/15 text-red-600 dark:bg-red-500/20 dark:text-red-400 border border-red-500/30 font-semibold px-2.5 py-0.5">
+            High Priority
           </Badge>
         );
       case "Medium":
         return (
-          <Badge className="bg-amber-500/15 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/30 font-medium px-2 py-0.5 text-[11px]">
-            Medium
+          <Badge className="bg-amber-500/15 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/30 font-medium px-2.5 py-0.5">
+            Medium Priority
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-sky-500/15 text-sky-700 dark:bg-sky-500/20 dark:text-sky-400 border border-sky-500/30 font-medium px-2 py-0.5 text-[11px]">
-            Low
+          <Badge className="bg-sky-500/15 text-sky-700 dark:bg-sky-500/20 dark:text-sky-400 border border-sky-500/30 font-medium px-2.5 py-0.5">
+            Low Priority
           </Badge>
         );
     }
   };
 
-  if (isLoading) {
-    return (
-      <Page title="Utilization Gaps">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-6">
-          <KpiCardSkeleton />
-          <KpiCardSkeleton />
-          <KpiCardSkeleton />
-          <KpiCardSkeleton />
-          <KpiCardSkeleton />
-        </div>
-        <TableSkeleton rows={8} cols={6} />
-      </Page>
-    );
-  }
+  const getCohortIconBox = (id: string) => {
+    const baseClass = "flex size-7 shrink-0 items-center justify-center rounded-lg bg-secondary dark:bg-card text-muted-foreground dark:text-muted-foreground/70";
+    switch (id) {
+      case "new-activation":
+        return (
+          <div className={baseClass}>
+            <UserPlus className="size-3.5" />
+          </div>
+        );
+      case "engagement-gap":
+        return (
+          <div className={baseClass}>
+            <Clock className="size-3.5" />
+          </div>
+        );
+      case "low-response":
+        return (
+          <div className={baseClass}>
+            <MessageSquareOff className="size-3.5" />
+          </div>
+        );
+      default:
+        return (
+          <div className={baseClass}>
+            <Activity className="size-3.5" />
+          </div>
+        );
+    }
+  };
 
   return (
     <Page
       title="Utilization Gaps"
-      subtitle="Unified Operational Hub — Replace passive reporting with daily actionable work queues and care leakage prevention."
-      chips={utilizationGapsChips}
-      showFilters={true}
+      subtitle="Phase 1: Operational Visibility — Replace passive reporting with daily actionable patient work queues."
+      showFilters={false}
       showIconActions={false}
       actions={
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/utilization-gaps-classic")}
+          onClick={() => navigate("/action-centre-classic")}
           className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40 font-semibold"
         >
-          <Layers className="size-3.5" />
           <span>Legacy UI</span>
         </Button>
       }
     >
-      {/* 1. Engagement & Utilization Overview Metric Deck (Clean, No Icons) */}
+      {/* 1. Engagement Overview Cards */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
-              Operational & Utilization Gap Summary
-            </h2>
-            <Tooltip>
-              <TooltipTrigger className="cursor-help">
-                <Info className="size-3.5 text-muted-foreground hover:text-primary transition-colors" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs">
-                These cards synthesize patient engagement drop-offs, onboarding delays, and out-of-network claims leakage into actionable daily work queues.
-              </TooltipContent>
-            </Tooltip>
-          </div>
+          <h2 className="text-sm font-semibold tracking-tight text-foreground dark:text-foreground/90 uppercase">
+            Operational Summary Cards
+          </h2>
           <span className="text-xs text-muted-foreground">
-            Click any card below to filter the patient work queue
+            Click any card to switch patient queue view
           </span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {COHORT_SUMMARIES.map((card) => {
             const isSelected = activeCohort === card.id;
             return (
               <Card
                 key={card.id}
-                onClick={() => setActiveCohort(card.id as any)}
+                onClick={() => {
+                  setActiveCohort(card.id as any);
+                  if (card.id !== "engagement-gap") setActiveGapTier("all");
+                }}
                 className={cn(
-                  "cursor-pointer rounded-xl border transition-[box-shadow,transform,background-color,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] relative overflow-hidden flex flex-col justify-between active:scale-[0.98]",
+                  "cursor-pointer rounded-2xl border transition-[box-shadow,transform,background-color,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] relative overflow-hidden flex flex-col justify-between active:scale-[0.98]",
                   isSelected
-                    ? "border-transparent ring-2 ring-primary bg-primary/[0.04] shadow-sm"
-                    : "border-border/60 bg-card shadow-2xs hover:shadow-sm hover:border-border"
+                    ? "border-transparent ring-2 ring-primary/40 bg-primary/[0.03] shadow-md"
+                    : "border-transparent bg-card shadow-sm hover:shadow-md hover:bg-accent/30"
                 )}
               >
-                <CardContent className="p-4 flex flex-col justify-between h-full">
+                <CardContent className="p-3.5 flex flex-col justify-between h-full">
                   <div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      {getCohortIcon(card.id)}
-                      <span className="text-sm leading-tight text-foreground/80 font-medium line-clamp-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-xs font-semibold text-foreground/90 dark:text-foreground/90 line-clamp-1 leading-tight pt-0.5">
                         {card.title}
                       </span>
+                      {getCohortIconBox(card.id)}
                     </div>
 
-                    <div className="flex items-baseline justify-between mt-2">
+                    <div className="flex items-baseline gap-2 mt-2">
                       <span className="text-2xl font-bold tracking-tight tabular-nums text-foreground">
                         {card.count}
                       </span>
                       <span
                         className={cn(
-                          "inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-semibold tracking-tight",
+                          "inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-medium tracking-tight",
                           card.wowPositive
                             ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                             : "bg-red-500/10 text-red-700 dark:text-red-400"
@@ -323,15 +295,13 @@ export default function UtilizationGaps() {
                         ) : (
                           <ArrowUpRight className="size-3" />
                         )}
-                        <span>{card.wowChange}</span>
+                        <span>{card.wowChange} WoW</span>
                       </span>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between pt-2.5 border-t border-border/40 text-[11px]">
-                    <span className="text-muted-foreground truncate max-w-[110px]" title={card.description}>
-                      {card.id === "all" ? "All Gaps" : card.id === "external-leakage" ? "Claims Gap" : "Engagement"}
-                    </span>
+                  <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/40 text-[11px]">
+                    <span className="text-muted-foreground font-medium">Patients</span>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -339,7 +309,7 @@ export default function UtilizationGaps() {
                         setSelectedMetricOverlay(card);
                         setMetricGraphView("WoW");
                       }}
-                      className="font-semibold text-primary hover:underline cursor-pointer flex items-center gap-1 transition-colors"
+                      className="font-semibold text-primary hover:underline cursor-pointer flex items-center gap-1"
                     >
                       <span>View Details</span>
                       <ExternalLink className="size-3" />
@@ -352,105 +322,223 @@ export default function UtilizationGaps() {
         </div>
       </div>
 
-      {/* 2. Actionable Patient Work Queue & Hybrid Table */}
-      <Card className="rounded-xl border border-border/60 bg-card shadow-2xs mb-6 overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-muted/30 dark:bg-card/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-0.5">
+      {/* 2. Actionable Patient Cohorts Work Queue Controls */}
+      <Card className="rounded-2xl border border-transparent bg-card shadow-sm transition-[box-shadow] duration-200 hover:shadow-md mb-6 overflow-hidden">
+        <div className="p-4 border-b border-border/50 bg-muted/50 dark:bg-card/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <span>Patient Work Queue</span>
-              <Badge variant="secondary" className="font-mono text-xs font-normal">
-                {filteredPatients.length}
+              <Badge variant="secondary" className="font-mono text-xs">
+                {filteredPatients.length} Active
               </Badge>
             </h3>
             <p className="text-xs text-muted-foreground">
-              Surfacing members requiring timely primary care intervention or leakage redirection.
+              Rule-based cohorts surfacing members requiring timely DPC intervention.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search patient, diagnosis, employer..."
+                placeholder="Search patient, condition, employer..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-9 text-xs rounded-lg border-border/80 bg-background"
+                className="pl-8 h-9 text-xs"
               />
             </div>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[170px] h-9 text-xs rounded-lg border-border/80 bg-background">
+              <SelectTrigger className="w-[180px] h-9 text-xs">
                 <SlidersHorizontal className="size-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Sort queue" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="highest-risk">Highest Priority</SelectItem>
-                <SelectItem value="longest-inactive">Longest Inactive</SelectItem>
-                <SelectItem value="last-visit">Recent Visit First</SelectItem>
-                <SelectItem value="newest">Newest Member</SelectItem>
+                <SelectItem value="highest-risk">Sort: Highest Priority</SelectItem>
+                <SelectItem value="longest-inactive">Sort: Longest Inactive</SelectItem>
+                <SelectItem value="last-visit">Sort: Recent Visit First</SelectItem>
+                <SelectItem value="newest">Sort: Newest Member</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* Cohort Tabs Bar (Clean & Streamlined) */}
-        <div className="px-4 py-3 border-b border-border/50 bg-background/50 overflow-x-auto">
-          <div className="inline-flex flex-wrap items-center gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-            {[
-              { id: "all" as const, label: "All Attention", count: 118 },
-              { id: "new-activation" as const, label: "New Activation", count: 28 },
-              { id: "engagement-gap" as const, label: "Engagement Gap", count: 54 },
-              { id: "low-response" as const, label: "Low Response", count: 16 },
-              { id: "external-leakage" as const, label: "External Leakage", count: 20 },
-            ].map((tab) => {
-              const isSelected = activeCohort === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveCohort(tab.id)}
-                  className={cn(
-                    "relative z-10 flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer select-none",
-                    isSelected
-                      ? "text-foreground font-semibold shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  )}
-                >
-                  {isSelected && (
-                    <motion.div
-                      layoutId="queueSwitchIndicator"
-                      className="absolute inset-0 rounded-md bg-background border border-border/60 shadow-2xs z-[-1]"
-                      transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
-                    />
-                  )}
-                  <span>{tab.label}</span>
-                  <span
+        {/* Cohort Tabs Bar */}
+        <div className="px-4 pt-3 border-b border-border/50 overflow-x-auto">
+          <div className="pb-3">
+            <div className="inline-flex flex-wrap items-center gap-1 rounded-md border bg-card p-1 shadow-2xs relative z-0">
+              {[
+                {
+                  id: "all" as const,
+                  label: "All Requiring Attention",
+                  count: 98,
+                  icon: null,
+                  activeBg: "bg-primary",
+                  activeText: "text-primary-foreground font-semibold",
+                  activeBadge: "bg-white/20 text-white",
+                  unselectedIcon: null,
+                },
+                {
+                  id: "new-activation" as const,
+                  label: "New Activation",
+                  count: 28,
+                  icon: UserPlus,
+                  activeBg: "bg-emerald-600 dark:bg-emerald-500",
+                  activeText: "text-white font-semibold",
+                  activeBadge: "bg-white/20 text-white",
+                  unselectedIcon: "text-emerald-500/80",
+                },
+                {
+                  id: "engagement-gap" as const,
+                  label: "Engagement Gap",
+                  count: 54,
+                  icon: Clock,
+                  activeBg: "bg-amber-600 dark:bg-amber-500",
+                  activeText: "text-white font-semibold",
+                  activeBadge: "bg-white/20 text-white",
+                  unselectedIcon: "text-amber-500/80",
+                },
+                {
+                  id: "low-response" as const,
+                  label: "Low Response",
+                  count: 16,
+                  icon: MessageSquareOff,
+                  activeBg: "bg-sky-600 dark:bg-sky-500",
+                  activeText: "text-white font-semibold",
+                  activeBadge: "bg-white/20 text-white",
+                  unselectedIcon: "text-sky-500/80",
+                },
+              ].map((tab) => {
+                const isSelected = activeCohort === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveCohort(tab.id);
+                      if (tab.id !== "engagement-gap") setActiveGapTier("all");
+                    }}
                     className={cn(
-                      "px-1.5 py-0.2 rounded-full text-[10px] tabular-nums font-semibold",
-                      isSelected ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground" : "bg-muted text-muted-foreground"
+                      "relative z-10 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-colors cursor-pointer select-none",
+                      isSelected
+                        ? tab.activeText
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     )}
                   >
-                    {tab.count}
-                  </span>
-                </button>
-              );
-            })}
+                    {isSelected && (
+                      <motion.div
+                        layoutId="queueSwitchIndicator"
+                        className={cn("absolute inset-0 rounded-md shadow-sm z-[-1]", tab.activeBg)}
+                        transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                      />
+                    )}
+                    {Icon && (
+                      <Icon className={cn("size-3.5", isSelected ? "text-white" : tab.unselectedIcon)} />
+                    )}
+                    <span>{tab.label}</span>
+                    <span
+                      className={cn(
+                        "px-1.5 py-0.5 rounded-full text-[10px] tabular-nums font-semibold",
+                        isSelected ? tab.activeBadge : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* Sub-filters for Engagement Gap */}
+          {activeCohort === "engagement-gap" && (
+            <div className="flex flex-wrap items-center gap-2 pb-3 pt-1 border-t border-border/40 text-xs">
+              <span className="text-muted-foreground font-medium flex items-center gap-1">
+                <Filter className="size-3" /> Duration Sub-filter:
+              </span>
+              <button
+                onClick={() => setActiveGapTier("all")}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
+                  activeGapTier === "all"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
+                )}
+              >
+                All Gaps
+              </button>
+              <button
+                onClick={() => setActiveGapTier("30-days")}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
+                  activeGapTier === "30-days"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
+                )}
+              >
+                30+ Days No Visit
+              </button>
+              <button
+                onClick={() => setActiveGapTier("60-days")}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
+                  activeGapTier === "60-days"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
+                )}
+              >
+                60+ Days No Visit
+              </button>
+              <button
+                onClick={() => setActiveGapTier("90-days")}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer",
+                  activeGapTier === "90-days"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
+                )}
+              >
+                90+ Days Critical Gap
+              </button>
+              <button
+                onClick={() => setActiveGapTier("custom")}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer flex items-center gap-1",
+                  activeGapTier === "custom"
+                    ? "bg-pink-500/15 text-primary dark:bg-pink-500/25 dark:text-pink-300 border border-pink-500/40 font-semibold shadow-2xs"
+                    : "text-muted-foreground hover:bg-secondary dark:hover:bg-card"
+                )}
+              >
+                <Calendar className="size-3" />
+                <span>Custom Date Range</span>
+              </button>
+
+              {activeGapTier === "custom" && (
+                <div className="inline-flex items-center gap-1.5 ml-1 pl-2 border-l border-border/60 animate-fade-in text-[11px]">
+                  <span className="text-muted-foreground">From:</span>
+                  <input type="date" defaultValue="2025-10-01" className="h-6 rounded border border-border bg-background px-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+                  <span className="text-muted-foreground">To:</span>
+                  <input type="date" defaultValue="2026-03-31" className="h-6 rounded border border-border bg-background px-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* 3. Clean Uncluttered Hybrid Table */}
+        {/* 3. Patient Lists Table */}
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-border/60 bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                <th className="py-3 px-5">Patient Member</th>
-                <th className="py-3 px-4">Priority</th>
-                <th className="py-3 px-4">Diagnosis</th>
-                <th className="py-3 px-4">Gap Reason</th>
-                <th className="py-3 px-4">Last Encounter</th>
-                <th className="py-3 px-5 text-right">Suggested Action</th>
+              <tr className="border-b border-border/50 bg-muted/70 dark:bg-card/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="py-3 px-4">Patient Member</th>
+                <th className="py-3 px-4">Priority Level</th>
+                <th className="py-3 px-4">Reason for Inclusion</th>
+                <th className="py-3 px-4">Last Visit</th>
+                <th className="py-3 px-4">Last Outreach</th>
+                <th className="py-3 px-4 text-right">Suggested Next Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/40 bg-background">
+            <tbody className="divide-y divide-border/60">
               {filteredPatients.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-12 text-muted-foreground">
@@ -458,8 +546,8 @@ export default function UtilizationGaps() {
                     <p className="font-semibold text-foreground/90 dark:text-muted-foreground/50">
                       No patients pending in this queue!
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      All engagement and leakage opportunities for this criteria have been handled or none match search.
+                    <p className="text-xs text-muted-foreground">
+                      All engagement opportunities for this criteria have been handled or none match search.
                     </p>
                   </td>
                 </tr>
@@ -471,92 +559,67 @@ export default function UtilizationGaps() {
                       key={patient.id}
                       onClick={() => setSelectedPatient(patient)}
                       className={cn(
-                        "cursor-pointer transition-colors hover:bg-muted/50 group",
-                        isDone && "opacity-50 bg-muted/30"
+                        "cursor-pointer transition-colors hover:bg-primary/[0.04] group",
+                        isDone && "opacity-60 bg-muted/50 dark:bg-card/30"
                       )}
                     >
-                      {/* Patient Member */}
-                      <td className="py-4 px-5">
+                      <td className="py-3.5 px-4 font-medium text-foreground">
                         <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-full bg-secondary dark:bg-card border border-border/50 flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
+                          <div className="size-9 rounded-full bg-muted dark:bg-card flex items-center justify-center text-xs font-bold shrink-0 text-foreground/90 dark:text-muted-foreground/50">
                             {patient.name.split(" ").map((n) => n[0]).join("")}
                           </div>
-                          <div className="min-w-0">
-                            <div className="font-semibold text-foreground truncate flex items-center gap-1.5">
+                          <div>
+                            <div className="font-semibold text-foreground dark:text-foreground flex items-center gap-1.5">
                               <span>{patient.name}</span>
                               {isDone && (
-                                <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0 font-normal">
+                                <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0">
                                   Actioned
                                 </Badge>
                               )}
                             </div>
-                            <div className="text-[11px] text-muted-foreground truncate mt-0.5">
-                              <IdCell id={patient.id} /> • {patient.age}y • {patient.gender}
+                            <div className="text-xs text-muted-foreground">
+                              <IdCell id={patient.id} /> • {patient.age} Yrs ({patient.gender})
                             </div>
                           </div>
                         </div>
                       </td>
 
-                      {/* Priority */}
-                      <td className="py-4 px-4 whitespace-nowrap">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         {getPriorityBadge(patient.priority)}
                       </td>
 
-                      {/* Diagnosis & Spruce Status (Clean inline pill) */}
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted underline-offset-4 text-xs font-medium text-foreground">
-                              {patient.condition}
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-[250px] text-xs">
-                              {getDiagnosisDesc(patient.condition)}
-                            </TooltipContent>
-                          </Tooltip>
-                          {patient.spruce && (
-                            <span className="inline-flex items-center rounded bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 dark:text-sky-300">
-                              Spruce
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Gap Reason (Clean typography without noisy emojis) */}
-                      <td className="py-4 px-4 max-w-xs">
-                        <div className="text-xs font-medium text-foreground truncate" title={patient.reason}>
+                      <td className="py-3.5 px-4 max-w-md">
+                        <div className="text-xs font-medium text-foreground dark:text-foreground/90 leading-snug">
                           {patient.reason}
                         </div>
-                        <div className="text-[11px] text-muted-foreground truncate mt-0.5" title={`${patient.employer} • ${patient.physician}`}>
-                          {patient.employer} • {patient.physician}
+                        <div className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-2">
+                          <span>🏢 {patient.employer}</span>
+                          <span>👨‍⚕️ {patient.physician}</span>
                         </div>
                       </td>
 
-                      {/* Last Encounter */}
-                      <td className="py-4 px-4 whitespace-nowrap text-xs">
-                        <div className="font-medium text-foreground">
-                          {patient.lastVisitText}
-                        </div>
-                        <div className="text-muted-foreground text-[11px] mt-0.5 truncate max-w-[150px]" title={patient.lastOutreachText}>
-                          {patient.lastOutreachText}
-                        </div>
+                      <td className="py-3.5 px-4 whitespace-nowrap text-xs text-foreground/90 dark:text-muted-foreground/50 font-medium">
+                        {patient.lastVisitText}
                       </td>
 
-                      {/* Suggested Action */}
-                      <td className="py-4 px-5 text-right whitespace-nowrap">
-                        <div className="inline-flex items-center justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant={isDone ? "secondary" : "default"}
-                            onClick={(e) => handleTriggerAction(patient, e)}
-                            className="h-8 text-xs font-medium shadow-2xs gap-1.5 px-3 rounded-lg"
-                          >
-                            {patient.suggestedActionType === "sms" && <MessageSquare className="size-3.5 shrink-0" />}
-                            {patient.suggestedActionType === "email" && <Mail className="size-3.5 shrink-0" />}
-                            {patient.suggestedActionType === "call" && <Phone className="size-3.5 shrink-0" />}
-                            {patient.suggestedActionType === "appt" && <Calendar className="size-3.5 shrink-0" />}
-                            <span>{isDone ? "Done" : patient.suggestedAction}</span>
-                          </Button>
-                          <ChevronRight className="size-4 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                      <td className="py-3.5 px-4 whitespace-nowrap text-xs text-muted-foreground">
+                        {patient.lastOutreachText}
+                      </td>
+
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                        <div className="inline-flex items-center justify-end gap-1.5 text-xs font-semibold text-foreground/90 dark:text-muted-foreground/50 group-hover:text-primary transition-colors">
+                          {patient.suggestedActionType === "sms" && <MessageSquare className="size-3.5 shrink-0" />}
+                          {patient.suggestedActionType === "email" && <Mail className="size-3.5 shrink-0" />}
+                          {patient.suggestedActionType === "call" && <Phone className="size-3.5 shrink-0" />}
+                          {patient.suggestedActionType === "appt" && <Calendar className="size-3.5 shrink-0" />}
+                          <span>{patient.suggestedAction}</span>
+                          {isDone ? (
+                            <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0 ml-1">
+                              Done
+                            </Badge>
+                          ) : (
+                            <ChevronRight className="size-3.5 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-primary" />
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -568,15 +631,15 @@ export default function UtilizationGaps() {
         </div>
       </Card>
 
-      {/* 4. Deep Patient Drill-down Drawer (Sheet) */}
+      {/* 4. Basic Patient Detail Drawer (Drill-down) */}
       <Sheet open={Boolean(selectedPatient)} onOpenChange={(open) => !open && setSelectedPatient(null)}>
         <SheetContent className="sm:max-w-xl w-full p-0 flex flex-col overflow-hidden bg-background">
           {selectedPatient && (
             <>
-              <SheetHeader className="p-6 border-b border-border bg-muted/40 space-y-3">
+              <SheetHeader className="p-6 border-b border-border bg-muted/80 dark:bg-card/50 space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2">
                       <SheetTitle className="text-xl font-bold">
                         {selectedPatient.name}
                       </SheetTitle>
@@ -585,49 +648,42 @@ export default function UtilizationGaps() {
                     <SheetDescription className="text-xs flex items-center gap-2 text-muted-foreground">
                       <span>ID: {selectedPatient.id}</span>
                       <span>•</span>
-                      <span>{selectedPatient.age}y ({selectedPatient.gender})</span>
-                      <span>•</span>
-                      <span>Spruce: <BoolBadge value={selectedPatient.spruce} /></span>
+                      <span>{selectedPatient.age} Yrs ({selectedPatient.gender})</span>
                     </SheetDescription>
                   </div>
                 </div>
 
                 {/* Demographics Strip */}
-                <div className="grid grid-cols-2 gap-3 pt-3 text-xs border-t border-border/60">
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Phone className="size-3.5 text-muted-foreground shrink-0" />
+                <div className="grid grid-cols-2 gap-3 pt-2 text-xs border-t border-border/60">
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
+                    <Phone className="size-3.5 text-muted-foreground" />
                     <span className="font-medium">{selectedPatient.contactPhone}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Mail className="size-3.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
+                    <Mail className="size-3.5 text-muted-foreground" />
                     <span className="font-medium truncate">{selectedPatient.contactEmail}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Building2 className="size-3.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
+                    <Building2 className="size-3.5 text-muted-foreground" />
                     <span className="font-medium truncate">{selectedPatient.employer}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Stethoscope className="size-3.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-center gap-2 text-foreground/90 dark:text-muted-foreground/50">
+                    <Stethoscope className="size-3.5 text-muted-foreground" />
                     <span className="font-medium truncate">{selectedPatient.physician}</span>
-                  </div>
-                  <div className="col-span-2 flex items-center gap-2 text-foreground bg-background p-2.5 rounded-lg border border-border/60">
-                    <Info className="size-3.5 text-primary shrink-0" />
-                    <span className="font-semibold">Diagnosis ({selectedPatient.condition}):</span>
-                    <span className="text-muted-foreground">{getDiagnosisDesc(selectedPatient.condition)}</span>
                   </div>
                 </div>
               </SheetHeader>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Recommended Action Box */}
-                <Card className="rounded-xl border border-transparent ring-1 ring-primary/30 bg-primary/[0.04] p-4 space-y-3 shadow-2xs">
+                <Card className="rounded-xl border border-transparent ring-1 ring-primary/25 bg-primary/[0.04] p-4 space-y-3 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-primary text-sm">
                       <AlertCircle className="size-4" />
                       <span>Recommended Operational Action</span>
                     </div>
-                    <Badge variant="outline" className="bg-background/80 text-xs font-normal">
-                      {selectedPatient.cohort.replace("-", " ").toUpperCase()}
+                    <Badge variant="outline" className="bg-white/80 dark:bg-black/50 text-xs">
+                      Phase 1 Rule
                     </Badge>
                   </div>
                   <p className="text-sm font-semibold text-foreground">
@@ -636,10 +692,10 @@ export default function UtilizationGaps() {
                   <p className="text-xs text-muted-foreground">
                     <strong>Flag Reason:</strong> {selectedPatient.reason}
                   </p>
-                  <div className="pt-2">
+                  <div className="pt-2 flex items-center gap-2">
                     <Button
                       size="sm"
-                      className="h-8 font-semibold w-full shadow-2xs"
+                      className="h-8 font-semibold w-full shadow"
                       onClick={() => handleTriggerAction(selectedPatient)}
                     >
                       <Send className="size-3.5 mr-2" /> Execute Action & Log Outreach
@@ -649,14 +705,14 @@ export default function UtilizationGaps() {
 
                 {/* Tabs for Drawer Details */}
                 <Tabs defaultValue="history" className="w-full">
-                  <TabsList className="grid grid-cols-3 w-full bg-muted/60 p-1 rounded-lg">
-                    <TabsTrigger value="history" className="text-xs rounded-md">
-                      Outreach History
+                  <TabsList className="grid grid-cols-3 w-full bg-secondary dark:bg-card">
+                    <TabsTrigger value="history" className="text-xs">
+                      Engagement History
                     </TabsTrigger>
-                    <TabsTrigger value="encounters" className="text-xs rounded-md">
-                      DPC Visits ({selectedPatient.recentEncounters.length})
+                    <TabsTrigger value="encounters" className="text-xs">
+                      Recent Visits ({selectedPatient.recentEncounters.length})
                     </TabsTrigger>
-                    <TabsTrigger value="claims" className="text-xs rounded-md">
+                    <TabsTrigger value="claims" className="text-xs">
                       External Claims ({selectedPatient.recentClaims.length})
                     </TabsTrigger>
                   </TabsList>
@@ -671,15 +727,15 @@ export default function UtilizationGaps() {
                       <div className="space-y-3 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
                         {selectedPatient.engagementHistory.map((ev) => (
                           <div key={ev.id} className="flex items-start gap-3 relative pl-1">
-                            <div className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 z-10 text-[10px] font-bold border border-primary/20">
+                            <div className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 z-10 text-[10px] font-bold">
                               {ev.type[0]}
                             </div>
-                            <div className="flex-1 bg-muted/40 p-3 rounded-xl border border-border/50 text-xs space-y-1">
-                              <div className="flex items-center justify-between font-semibold text-foreground">
+                            <div className="flex-1 bg-muted/70 dark:bg-card/50 p-3 rounded-xl border border-transparent shadow-sm text-xs space-y-1">
+                              <div className="flex items-center justify-between font-semibold">
                                 <span>{ev.type} Outreach</span>
                                 <span className="text-muted-foreground font-normal">{ev.date}</span>
                               </div>
-                              <p className="text-muted-foreground">{ev.description}</p>
+                              <p className="text-foreground/90 dark:text-muted-foreground/50">{ev.description}</p>
                               {ev.outcome && (
                                 <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium pt-1">
                                   Outcome: {ev.outcome}
@@ -705,13 +761,13 @@ export default function UtilizationGaps() {
                       </div>
                     ) : (
                       selectedPatient.recentEncounters.map((enc) => (
-                        <div key={enc.id} className="p-3 rounded-xl border border-border/50 bg-card text-xs space-y-1.5">
+                        <div key={enc.id} className="p-3 rounded-xl border border-transparent bg-card shadow-sm text-xs space-y-1.5">
                           <div className="flex items-center justify-between font-bold text-foreground">
                             <span>{enc.type}</span>
                             <span className="text-muted-foreground font-normal">{enc.date}</span>
                           </div>
                           <div className="text-[11px] text-muted-foreground">Provider: {enc.provider}</div>
-                          <p className="text-muted-foreground bg-muted/40 p-2 rounded-lg">
+                          <p className="text-foreground/90 dark:text-muted-foreground/50 bg-muted dark:bg-card p-2 rounded">
                             {enc.notes}
                           </p>
                         </div>
@@ -724,14 +780,14 @@ export default function UtilizationGaps() {
                       External Utilization & Leakage Claims
                     </h4>
                     {selectedPatient.recentClaims.map((cl) => (
-                      <div key={cl.id} className="p-3 rounded-xl border border-purple-500/30 bg-purple-500/[0.04] text-xs space-y-1.5">
+                      <div key={cl.id} className="p-3 rounded-lg border border-purple-500/30 bg-purple-500/[0.04] text-xs space-y-1.5">
                         <div className="flex items-center justify-between font-bold text-purple-900 dark:text-purple-300">
                           <span className="flex items-center gap-1.5">
                             <ShieldAlert className="size-3.5 text-purple-600" /> {cl.provider}
                           </span>
                           <span className="font-mono text-purple-700 dark:text-purple-400 font-bold">{cl.amount}</span>
                         </div>
-                        <div className="text-foreground font-medium">
+                        <div className="text-foreground/90 dark:text-muted-foreground/50 font-medium">
                           Diagnosis: {cl.diagnosis}
                         </div>
                         <div className="text-[11px] text-muted-foreground">Claim Date: {cl.date}</div>
@@ -741,12 +797,12 @@ export default function UtilizationGaps() {
                 </Tabs>
               </div>
 
-              <SheetFooter className="p-4 border-t border-border bg-muted/30 flex flex-row justify-between items-center">
-                <span className="text-xs text-muted-foreground">
-                  DPC Operational Work Queue • Phase 1
-                </span>
-                <Button size="sm" variant="outline" onClick={() => setSelectedPatient(null)} className="rounded-lg">
+              <SheetFooter className="p-4 border-t border-border bg-muted/50 dark:bg-card/50 flex flex-row justify-between items-center">
+                <Button variant="outline" size="sm" onClick={() => setSelectedPatient(null)}>
                   Close Drawer
+                </Button>
+                <Button size="sm" onClick={() => handleTriggerAction(selectedPatient)}>
+                  <CheckCircle2 className="size-3.5 mr-1.5" /> Mark Action Handled
                 </Button>
               </SheetFooter>
             </>
@@ -761,10 +817,8 @@ export default function UtilizationGaps() {
             <div className="space-y-6">
               <DialogHeader className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                      {getCohortIcon(selectedMetricOverlay.id)}
-                    </div>
+                  <div className="flex items-center gap-3">
+                    {getCohortIconBox(selectedMetricOverlay.id)}
                     <div>
                       <DialogTitle className="text-xl font-bold text-foreground">
                         {selectedMetricOverlay.title} Metric Details
@@ -826,7 +880,7 @@ export default function UtilizationGaps() {
                       className={cn(
                         "px-3 py-1 rounded-md text-xs font-semibold transition-colors cursor-pointer",
                         metricGraphView === "WoW"
-                          ? "bg-primary text-primary-foreground shadow-2xs"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -838,7 +892,7 @@ export default function UtilizationGaps() {
                       className={cn(
                         "px-3 py-1 rounded-md text-xs font-semibold transition-colors cursor-pointer",
                         metricGraphView === "MoM"
-                          ? "bg-primary text-primary-foreground shadow-2xs"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -862,7 +916,7 @@ export default function UtilizationGaps() {
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
                       <XAxis dataKey="period" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
                       <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
-                      <RechartsTooltip
+                      <Tooltip
                         contentStyle={{
                           backgroundColor: "var(--card)",
                           borderColor: "var(--border)",
@@ -907,6 +961,7 @@ export default function UtilizationGaps() {
                     size="sm"
                     onClick={() => {
                       setActiveCohort(selectedMetricOverlay.id as CohortType);
+                      if (selectedMetricOverlay.id !== "engagement-gap") setActiveGapTier("all");
                       setSelectedMetricOverlay(null);
                     }}
                   >

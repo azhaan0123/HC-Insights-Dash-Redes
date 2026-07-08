@@ -42,8 +42,8 @@ export default function OnboardingManagement() {
   };
 
   const leadingTabs = (
-    <div className="border-b border-slate-200 dark:border-slate-800 -mb-px">
-      <button className="border-b-2 border-[#e32168] pb-2 text-xs md:text-sm font-bold text-[#e32168] tracking-wider uppercase">
+    <div className="border-b border-border dark:border-border -mb-px">
+      <button className="border-b-2 border-primary pb-2 text-xs md:text-sm font-bold text-primary tracking-wider uppercase">
         Networks
       </button>
     </div>
@@ -60,53 +60,53 @@ export default function OnboardingManagement() {
       <div className="space-y-6 max-w-[1600px] mx-auto w-full">
         {/* Pipeline Status Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs flex flex-col justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <div className="bg-card rounded-lg border border-border dark:border-border p-4 shadow-2xs flex flex-col justify-between">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Contracting
             </span>
             <div className="mt-3 flex items-baseline">
               <span className="text-2xl font-bold text-foreground">0</span>
-              <span className="ml-1.5 text-xs text-slate-500">networks</span>
+              <span className="ml-1.5 text-xs text-muted-foreground">networks</span>
             </div>
           </div>
 
-          <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs flex flex-col justify-between border-l-4 border-l-amber-500">
+          <div className="bg-card rounded-lg border border-border dark:border-border p-4 shadow-2xs flex flex-col justify-between border-l-4 border-l-amber-500">
             <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
               Awaiting Credentials
             </span>
             <div className="mt-3 flex items-baseline">
               <span className="text-2xl font-bold text-foreground">8</span>
-              <span className="ml-1.5 text-xs text-slate-500">networks</span>
+              <span className="ml-1.5 text-xs text-muted-foreground">networks</span>
             </div>
           </div>
 
-          <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs flex flex-col justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <div className="bg-card rounded-lg border border-border dark:border-border p-4 shadow-2xs flex flex-col justify-between">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Onboarding
             </span>
             <div className="mt-3 flex items-baseline">
               <span className="text-2xl font-bold text-foreground">0</span>
-              <span className="ml-1.5 text-xs text-slate-500">networks</span>
+              <span className="ml-1.5 text-xs text-muted-foreground">networks</span>
             </div>
           </div>
 
-          <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs flex flex-col justify-between border-l-4 border-l-emerald-500">
+          <div className="bg-card rounded-lg border border-border dark:border-border p-4 shadow-2xs flex flex-col justify-between border-l-4 border-l-emerald-500">
             <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
               Maintenance
             </span>
             <div className="mt-3 flex items-baseline">
               <span className="text-2xl font-bold text-foreground">8</span>
-              <span className="ml-1.5 text-xs text-slate-500">networks</span>
+              <span className="ml-1.5 text-xs text-muted-foreground">networks</span>
             </div>
           </div>
 
-          <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs flex flex-col justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <div className="bg-card rounded-lg border border-border dark:border-border p-4 shadow-2xs flex flex-col justify-between">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Total Pipeline
             </span>
             <div className="mt-3 flex items-baseline">
-              <span className="text-2xl font-bold text-[#e32168]">16</span>
-              <span className="ml-1.5 text-xs text-slate-500">entities</span>
+              <span className="text-2xl font-bold text-primary">16</span>
+              <span className="ml-1.5 text-xs text-muted-foreground">entities</span>
             </div>
           </div>
         </div>
@@ -114,17 +114,17 @@ export default function OnboardingManagement() {
         {/* Section Title */}
         <div>
           <h2 className="text-base font-bold text-foreground">Network Pipeline</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Overview of current network onboarding statuses and affiliated practice counts.
           </p>
         </div>
 
         {/* Pipeline Table */}
-        <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-card shadow-xs overflow-hidden flex flex-col">
+        <div className="rounded-lg border border-border dark:border-border bg-card shadow-xs overflow-hidden flex flex-col">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
-                <tr className="bg-slate-100/80 dark:bg-muted/50 border-b border-slate-200 dark:border-slate-800 text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
+                <tr className="bg-secondary/80 dark:bg-muted/50 border-b border-border dark:border-border text-muted-foreground text-[11px] font-semibold uppercase tracking-wider">
                   <th className="py-3.5 pl-4 pr-2 w-10"></th>
                   <th className="py-3.5 px-4">Network Name</th>
                   <th className="py-3.5 px-4">Type</th>
@@ -134,7 +134,7 @@ export default function OnboardingManagement() {
                   <th className="py-3.5 px-4 text-right pr-6">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800 text-xs md:text-sm text-foreground">
+              <tbody className="divide-y divide-border/60 dark:divide-border text-xs md:text-sm text-foreground">
                 {networks.map((item) => {
                   const isExpanded = expandedRow === item.id;
                   const isAwaiting = item.status === "Awaiting Credentials";
@@ -143,19 +143,19 @@ export default function OnboardingManagement() {
                     <React.Fragment key={item.id}>
                       <tr
                         onClick={() => toggleExpand(item.id)}
-                        className="hover:bg-slate-50/70 dark:hover:bg-muted/30 transition-colors cursor-pointer"
+                        className="hover:bg-muted/70 dark:hover:bg-muted/30 transition-colors cursor-pointer"
                       >
-                        <td className="py-3 pl-4 pr-2 text-slate-400">
+                        <td className="py-3 pl-4 pr-2 text-muted-foreground/70">
                           <ChevronRight
                             className={`size-4 transition-transform duration-200 ${
-                              isExpanded ? "rotate-90 text-[#e32168]" : ""
+                              isExpanded ? "rotate-90 text-primary" : ""
                             }`}
                           />
                         </td>
                         <td className="py-3 px-4 font-medium text-foreground max-w-[300px] truncate">
                           {item.name}
                         </td>
-                        <td className="py-3 px-4 text-slate-600 dark:text-slate-400 font-medium">
+                        <td className="py-3 px-4 text-muted-foreground dark:text-muted-foreground/70 font-medium">
                           {item.type}
                         </td>
                         <td className="py-3 px-4">
@@ -174,7 +174,7 @@ export default function OnboardingManagement() {
                             {item.status}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
+                        <td className="py-3 px-4 text-muted-foreground dark:text-muted-foreground/70">
                           <span className="font-bold text-foreground mr-1">{item.dpcCount}</span>
                           DPCs
                         </td>
@@ -184,7 +184,7 @@ export default function OnboardingManagement() {
                         <td className="py-3 px-4 text-right pr-6" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => setSelectedNetwork(item)}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded border border-[#e32168] text-[#e32168] hover:bg-[#e32168]/10 text-xs font-semibold transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded border border-primary text-primary hover:bg-primary/10 text-xs font-semibold transition-colors"
                           >
                             <span>DPC List</span>
                             <ArrowRight className="size-3" />
@@ -192,14 +192,14 @@ export default function OnboardingManagement() {
                         </td>
                       </tr>
                       {isExpanded && (
-                        <tr className="bg-slate-50/80 dark:bg-muted/20 border-b">
-                          <td colSpan={7} className="p-4 pl-12 text-xs text-slate-600 dark:text-slate-400">
-                            <div className="p-3 rounded bg-background border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                        <tr className="bg-muted/80 dark:bg-muted/20 border-b">
+                          <td colSpan={7} className="p-4 pl-12 text-xs text-muted-foreground dark:text-muted-foreground/70">
+                            <div className="p-3 rounded bg-background border border-border dark:border-border flex items-center justify-between">
                               <div>
                                 <span className="font-semibold text-foreground">Associated DPCs:</span>{" "}
                                 {item.dpcCount === 0 ? "No DPCs configured yet." : `${item.dpcCount} active practice locations linked.`}
                               </div>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#e32168]" onClick={() => setSelectedNetwork(item)}>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-primary" onClick={() => setSelectedNetwork(item)}>
                                 View Full Configuration
                               </Button>
                             </div>
@@ -218,32 +218,32 @@ export default function OnboardingManagement() {
         <Dialog open={!!selectedNetwork} onOpenChange={() => setSelectedNetwork(null)}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="text-[#e32168] flex items-center gap-2">
+              <DialogTitle className="text-primary flex items-center gap-2">
                 <span>DPC List: {selectedNetwork?.name}</span>
               </DialogTitle>
             </DialogHeader>
-            <div className="py-4 text-sm text-slate-600 dark:text-slate-400 space-y-3">
+            <div className="py-4 text-sm text-muted-foreground dark:text-muted-foreground/70 space-y-3">
               <p>
                 Displaying practice locations and contracted DPC clinics affiliated with{" "}
                 <strong className="text-foreground">{selectedNetwork?.name}</strong>.
               </p>
-              <div className="rounded-md border p-3 bg-slate-50 dark:bg-muted/30">
+              <div className="rounded-md border p-3 bg-muted dark:bg-muted/30">
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-500">Onboarding Status:</span>
+                  <span className="text-muted-foreground">Onboarding Status:</span>
                   <span className="font-semibold text-foreground">{selectedNetwork?.status}</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Invited Users:</span>
+                  <span className="text-muted-foreground">Invited Users:</span>
                   <span className="font-semibold text-foreground">{selectedNetwork?.invitedUsers} members</span>
                 </div>
               </div>
               {selectedNetwork?.dpcCount === 0 ? (
-                <div className="py-6 text-center text-slate-400 text-xs border border-dashed rounded">
+                <div className="py-6 text-center text-muted-foreground/70 text-xs border border-dashed rounded">
                   No DPC clinics registered under this network entity.
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="text-xs font-semibold uppercase text-slate-500">Linked Practices ({selectedNetwork?.dpcCount})</div>
+                  <div className="text-xs font-semibold uppercase text-muted-foreground">Linked Practices ({selectedNetwork?.dpcCount})</div>
                   <div className="p-2.5 rounded border bg-background flex items-center justify-between text-xs">
                     <span className="font-medium text-foreground">{selectedNetwork?.name} Primary Care Clinic</span>
                     <span className="text-emerald-600 font-medium">Active</span>
@@ -252,7 +252,7 @@ export default function OnboardingManagement() {
               )}
             </div>
             <DialogFooter>
-              <Button className="bg-[#e32168] hover:bg-[#c9185a] text-white" onClick={() => setSelectedNetwork(null)}>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setSelectedNetwork(null)}>
                 Close
               </Button>
             </DialogFooter>

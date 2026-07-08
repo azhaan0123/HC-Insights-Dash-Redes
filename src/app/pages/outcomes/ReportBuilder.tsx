@@ -17,7 +17,7 @@ export default function ReportBuilder() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   variant="outline" 
-                  className="flex-1 justify-between font-normal text-muted-foreground hover:bg-transparent border-slate-200"
+                  className="flex-1 justify-between font-normal text-muted-foreground hover:bg-transparent border-border"
                 >
                   Choose a diagnosis
                   <ChevronDown className="size-4 opacity-50" />

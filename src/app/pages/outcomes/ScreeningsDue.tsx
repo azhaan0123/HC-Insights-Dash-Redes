@@ -36,15 +36,15 @@ const CustomBarTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="flex flex-col gap-2 rounded-lg border bg-white p-3 shadow-md min-w-[160px]">
-        <p className="text-[13px] font-semibold text-slate-800 pb-1">{label}</p>
+        <p className="text-[13px] font-semibold text-foreground pb-1">{label}</p>
         <div className="flex flex-col gap-1.5">
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-2">
                 <div className="size-3.5 rounded-[3px]" style={{ backgroundColor: entry.color }} />
-                <span className="text-[13px] font-medium text-slate-500">{entry.name}</span>
+                <span className="text-[13px] font-medium text-muted-foreground">{entry.name}</span>
               </div>
-              <span className="text-[13px] text-slate-800">{entry.value}</span>
+              <span className="text-[13px] text-foreground">{entry.value}</span>
             </div>
           ))}
         </div>
@@ -130,7 +130,7 @@ export default function ScreeningsDue() {
                 />
                 <Legend iconType="square" wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
                 <Bar dataKey="overdue" name="Overdue" stackId="a" fill="#10b981" barSize={16} />
-                <Bar dataKey="dueSoon" name="Due Soon" stackId="a" fill="#e32168" barSize={16} />
+                <Bar dataKey="dueSoon" name="Due Soon" stackId="a" fill="#FF6B2B" barSize={16} />
               </BarChart>
             </ResponsiveContainer>
           </div>

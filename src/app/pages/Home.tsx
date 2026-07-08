@@ -6,7 +6,6 @@ import {
   UserX,
   HeartPulse,
   Activity,
-  ArrowRight,
   ListTodo,
   FileCheck,
   Megaphone,
@@ -107,7 +106,7 @@ function StatusDot({ status }: { status: string }) {
   if (status === "Completed") return <span className="mr-2 inline-block size-2 rounded-full bg-emerald-500" />;
   if (status === "Pending") return <span className="mr-2 inline-block size-2 rounded-full bg-amber-500" />;
   if (status === "In Progress") return <span className="mr-2 inline-block size-2 rounded-full bg-blue-500" />;
-  return <span className="mr-2 inline-block size-2 rounded-full bg-slate-300" />;
+  return <span className="mr-2 inline-block size-2 rounded-full bg-muted-foreground/40" />;
 }
 
 function QuickActionCard({ title, description, impact, icon: Icon, onAction, badgeText = "AI Recommendation" }: any) {
@@ -267,6 +266,8 @@ export default function Home() {
 
   return (
     <Page title={greeting} subtitle={subtitleText}>
+
+
       {/* Quick Actions Row */}
       <div className="mb-6 stagger-section">
         <div className="flex items-center gap-2 mb-3">
@@ -300,7 +301,7 @@ export default function Home() {
 
       {/* Performance Overview Heading */}
       <div className="flex items-center gap-2 mb-3 stagger-section">
-        <Activity className="size-4 text-slate-400" />
+        <Activity className="size-4 text-muted-foreground/70" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Performance Overview</h3>
       </div>
 
@@ -559,8 +560,8 @@ export default function Home() {
                 const isLast = idx === recentActivity.length - 1;
                 const Icon = activity.icon;
                 return (
-                  <div key={activity.id} className={cn("flex items-start gap-4 px-6 py-4 hover:bg-slate-50/50 transition-[background-color] duration-150", !isLast && "border-b border-border/50")}>
-                    <div className="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                  <div key={activity.id} className={cn("flex items-start gap-4 px-6 py-4 hover:bg-muted/50 transition-[background-color] duration-150", !isLast && "border-b border-border/50")}>
+                    <div className="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground">
                       <Icon className="size-[18px]" />
                     </div>
                     <div className="flex flex-1 flex-col gap-1 overflow-hidden mt-0.5">
@@ -603,12 +604,12 @@ export default function Home() {
 
               <div className="p-6 space-y-5">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-border bg-slate-50/50 p-4">
+                  <div className="rounded-xl border border-border bg-muted/50 p-4">
                     <span className="text-xs text-muted-foreground block mb-1">Quality Bonus Impact</span>
                     <span className="text-2xl font-bold text-emerald-600">+$2,400</span>
                     <span className="text-[10px] text-muted-foreground block mt-1">HEDIS score optimization</span>
                   </div>
-                  <div className="rounded-xl border border-border bg-slate-50/50 p-4">
+                  <div className="rounded-xl border border-border bg-muted/50 p-4">
                     <span className="text-xs text-muted-foreground block mb-1">Target Patients</span>
                     <span className="text-2xl font-bold text-foreground">14 Patients</span>
                     <span className="text-[10px] text-muted-foreground block mt-1">&gt;12 months since last checkup</span>
@@ -656,7 +657,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 p-4 bg-slate-50/50 border-t border-border/50">
+              <div className="flex justify-end gap-3 p-4 bg-muted/50 border-t border-border/50">
                 <Button variant="ghost" size="sm" onClick={() => setActiveAction(null)}>Cancel</Button>
                 <Button size="sm" onClick={() => { alert("Campaign sent!"); setActiveAction(null); }}>Send Smart Outreach</Button>
               </div>
@@ -710,13 +711,13 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-border rounded-xl text-[11px] leading-relaxed text-muted-foreground">
+                <div className="p-3 bg-muted border border-border rounded-xl text-[11px] leading-relaxed text-muted-foreground">
                   <span className="font-bold text-foreground block mb-1">Clinical Note Evidence:</span>
                   "...Patient reports tingling and numbness in lower extremities. Sensation reduced on monofilament exam. Dr. Evans, 12 Jun"
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 p-4 bg-slate-50/50 border-t border-border/50">
+              <div className="flex justify-end gap-3 p-4 bg-muted/50 border-t border-border/50">
                 <Button variant="ghost" size="sm" onClick={() => setActiveAction(null)}>Cancel</Button>
                 <Button size="sm" onClick={() => { alert("Claim resubmitted!"); setActiveAction(null); }}>Approve & Resubmit Claim</Button>
               </div>
@@ -761,7 +762,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 p-4 bg-slate-50/50 border-t border-border/50">
+              <div className="flex justify-end gap-3 p-4 bg-muted/50 border-t border-border/50">
                 <Button variant="ghost" size="sm" onClick={() => setActiveAction(null)}>Cancel</Button>
                 <Button size="sm" onClick={() => { alert("Invitations sent!"); setActiveAction(null); }}>Send Smart Invites</Button>
               </div>

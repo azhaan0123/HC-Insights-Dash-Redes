@@ -46,12 +46,12 @@ export default function InboundIntegrationBatches() {
     : [];
 
   const columns: Column<BatchRecord>[] = [
-    { key: "id", header: "ID", className: "font-mono font-medium text-[#e32168]" },
+    { key: "id", header: "ID", className: "font-mono font-medium text-primary" },
     { key: "dpcName", header: "DPC Name", className: "font-medium text-foreground" },
-    { key: "type", header: "Type", className: "text-slate-600 dark:text-slate-400" },
-    { key: "step", header: "Processing Step", className: "text-slate-600 dark:text-slate-400" },
-    { key: "integrationType", header: "Integration Type", className: "text-slate-600 dark:text-slate-400" },
-    { key: "vendor", header: "Vendor", className: "text-slate-600 dark:text-slate-400 font-medium" },
+    { key: "type", header: "Type", className: "text-muted-foreground dark:text-muted-foreground/70" },
+    { key: "step", header: "Processing Step", className: "text-muted-foreground dark:text-muted-foreground/70" },
+    { key: "integrationType", header: "Integration Type", className: "text-muted-foreground dark:text-muted-foreground/70" },
+    { key: "vendor", header: "Vendor", className: "text-muted-foreground dark:text-muted-foreground/70 font-medium" },
     {
       key: "status",
       header: "Status",
@@ -72,11 +72,11 @@ export default function InboundIntegrationBatches() {
         </span>
       ),
     },
-    { key: "createdAt", header: "Created At", className: "text-slate-500 text-xs" },
+    { key: "createdAt", header: "Created At", className: "text-muted-foreground text-xs" },
     {
       key: "details",
       header: "Details",
-      cell: (b) => <span className="text-slate-600 dark:text-slate-400 truncate max-w-[180px] block" title={b.details}>{b.details}</span>,
+      cell: (b) => <span className="text-muted-foreground dark:text-muted-foreground/70 truncate max-w-[180px] block" title={b.details}>{b.details}</span>,
     },
   ];
 
@@ -95,13 +95,13 @@ export default function InboundIntegrationBatches() {
               placeholder="Search by ID, type or status"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 pr-8 bg-background border-slate-200 dark:border-slate-800 text-sm shadow-2xs"
+              className="h-9 pr-8 bg-background border-border dark:border-border text-sm shadow-2xs"
             />
-            <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+            <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/70 pointer-events-none" />
           </div>
 
           <Button
-            className="h-9 px-5 bg-[#e32168] hover:bg-[#c9185a] text-white text-sm font-medium shadow-2xs transition-colors gap-1.5 inline-flex items-center"
+            className="h-9 px-5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium shadow-2xs transition-colors gap-1.5 inline-flex items-center"
             onClick={handleRefresh}
             disabled={isRefreshing}
           >
@@ -120,16 +120,16 @@ export default function InboundIntegrationBatches() {
 
         {/* Demo simulation hint banner */}
         {!showDemo && (
-          <div className="rounded-lg bg-slate-50 dark:bg-muted/30 border p-4 flex items-center justify-between text-xs text-slate-500">
+          <div className="rounded-lg bg-muted dark:bg-muted/30 border p-4 flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-1.5">
-              <Layers className="size-4 text-slate-400" />
+              <Layers className="size-4 text-muted-foreground/70" />
               <span>Monitoring inbound pipeline queues for integration partners. Click simulate to view active batches.</span>
             </div>
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setShowDemo(true)}
-              className="text-[#e32168] hover:bg-transparent hover:underline font-semibold h-7 px-2 text-xs"
+              className="text-primary hover:bg-transparent hover:underline font-semibold h-7 px-2 text-xs"
             >
               Simulate Active Batches
             </Button>

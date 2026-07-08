@@ -1,4 +1,4 @@
-import { NavLink, Link, useLocation } from "react-router";
+import { NavLink, Link, useLocation, useNavigate } from "react-router";
 import { 
   MessageSquarePlus, 
   ChevronRight, 
@@ -63,6 +63,7 @@ import { useOnboardingTour } from "../../contexts/OnboardingTourContext";
 
 const THEME_COLORS = [
   { id: "pink", value: "#e32168" },
+  { id: "watermelon", value: "#FF6B2B" },
   { id: "blue", value: "#2563eb" },
   { id: "teal", value: "#0d9488" },
   { id: "orange", value: "#f59e0b" },
@@ -133,6 +134,8 @@ function NavMenu({ items }: { items: NavItem[] }) {
 
 export function AppSidebar() {
   const { startTour } = useOnboardingTour();
+  const navigate = useNavigate();
+  const [showAboutVersion, setShowAboutVersion] = useState(false);
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
@@ -174,7 +177,7 @@ export function AppSidebar() {
               <span className="truncate tracking-tight text-foreground" style={{ fontWeight: 600 }}>
                 ACME DPC
               </span>
-              <span className="truncate text-[11px] text-slate-400">Your Logo Here</span>
+              <span className="truncate text-[11px] text-muted-foreground/70">Your Logo Here</span>
             </div>
           )}
         </div>
@@ -195,13 +198,15 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton id="tour-step-16" tooltip="Get Help">
-              <HelpCircle />
-              <span>Get Help</span>
+            <SidebarMenuButton id="tour-step-16" tooltip="Get Help" asChild>
+              <a href="https://intercom.help/health-compiler-inc/en" target="_blank" rel="noopener noreferrer">
+                <HelpCircle />
+                <span>Get Help</span>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(open) => { if (!open) setShowAboutVersion(false); }}>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton tooltip="HC Superadmin" className="h-auto py-1.5 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                   <Avatar className="size-7 rounded-md">
@@ -211,7 +216,7 @@ export function AppSidebar() {
                   </Avatar>
                   <div className="flex min-w-0 flex-col leading-tight">
                     <span className="truncate text-sm text-foreground">HC Superadmin</span>
-                    <span className="truncate text-[11px] text-slate-400">hc_superadmin@gmail.com</span>
+                    <span className="truncate text-[11px] text-muted-foreground/70">hc_superadmin@gmail.com</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -229,44 +234,44 @@ export function AppSidebar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/users" className="flex items-center cursor-pointer w-full">
-                    <UserCog className="mr-2 size-4" />
+                  <Link to="/admin/users" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <UserCog className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Manage Users</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/onboarding" className="flex items-center cursor-pointer w-full">
-                    <UserPlus className="mr-2 size-4" />
+                  <Link to="/admin/onboarding" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <UserPlus className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Onboarding Management</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/organization" className="flex items-center cursor-pointer w-full">
-                    <Settings className="mr-2 size-4" />
+                  <Link to="/admin/organization" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <Settings className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Manage Organization</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/patient-counts" className="flex items-center cursor-pointer w-full">
-                    <Users className="mr-2 size-4" />
+                  <Link to="/admin/patient-counts" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <Users className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Organization Patient Counts</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/integration-batches" className="flex items-center cursor-pointer w-full">
-                    <Activity className="mr-2 size-4" />
+                  <Link to="/admin/integration-batches" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <Activity className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Inbound Integration Batches</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/survey-config" className="flex items-center cursor-pointer w-full">
-                    <ClipboardList className="mr-2 size-4" />
+                  <Link to="/admin/survey-config" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <ClipboardList className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Survey Configuration</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/templates" className="flex items-center cursor-pointer w-full">
-                    <FileText className="mr-2 size-4" />
+                  <Link to="/admin/templates" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <FileText className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Templates</span>
                   </Link>
                 </DropdownMenuItem>
@@ -278,14 +283,14 @@ export function AppSidebar() {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent className="p-3 w-[220px]">
-                      <div className="font-medium text-slate-700 text-sm mb-3">Select Primary Color</div>
+                      <div className="font-medium text-foreground/90 text-sm mb-3">Select Primary Color</div>
                       <div className="grid grid-cols-4 gap-2">
                         {THEME_COLORS.map((color) => (
                           <button
                             key={color.id}
                             className={cn(
                               "size-9 rounded-md flex items-center justify-center transition-all",
-                              primaryColor === color.value ? "ring-2 ring-slate-200 ring-offset-1" : "hover:scale-110"
+                              primaryColor === color.value ? "ring-2 ring-ring/30 ring-offset-1" : "hover:scale-110"
                             )}
                             style={{ backgroundColor: color.value }}
                             onClick={() => setPrimaryColor(color.value)}
@@ -294,8 +299,8 @@ export function AppSidebar() {
                           </button>
                         ))}
                         {/* Custom Color Button */}
-                        <div className="relative size-9 rounded-md border border-dashed border-slate-400 flex items-center justify-center hover:bg-slate-50 transition-colors cursor-pointer overflow-hidden group">
-                          <Pipette className="size-4 text-slate-500 group-hover:text-slate-700" />
+                        <div className="relative size-9 rounded-md border border-dashed border-border flex items-center justify-center hover:bg-muted transition-colors cursor-pointer overflow-hidden group">
+                          <Pipette className="size-4 text-muted-foreground group-hover:text-foreground/90" />
                           <input 
                             type="color" 
                             className="absolute inset-[-10px] opacity-0 cursor-pointer w-[200%] h-[200%]"
@@ -338,11 +343,11 @@ export function AppSidebar() {
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/admin/survey-config")} className="cursor-pointer">
                   <LayoutTemplate className="mr-2" />
                   Survey Config
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/admin/templates")} className="cursor-pointer">
                   <MessageSquare className="mr-2" />
                   Templates
                 </DropdownMenuItem>
@@ -351,11 +356,22 @@ export function AppSidebar() {
                   <BookOpen className="mr-2" />
                   Guide
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setShowAboutVersion(true);
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAboutVersion(true);
+                  }}
+                  onMouseLeave={() => setShowAboutVersion(false)}
+                >
                   <Info className="mr-2" />
-                  About
+                  <span>About{showAboutVersion && " v24.0.3"}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/onboarding")} className="cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="mr-2" />
                   Log out
                 </DropdownMenuItem>

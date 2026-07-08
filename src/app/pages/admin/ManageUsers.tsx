@@ -136,11 +136,11 @@ export default function ManageUsers() {
 
   const columns: Column<UserRecord>[] = [
     { key: "username", header: "Username", cell: (r) => <span className="truncate max-w-[260px] block" title={r.username}>{r.username}</span> },
-    { key: "clientId", header: "Client ID", className: "text-slate-600 dark:text-slate-400" },
+    { key: "clientId", header: "Client ID", className: "text-muted-foreground dark:text-muted-foreground/70" },
     { key: "name", header: "Name", className: "font-medium text-foreground" },
-    { key: "userType", header: "User Type", className: "text-slate-600 dark:text-slate-400" },
-    { key: "orgName", header: "Organization Name", className: "text-slate-600 dark:text-slate-400" },
-    { key: "role", header: "User Role", className: "text-slate-600 dark:text-slate-400" },
+    { key: "userType", header: "User Type", className: "text-muted-foreground dark:text-muted-foreground/70" },
+    { key: "orgName", header: "Organization Name", className: "text-muted-foreground dark:text-muted-foreground/70" },
+    { key: "role", header: "User Role", className: "text-muted-foreground dark:text-muted-foreground/70" },
     {
       key: "status",
       header: (
@@ -149,7 +149,7 @@ export default function ManageUsers() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="size-3.5 text-slate-400 cursor-help" />
+                <Info className="size-3.5 text-muted-foreground/70 cursor-help" />
               </TooltipTrigger>
               <TooltipContent>Active or Suspended status</TooltipContent>
             </Tooltip>
@@ -172,14 +172,14 @@ export default function ManageUsers() {
         <div className="flex items-center justify-center gap-2">
           <button
             onClick={() => handleOpenEdit(r)}
-            className="p-1 rounded text-slate-500 hover:text-[#e32168] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-secondary dark:hover:bg-card transition-colors"
             title="Edit user"
           >
             <Pencil className="size-3.5" />
           </button>
           <button
             onClick={() => handleDelete(r.id)}
-            className="p-1 rounded text-slate-500 hover:text-red-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1 rounded text-muted-foreground hover:text-red-600 hover:bg-secondary dark:hover:bg-card transition-colors"
             title="Delete user"
           >
             <Trash2 className="size-3.5" />
@@ -201,11 +201,11 @@ export default function ManageUsers() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex flex-col gap-1.5 min-w-[200px]">
-              <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              <label className="text-xs font-medium text-muted-foreground dark:text-muted-foreground/70">
                 Select Primary Organization Type
               </label>
               <Select value={primaryOrgType} onValueChange={setPrimaryOrgType}>
-                <SelectTrigger className="h-9 w-[220px] bg-background border-slate-200 dark:border-slate-800 text-sm shadow-2xs">
+                <SelectTrigger className="h-9 w-[220px] bg-background border-border dark:border-border text-sm shadow-2xs">
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,11 +217,11 @@ export default function ManageUsers() {
             </div>
 
             <div className="flex flex-col gap-1.5 min-w-[200px]">
-              <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              <label className="text-xs font-medium text-muted-foreground dark:text-muted-foreground/70">
                 Select Organization Name
               </label>
               <Select value={orgNameFilter} onValueChange={setOrgNameFilter}>
-                <SelectTrigger className="h-9 w-[220px] bg-background border-slate-200 dark:border-slate-800 text-sm shadow-2xs">
+                <SelectTrigger className="h-9 w-[220px] bg-background border-border dark:border-border text-sm shadow-2xs">
                   <SelectValue placeholder="Select Organization" />
                 </SelectTrigger>
                 <SelectContent>
@@ -235,7 +235,7 @@ export default function ManageUsers() {
 
             <Button
               variant="outline"
-              className="h-9 px-4 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="h-9 px-4 text-xs font-semibold hover:bg-secondary dark:hover:bg-card"
               onClick={handleReset}
             >
               Reset
@@ -243,7 +243,7 @@ export default function ManageUsers() {
           </div>
 
           <Button
-            className="h-9 px-4 bg-[#e32168] hover:bg-[#c9185a] text-white text-sm font-medium shadow-2xs gap-1.5 transition-colors inline-flex items-center"
+            className="h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium shadow-2xs gap-1.5 transition-colors inline-flex items-center"
             onClick={handleOpenAdd}
           >
             <Plus className="size-4" />
@@ -263,7 +263,7 @@ export default function ManageUsers() {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="sm:max-w-[480px]">
             <DialogHeader>
-              <DialogTitle className="text-[#e32168]">
+              <DialogTitle className="text-primary font-bold">
                 {editingUser ? "Edit User" : "Add New User"}
               </DialogTitle>
             </DialogHeader>
@@ -365,7 +365,7 @@ export default function ManageUsers() {
                     checked={formData.status}
                     onCheckedChange={(val) => setFormData({ ...formData, status: val })}
                   />
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     {formData.status ? "Active" : "Inactive"}
                   </span>
                 </div>
@@ -375,7 +375,7 @@ export default function ManageUsers() {
               <Button variant="outline" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>
-              <Button className="bg-[#e32168] hover:bg-[#c9185a] text-white" onClick={handleSave}>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleSave}>
                 Save User
               </Button>
             </DialogFooter>

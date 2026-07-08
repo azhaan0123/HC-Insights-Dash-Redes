@@ -6,7 +6,7 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div className={`flex items-center justify-center py-16 text-sm text-slate-400 ${className}`}>
+    <div className={`flex items-center justify-center py-16 text-sm text-muted-foreground/70 ${className}`}>
       {message}
     </div>
   );

@@ -57,7 +57,7 @@ export function AiChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-slate-50/50 dark:bg-muted/10 flex-1 relative">
+    <div className="flex flex-col h-full min-h-0 bg-muted/50 dark:bg-muted/10 flex-1 relative">
       <ScrollArea className="flex-1 min-h-0 px-4 py-4">
         <div className="flex flex-col gap-4 pb-4">
           {messages.map((msg) => (
@@ -68,8 +68,8 @@ export function AiChatInterface() {
               <div className={cn(
                 "flex size-7 shrink-0 select-none items-center justify-center rounded-lg shadow-2xs text-xs font-semibold mt-0.5",
                 msg.role === 'user' 
-                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' 
-                  : 'bg-gradient-to-br from-[#e32168] to-[#ff4d8d] text-white shadow-[#e32168]/20'
+                  ? 'bg-card text-white dark:bg-secondary dark:text-foreground' 
+                  : 'bg-gradient-to-br from-[#FF6B2B] to-[#ff8c5a] text-white shadow-[#FF6B2B]/20'
               )}>
                 {msg.role === 'user' ? <User className="size-3.5" /> : <Sparkles className="size-3.5" />}
               </div>
@@ -79,14 +79,14 @@ export function AiChatInterface() {
                   className={cn(
                     "px-3.5 py-2.5 text-xs md:text-sm leading-relaxed shadow-2xs transition-all",
                     msg.role === 'user'
-                      ? 'bg-[#e32168] text-white rounded-2xl rounded-tr-xs font-normal'
-                      : 'bg-card border border-slate-200/80 dark:border-slate-800 rounded-2xl rounded-tl-xs text-foreground font-normal'
+                      ? 'bg-[#FF6B2B] text-white rounded-2xl rounded-tr-xs font-normal'
+                      : 'bg-card border border-border/80 dark:border-border rounded-2xl rounded-tl-xs text-foreground font-normal'
                   )}
                 >
                   {msg.content}
                 </div>
                 {msg.timestamp && (
-                  <span className={cn("text-[10px] text-slate-400 px-1", msg.role === 'user' ? 'text-right' : 'text-left')}>
+                  <span className={cn("text-[10px] text-muted-foreground/70 px-1", msg.role === 'user' ? 'text-right' : 'text-left')}>
                     {msg.timestamp}
                   </span>
                 )}
@@ -96,11 +96,11 @@ export function AiChatInterface() {
 
           {isTyping && (
              <div className="flex gap-3 text-sm flex-row animate-fade-in-up">
-               <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-lg bg-gradient-to-br from-[#e32168] to-[#ff4d8d] text-white shadow-2xs shadow-[#e32168]/20 mt-0.5">
+               <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B2B] to-[#ff8c5a] text-white shadow-2xs shadow-[#FF6B2B]/20 mt-0.5">
                  <Sparkles className="size-3.5" />
                </div>
-               <div className="flex items-center gap-2 px-4 py-3 bg-card border border-slate-200/80 dark:border-slate-800 rounded-2xl rounded-tl-xs shadow-2xs">
-                 <Loader2 className="size-3.5 animate-spin text-[#e32168]" />
+               <div className="flex items-center gap-2 px-4 py-3 bg-card border border-border/80 dark:border-border rounded-2xl rounded-tl-xs shadow-2xs">
+                 <Loader2 className="size-3.5 animate-spin text-[#FF6B2B]" />
                  <span className="text-xs text-muted-foreground font-medium">Analyzing workspace data...</span>
                </div>
              </div>
@@ -109,7 +109,7 @@ export function AiChatInterface() {
       </ScrollArea>
       
       {/* Footer Controls & Prompt Box */}
-      <div className="p-4 border-t border-slate-200/80 dark:border-slate-800 bg-card shrink-0 shadow-lg shadow-black/5">
+      <div className="p-4 border-t border-border/80 dark:border-border bg-card shrink-0 shadow-lg shadow-black/5">
         <AiPresetQuestions onSelect={handlePresetClick} />
         
         <form
@@ -124,7 +124,7 @@ export function AiChatInterface() {
             placeholder="Ask HealthCompiler AI..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="h-10 w-full pl-3.5 pr-11 text-xs md:text-sm rounded-xl border-slate-200 dark:border-slate-800 bg-muted/40 dark:bg-muted/20 focus-visible:ring-1 focus-visible:ring-[#e32168] focus-visible:border-[#e32168] focus-visible:bg-background transition-all shadow-inner"
+            className="h-10 w-full pl-3.5 pr-11 text-xs md:text-sm rounded-xl border-border dark:border-border bg-muted/40 dark:bg-muted/20 focus-visible:ring-1 focus-visible:ring-[#FF6B2B] focus-visible:border-[#FF6B2B] focus-visible:bg-background transition-all shadow-inner"
           />
           <Button 
             type="submit" 
@@ -133,8 +133,8 @@ export function AiChatInterface() {
             className={cn(
               "absolute right-1 size-8 rounded-lg transition-all cursor-pointer",
               input.trim() 
-                ? "bg-[#e32168] hover:bg-[#c9185a] text-white shadow-sm shadow-[#e32168]/25 scale-100" 
-                : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 scale-95"
+                ? "bg-[#FF6B2B] hover:bg-[#e05a1a] text-white shadow-sm shadow-[#FF6B2B]/25 scale-100" 
+                : "bg-secondary dark:bg-card text-muted-foreground/70 dark:text-muted-foreground scale-95"
             )}
             title="Submit prompt"
           >
@@ -142,7 +142,7 @@ export function AiChatInterface() {
             <span className="sr-only">Send</span>
           </Button>
         </form>
-        <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-slate-400">
+        <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-muted-foreground/70">
           <span>Press Enter to send</span>
           <span className="flex items-center gap-1">
             <span className="size-1 rounded-full bg-emerald-500" />

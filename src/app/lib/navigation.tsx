@@ -1,5 +1,6 @@
 import {
   Home,
+  Activity,
   BarChart3,
   Users,
   HeartPulse,
@@ -35,6 +36,8 @@ export type NavItem = {
 /** Primary analytics modules, in display order, matching the Figma frame. */
 export const NAV_ITEMS: NavItem[] = [
   { key: "home", label: "Home", icon: Home, path: "/home" },
+  { key: "utilization-gaps", label: "Utilization Gaps", icon: Activity, path: "/utilization-gaps", tourId: "tour-step-3" },
+  { key: "utilization-gaps-classic", label: "Utilization Gaps (Classic UI)", icon: Layers, path: "/utilization-gaps-classic" },
   { 
     key: "engagement", 
     label: "Engagement & Utilization", 
@@ -61,7 +64,6 @@ export const NAV_ITEMS: NavItem[] = [
     ]
   },
   { key: "cost-savings", label: "Cost Savings", icon: BadgeDollarSign, path: "/cost-savings", tourId: "tour-step-6" },
-  { key: "utilization-gaps", label: "Utilization Gaps", icon: Users, path: "/utilization-gaps", tourId: "tour-step-3" },
   { key: "chronic-risk", label: "Chronic Risk", icon: HeartPulse, path: "/chronic-risk", tourId: "tour-step-4" },
   { key: "claims", label: "Claims Utilization", icon: ReceiptText, path: "/claims", tourId: "tour-step-7" },
   { key: "billing", label: "Claims Billing Report", icon: Receipt, path: "/billing", tourId: "tour-step-5" },

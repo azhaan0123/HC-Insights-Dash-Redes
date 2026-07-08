@@ -18,14 +18,14 @@ export function RightAiSidebar({
     <div 
       className={cn(
         "h-full bg-card flex flex-col shrink-0 transition-[width] duration-200 ease-linear overflow-hidden hidden xl:flex shadow-2xl z-30",
-        isOpen ? "w-[420px] border-l border-slate-200/80 dark:border-slate-800" : "w-0 border-l-0"
+        isOpen ? "w-[420px] border-l border-border/80 dark:border-border" : "w-0 border-l-0"
       )}
     >
       <div className="w-[420px] flex-1 flex flex-col min-h-0 h-full">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-slate-50/80 dark:from-muted/20 to-transparent shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/80 dark:border-border bg-gradient-to-b from-slate-50/80 dark:from-muted/20 to-transparent shrink-0">
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#e32168] to-[#ff4d8d] text-white shadow-md shadow-[#e32168]/25">
+            <div className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#FF6B2B] to-[#ff8c5a] text-white shadow-md shadow-[#FF6B2B]/25">
               <Sparkles className="size-4.5" />
             </div>
             <div>
@@ -36,14 +36,14 @@ export function RightAiSidebar({
                   <span>Ready</span>
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Cross-domain clinical & financial co-pilot</p>
+              <p className="text-[11px] text-muted-foreground dark:text-muted-foreground/70 font-normal">Cross-domain clinical & financial co-pilot</p>
             </div>
           </div>
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => setIsOpen(false)} 
-            className="size-8 rounded-lg text-slate-400 hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            className="size-8 rounded-lg text-muted-foreground/70 hover:text-foreground hover:bg-secondary dark:hover:bg-card cursor-pointer"
             title="Close AI Assistant"
           >
             <X className="size-4" />
@@ -52,25 +52,25 @@ export function RightAiSidebar({
 
         {/* Tabs Container */}
         <Tabs defaultValue="chat" className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="px-5 pt-3.5 pb-3 border-b border-slate-200/80 dark:border-slate-800 shrink-0 bg-background/50">
-            <TabsList className="w-full grid grid-cols-3 bg-slate-100 dark:bg-slate-800/60 p-1 h-9 rounded-xl border border-slate-200/60 dark:border-slate-700/50">
+          <div className="px-5 pt-3.5 pb-3 border-b border-border/80 dark:border-border shrink-0 bg-background/50">
+            <TabsList className="w-full grid grid-cols-3 bg-secondary dark:bg-card/60 p-1 h-9 rounded-xl border border-border/60 dark:border-border/50">
               <TabsTrigger 
                 value="chat" 
-                className="text-xs font-semibold h-full rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-slate-500 hover:text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold h-full rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <MessageSquare className="size-3.5" />
                 <span>Chat</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="insights" 
-                className="text-xs font-semibold h-full rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-slate-500 hover:text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold h-full rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Lightbulb className="size-3.5 text-amber-500" />
                 <span>Insights</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="actions" 
-                className="text-xs font-semibold h-full rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-slate-500 hover:text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold h-full rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Zap className="size-3.5 text-purple-500" />
                 <span>Actions</span>
@@ -80,20 +80,20 @@ export function RightAiSidebar({
 
           <TabsContent value="chat" className="flex-1 mt-0 overflow-hidden outline-none flex flex-col min-h-0 h-full data-[state=inactive]:hidden">
             {/* Context Banner inside Chat */}
-            <div className="bg-[#e32168]/5 px-5 py-2.5 text-xs text-foreground border-b border-[#e32168]/10 shrink-0 flex items-center gap-2">
-              <Activity className="size-3.5 text-[#e32168] shrink-0" />
-              <span className="truncate"><span className="font-semibold text-[#e32168]">Workspace Sync:</span> Analyzing data across Dashboards, HCC, and ACO.</span>
+            <div className="bg-[#FF6B2B]/5 px-5 py-2.5 text-xs text-foreground border-b border-[#FF6B2B]/10 shrink-0 flex items-center gap-2">
+              <Activity className="size-3.5 text-[#FF6B2B] shrink-0" />
+              <span className="truncate"><span className="font-semibold text-[#FF6B2B]">Workspace Sync:</span> Analyzing data across Dashboards, HCC, and ACO.</span>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
               <AiChatInterface />
             </div>
           </TabsContent>
 
-          <TabsContent value="insights" className="flex-1 mt-0 overflow-hidden outline-none flex flex-col min-h-0 h-full data-[state=inactive]:hidden bg-slate-50/50 dark:bg-muted/10">
+          <TabsContent value="insights" className="flex-1 mt-0 overflow-hidden outline-none flex flex-col min-h-0 h-full data-[state=inactive]:hidden bg-muted/50 dark:bg-muted/10">
             <AiInsightsTab />
           </TabsContent>
 
-          <TabsContent value="actions" className="flex-1 mt-0 overflow-hidden outline-none flex flex-col min-h-0 h-full data-[state=inactive]:hidden bg-slate-50/50 dark:bg-muted/10">
+          <TabsContent value="actions" className="flex-1 mt-0 overflow-hidden outline-none flex flex-col min-h-0 h-full data-[state=inactive]:hidden bg-muted/50 dark:bg-muted/10">
             <AiActionsTab />
           </TabsContent>
         </Tabs>

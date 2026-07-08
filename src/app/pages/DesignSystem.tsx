@@ -110,7 +110,7 @@ function Swatch({ name, hex, fg }: { name: string; hex: string; fg?: string }) {
       </span>
       <span className="flex flex-col bg-card px-2.5 py-1.5">
         <span className="truncate text-xs text-foreground">{name}</span>
-        <span className="font-mono text-[11px] text-slate-400">{hex}</span>
+        <span className="font-mono text-[11px] text-muted-foreground/70">{hex}</span>
       </span>
     </button>
   );
@@ -196,7 +196,7 @@ export default function DesignSystem() {
                 <h2 className="text-foreground font-semibold" style={{ fontSize: "1.4rem", lineHeight: 1.2 }}>
                   HealthCompiler Design System
                 </h2>
-                <p className="mt-1.5 max-w-2xl text-sm text-slate-500 leading-relaxed">
+                <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground leading-relaxed">
                   The foundations behind the ACME DPC analytics suite. Built for clarity,
                   density, and restraint — color is used sparingly to direct attention,
                   type and spacing carry the hierarchy.
@@ -220,7 +220,7 @@ export default function DesignSystem() {
               </span>
               <div className="mt-auto pt-4">
                 <p className="text-foreground font-semibold" style={{ fontSize: "1.1rem" }}>Geist</p>
-                <p className="text-xs text-slate-500">Primary · sans-serif</p>
+                <p className="text-xs text-muted-foreground">Primary · sans-serif</p>
               </div>
             </div>
           </Tile>
@@ -263,7 +263,7 @@ export default function DesignSystem() {
                   <span className="truncate text-foreground" style={t.style}>
                     {t.sample} {t.label}
                   </span>
-                  <span className="shrink-0 font-mono text-[11px] text-slate-400">{t.size}</span>
+                  <span className="shrink-0 font-mono text-[11px] text-muted-foreground/70">{t.size}</span>
                 </div>
               ))}
             </div>
@@ -278,11 +278,11 @@ export default function DesignSystem() {
                     className="h-20 w-full border-2 border-primary bg-secondary"
                     style={{ borderRadius: r.value }}
                   />
-                  <span className="text-center text-[11px] text-slate-500">{r.name}</span>
+                  <span className="text-center text-[11px] text-muted-foreground">{r.name}</span>
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-xs text-slate-400">Base token <span className="font-mono">--radius: 0.7rem</span></p>
+            <p className="mt-4 text-xs text-muted-foreground/70">Base token <span className="font-mono">--radius: 0.7rem</span></p>
           </Tile>
 
           {/* Spacing */}
@@ -290,13 +290,13 @@ export default function DesignSystem() {
             <div className="space-y-3">
               {SPACING.map((s) => (
                 <div key={s.token} className="flex items-center gap-3">
-                  <span className="w-4 shrink-0 text-left text-[11px] text-slate-400">{s.token}</span>
+                  <span className="w-4 shrink-0 text-left text-[11px] text-muted-foreground/70">{s.token}</span>
                   <span className="h-3 rounded-full bg-primary" style={{ width: s.px }} />
-                  <span className="text-[11px] text-slate-400">{s.px}px</span>
+                  <span className="text-[11px] text-muted-foreground/70">{s.px}px</span>
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-xs text-slate-400">Base unit <span className="font-mono">4px</span></p>
+            <p className="mt-4 text-xs text-muted-foreground/70">Base unit <span className="font-mono">4px</span></p>
           </Tile>
 
           {/* Elevation */}
@@ -305,7 +305,7 @@ export default function DesignSystem() {
               {SHADOWS.map((s) => (
                 <div key={s.name} className="flex flex-col items-center gap-2">
                   <div className={`grid h-24 w-full place-items-center rounded-md border bg-card ${s.cls}`}>
-                    <span className="text-[11px] text-slate-400">{s.name}</span>
+                    <span className="text-[11px] text-muted-foreground/70">{s.name}</span>
                   </div>
                 </div>
               ))}
@@ -318,10 +318,10 @@ export default function DesignSystem() {
               <AnimationCurve />
               <div className="flex flex-col mt-2">
                 <span className="font-semibold text-foreground text-sm">Standard Easing</span>
-                <span className="font-mono text-[11px] text-slate-500 mt-1 bg-muted px-2 py-1 rounded w-max">
+                <span className="font-mono text-[11px] text-muted-foreground mt-1 bg-muted px-2 py-1 rounded w-max">
                   cubic-bezier(0.22, 1, 0.36, 1)
                 </span>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                   A snappy, responsive ease-out curve. Rapid initial acceleration followed by a smooth deceleration. 
                   Used for charts, modals, and hover transitions.
                 </p>
@@ -335,13 +335,13 @@ export default function DesignSystem() {
               {ICONS.map((Icon, i) => (
                 <span
                   key={i}
-                  className="grid size-9 place-items-center rounded-md border bg-card text-slate-600"
+                  className="grid size-9 place-items-center rounded-md border bg-card text-muted-foreground"
                 >
                   <Icon className="size-[18px]" />
                 </span>
               ))}
             </div>
-            <p className="mt-4 text-xs text-slate-400">lucide-react · 18px · 1.5px stroke</p>
+            <p className="mt-4 text-xs text-muted-foreground/70">lucide-react · 18px · 1.5px stroke</p>
           </Tile>
 
           {/* Buttons */}
@@ -376,7 +376,7 @@ export default function DesignSystem() {
           {/* Filter chip example */}
           <Tile title="Components · Filters">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 text-xs text-slate-400">
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground/70">
                 <Filter className="size-3.5" /> Filters
               </span>
               <span className="h-4 w-px bg-border" />
@@ -386,7 +386,7 @@ export default function DesignSystem() {
                 ["Physician", "All Physicians"],
               ].map(([k, v]) => (
                 <span key={k} className="flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs">
-                  <span className="text-slate-400">{k}</span>
+                  <span className="text-muted-foreground/70">{k}</span>
                   <span className="text-foreground">{v}</span>
                 </span>
               ))}
