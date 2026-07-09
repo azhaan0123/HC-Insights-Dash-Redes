@@ -11,7 +11,8 @@ import {
 } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
-import { ContextualWikiButton } from "../wiki/ContextualWikiButton";
+import soc2Badge from "../../../assets/soc2-compliance.png";
+import hipaaBadge from "../../../assets/HIPPA-Compliance.png";
 
 import {
   Popover,
@@ -32,14 +33,13 @@ import {
 } from "lucide-react";
 
 const APPS_MENU = [
-  { label: "Dashboards", icon: LayoutDashboard, to: "/engagement" },
-  { label: "HCC Insights", icon: BarChart, to: "/hcc" },
-  { label: "ACO Insights", icon: ClipboardCheck, to: "/aco" },
-  { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes" },
-  { label: "Mips Nexus", icon: LineChart },
-  { label: "Ask AI", icon: Sparkles },
-  { label: "Employer Insights", icon: Users },
-  { label: "Technical Specs (/wiki)", icon: BookOpen, to: "/wiki" },
+  { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
+  { label: "HCC Insights", icon: BarChart, to: "/hcc", matchPath: "/hcc" },
+  { label: "ACO Insights", icon: ClipboardCheck, to: "/aco", matchPath: "/aco" },
+  { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes", matchPath: "/outcomes" },
+  { label: "Mips Nexus", icon: LineChart, to: "/mips/dashboard", matchPath: "/mips" },
+  { label: "Helix", icon: Sparkles, to: "/ask-hc", matchPath: "/ask-hc" },
+  { label: "Employer Insights", icon: Users, to: "/employer/overview", matchPath: "/employer" },
 ];
 
 function TopBar({
@@ -50,6 +50,7 @@ function TopBar({
   setIsAiSidebarOpen: (v: boolean) => void;
 }) {
   const { pathname } = useLocation();
+  const [isAppsMenuOpen, setIsAppsMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-card px-4">
@@ -67,14 +68,14 @@ function TopBar({
       </div>
 
       <div className="ml-auto flex items-center gap-2">
-        <Popover>
+        <Popover open={isAppsMenuOpen} onOpenChange={setIsAppsMenuOpen}>
           <PopoverTrigger id="tour-step-12" className="grid size-9 place-items-center rounded-md text-primary outline-none hover:bg-accent transition-colors">
             <LayoutGrid className="size-5" />
           </PopoverTrigger>
           <PopoverContent align="end" className="w-[320px] rounded-xl border bg-card p-4 shadow-lg" sideOffset={8}>
             <div className="grid grid-cols-2 gap-y-6 gap-x-2 py-2">
               {APPS_MENU.map((app) => {
-                const isActive = app.to && pathname.startsWith(app.to);
+                const isActive = (app.to && pathname.startsWith(app.to)) || (app.matchPath && pathname.startsWith(app.matchPath));
                 
                 const inner = (
                   <>
@@ -88,14 +89,23 @@ function TopBar({
                   </>
                 );
 
-                const className = "group flex flex-col items-center justify-center gap-2 rounded-lg p-2 outline-none transition-colors hover:bg-accent/40";
+                const className = "group flex flex-col items-center justify-center gap-2 rounded-lg p-2 outline-none transition-colors hover:bg-accent/40 cursor-pointer";
 
                 return app.to ? (
-                  <Link key={app.label} to={app.to} className={className}>
+                  <Link 
+                    key={app.label} 
+                    to={app.to} 
+                    onClick={() => setIsAppsMenuOpen(false)}
+                    className={className}
+                  >
                     {inner}
                   </Link>
                 ) : (
-                  <button key={app.label} className={className}>
+                  <button 
+                    key={app.label} 
+                    onClick={() => setIsAppsMenuOpen(false)}
+                    className={className}
+                  >
                     {inner}
                   </button>
                 );
@@ -104,7 +114,6 @@ function TopBar({
           </PopoverContent>
         </Popover>
 
-        <ContextualWikiButton variant="outline" size="sm" className="h-9" showLabel={true} />
 
         <Button
           id="tour-step-17"
@@ -112,10 +121,10 @@ function TopBar({
           size="sm"
           className="h-9 gap-2 text-primary hover:bg-primary/10 pl-3 pr-3.5 transition-[background-color] duration-150"
           onClick={() => setIsAiSidebarOpen(!isAiSidebarOpen)}
-          title="Start Chat Bot Support"
+          title="Open Helix"
         >
           <Sparkles className="size-4" />
-          <span className="font-medium">Ask AI</span>
+          <span className="font-medium">Helix</span>
         </Button>
       </div>
     </header>
@@ -125,13 +134,9 @@ function TopBar({
 function Footer() {
   return (
     <footer className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t bg-card px-6 py-4 text-xs text-muted-foreground">
-      <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-full border text-[8px] font-semibold text-muted-foreground/70">
-          SOC 2
-        </span>
-        <span className="grid size-9 place-items-center rounded-full border text-[8px] font-semibold text-muted-foreground/70">
-          HIPAA
-        </span>
+      <div className="flex items-center gap-3">
+        <img src={soc2Badge} alt="SOC 2 Compliance" className="h-9 w-auto object-contain" />
+        <img src={hipaaBadge} alt="HIPAA Compliance" className="h-9 w-auto object-contain" />
       </div>
       <div className="flex items-center gap-2">
         <span>©2025 Healthcompiler, Inc.</span>

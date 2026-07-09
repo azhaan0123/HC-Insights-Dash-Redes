@@ -5,6 +5,8 @@ import { acoArticles } from './acoArticles';
 import { outcomesArticles } from './outcomesArticles';
 import { adminArticles } from './adminArticles';
 import { supportArticles } from './supportArticles';
+import { mipsArticles } from './mipsArticles';
+import { employerArticles } from './employerArticles';
 
 export * from './types';
 export { analyticsArticles } from './analyticsArticles';
@@ -13,6 +15,8 @@ export { acoArticles } from './acoArticles';
 export { outcomesArticles } from './outcomesArticles';
 export { adminArticles } from './adminArticles';
 export { supportArticles } from './supportArticles';
+export { mipsArticles } from './mipsArticles';
+export { employerArticles } from './employerArticles';
 
 export const ALL_WIKI_ARTICLES: WikiArticle[] = [
   ...analyticsArticles,
@@ -21,6 +25,8 @@ export const ALL_WIKI_ARTICLES: WikiArticle[] = [
   ...outcomesArticles,
   ...adminArticles,
   ...supportArticles,
+  ...mipsArticles,
+  ...employerArticles,
 ];
 
 /**

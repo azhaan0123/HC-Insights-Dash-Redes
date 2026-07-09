@@ -112,3 +112,19 @@ export const labCadenceChips: FilterChip[] = [
   { label: "Lab Test", value: "All Lab Tests", options: ["All Lab Tests", "Lipid Panel", "Comprehensive Metabolic Panel", "CBC", "HbA1c"] },
   { label: "Status", value: "All Statuses", options: ["All Statuses", "Due Soon", "Overdue"] },
 ];
+
+export const mipsChips: FilterChip[] = [
+  { label: "Performance Year", value: "2026", options: ["2026", "2025", "2026"] },
+  { label: "Provider", value: "All Providers", options: ["All Providers", ...physicianOptions.filter(p => p !== "All Physicians")] },
+  { label: "Submission Status", value: "Q4 In Progress", options: ["Q4 In Progress", "Submitted", "Ready for Review"] },
+  { label: "Domain", value: "All Domains", options: ["All Domains", "Quality", "Cost", "Promoting Interoperability", "Improvement Activities"] },
+];
+
+export const employerChips: FilterChip[] = [
+  { label: "Plan Year", value: "2024", options: ["2024", "2025", "2026"] },
+  { label: "Employer Group", value: "Acme Corporation", options: ["Acme Corporation", ...employerOptions.filter(e => e !== "All Sponsored Patients" && e !== "Acme Corporation")] },
+  { label: "From Month", value: "Jan", options: ["Jan", "Apr", "Jul", "Oct"] },
+  { label: "To Month", value: "Dec", options: ["Mar", "Jun", "Sep", "Dec"] },
+  { label: "Cohort Status", value: "Active Manifest", options: ["Active Manifest", "COBRA / Terminated", "All Members"] },
+];
+

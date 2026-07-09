@@ -23,7 +23,7 @@ import {
   ClipboardList,
   FileText,
 } from "lucide-react";
-import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
+import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -143,6 +143,8 @@ export function AppSidebar() {
   const isHcc = pathname.startsWith("/hcc");
   const isAco = pathname.startsWith("/aco");
   const isOutcomes = pathname.startsWith("/outcomes");
+  const isMips = pathname.startsWith("/mips");
+  const isEmployer = pathname.startsWith("/employer");
 
   const { 
     primaryColor, setPrimaryColor, 
@@ -163,6 +165,12 @@ export function AppSidebar() {
   } else if (isOutcomes) {
     navItems = OUTCOMES_NAV_ITEMS;
     groupLabel = "Patient Outcomes";
+  } else if (isMips) {
+    navItems = MIPS_NAV_ITEMS;
+    groupLabel = "MIPS Nexus";
+  } else if (isEmployer) {
+    navItems = EMPLOYER_NAV_ITEMS;
+    groupLabel = "Employer Analytics";
   }
 
   return (
@@ -184,6 +192,21 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {isMips && !collapsed && (
+          <div className="px-3 pt-3 pb-1.5 border-b border-sidebar-border/60">
+            <span className="text-[11px] font-medium text-muted-foreground block mb-1.5">Select Provider</span>
+            <select
+              className="w-full h-8 px-2.5 text-xs rounded-md border bg-background text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer"
+              defaultValue="Dr. Amanda Johnson"
+            >
+              <option value="Dr. Amanda Johnson">Dr. Amanda Johnson</option>
+              <option value="Dr. Andrew Anderson">Dr. Andrew Anderson</option>
+              <option value="Dr. Laura Hill">Dr. Laura Hill</option>
+              <option value="Dr. Christopher Nelson">Dr. Christopher Nelson</option>
+              <option value="All Providers">All Providers</option>
+            </select>
+          </div>
+        )}
         <SidebarGroup id="tour-step-1">
           <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
           <NavMenu items={navItems} />
@@ -208,15 +231,15 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu onOpenChange={(open) => { if (!open) setShowAboutVersion(false); }}>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton tooltip="HC Superadmin" className="h-auto py-1.5 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                <SidebarMenuButton tooltip={isMips ? "Dr. Amanda Johnson" : "HC Superadmin"} className="h-auto py-1.5 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                   <Avatar className="size-7 rounded-md">
-                    <AvatarFallback className="rounded-md bg-primary text-xs text-primary-foreground">
-                      HS
+                    <AvatarFallback className={cn("rounded-md text-xs text-primary-foreground", isMips ? "bg-blue-600" : "bg-primary")}>
+                      {isMips ? "A" : "HS"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex min-w-0 flex-col leading-tight">
-                    <span className="truncate text-sm text-foreground">HC Superadmin</span>
-                    <span className="truncate text-[11px] text-muted-foreground/70">hc_superadmin@gmail.com</span>
+                    <span className="truncate text-sm text-foreground">{isMips ? "Dr. Amanda Johnson" : "HC Superadmin"}</span>
+                    <span className="truncate text-[11px] text-muted-foreground/70">{isMips ? "Administrator" : "hc_superadmin@gmail.com"}</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -352,6 +375,10 @@ export function AppSidebar() {
                   Templates
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/wiki")} className="cursor-pointer">
+                  <BookOpen className="mr-2" />
+                  Technical Specs (/wiki)
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={startTour} className="cursor-pointer">
                   <BookOpen className="mr-2" />
                   Guide
@@ -371,7 +398,7 @@ export function AppSidebar() {
                   <Info className="mr-2" />
                   <span>About{showAboutVersion && " v24.0.3"}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/onboarding")} className="cursor-pointer text-destructive focus:text-destructive">
+                <DropdownMenuItem onClick={() => navigate("/login")} className="cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="mr-2" />
                   Log out
                 </DropdownMenuItem>

@@ -128,7 +128,7 @@ const TOUR_STEPS: TourStep[] = [
     id: "step-17",
     targetId: "tour-step-17",
     title: "Chat Bot Support",
-    badge: "AI Assistant",
+    badge: "Helix Assistant",
     content: `Step 1: Still need help? Start a chat with our support agent (do not share any PHI).\n\nImportant Disclaimer:\nFor your privacy and security, please do not share any Protected Health Information (PHI) or sensitive personal data (such as medical details, patient identifiers, or health records) in this chat.\n\nIf your request involves PHI or requires access to sensitive information, please submit a support ticket.\n\nStep 2: If your issue isn’t resolved, type “Report” to create a support ticket.\nStep 3: Provide a few details - our team will receive it and respond in chat.\nStep 4: You can also request to connect with a support team member if needed.`
   }
 ];

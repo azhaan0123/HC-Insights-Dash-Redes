@@ -21,6 +21,10 @@ import {
   CalendarDays,
   FilePlus,
   BadgeDollarSign,
+  Sparkles,
+  Sliders,
+  FileText,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -93,7 +97,6 @@ export const ACO_NAV_ITEMS: NavItem[] = [
 /** Secondary / system-level destinations shown in their own sidebar group. */
 export const SYSTEM_NAV_ITEMS: NavItem[] = [
   { key: "design-system", label: "Design System", icon: Palette, path: "/design-system" },
-  { key: "product-wiki", label: "Technical Specs (/wiki)", icon: ClipboardCheck, path: "/wiki" },
 ];
 
 export const OUTCOMES_NAV_ITEMS: NavItem[] = [
@@ -106,4 +109,24 @@ export const OUTCOMES_NAV_ITEMS: NavItem[] = [
   { key: "outcomes-medication-refills", label: "Medication Refills", icon: Pill, path: "/outcomes/medication-refills" },
   { key: "outcomes-lab-cadence", label: "Lab Cadence", icon: CalendarDays, path: "/outcomes/lab-cadence" },
   { key: "outcomes-report-builder", label: "Report Builder", icon: FilePlus, path: "/outcomes/report-builder" },
+];
+
+export const MIPS_NAV_ITEMS: NavItem[] = [
+  { key: "mips-dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/mips/dashboard" },
+  { key: "mips-ai-assistant", label: "Helix Assistant", icon: Sparkles, path: "/mips/ai-assistant" },
+  { key: "mips-quality-measures", label: "Quality Measures", icon: ShieldCheck, path: "/mips/quality-measures" },
+  { key: "mips-cost-performance", label: "Cost Performance", icon: BadgeDollarSign, path: "/mips/cost-performance" },
+  { key: "mips-interoperability", label: "Interoperability", icon: Sliders, path: "/mips/interoperability" },
+  { key: "mips-improvement-activities", label: "Improvement Activities", icon: ClipboardCheck, path: "/mips/improvement-activities" },
+  { key: "mips-provider-comparison", label: "Provider Comparison", icon: Users, path: "/mips/provider-comparison" },
+  { key: "mips-reports", label: "Reports", icon: FileText, path: "/mips/reports" },
+];
+
+export const EMPLOYER_NAV_ITEMS: NavItem[] = [
+  { key: "emp-overview", label: "Overview", icon: LayoutDashboard, path: "/employer/overview" },
+  { key: "emp-enrollment", label: "Enrollment", icon: Users, path: "/employer/enrollment" },
+  { key: "emp-financial", label: "Financial Performance", icon: BadgeDollarSign, path: "/employer/financial" },
+  { key: "emp-chronic", label: "Chronic Conditions", icon: HeartPulse, path: "/employer/chronic" },
+  { key: "emp-high-cost", label: "High-Cost Claimants", icon: ShieldAlert, path: "/employer/high-cost" },
+  { key: "emp-benchmarking", label: "Risk Benchmarking", icon: LineChart, path: "/employer/benchmarking" },
 ];

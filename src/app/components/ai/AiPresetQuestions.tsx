@@ -12,7 +12,7 @@ export function AiPresetQuestions({ onSelect }: { onSelect: (question: string) =
   return (
     <div className="flex flex-col gap-2 mb-3">
       <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-muted-foreground/70 flex items-center gap-1.5">
-        <Sparkles className="size-3 text-[#FF6B2B]" />
+        <Sparkles className="size-3 text-[#e32168]" />
         <span>Suggested Prompts</span>
       </span>
       <div className="flex flex-wrap gap-1.5">
@@ -21,10 +21,10 @@ export function AiPresetQuestions({ onSelect }: { onSelect: (question: string) =
             key={preset}
             type="button"
             onClick={() => onSelect(preset)}
-            className="group inline-flex items-center gap-1 text-left rounded-full border border-border dark:border-border bg-background/90 hover:bg-[#FF6B2B]/5 hover:border-[#FF6B2B]/40 px-3 py-1 text-xs font-medium text-muted-foreground dark:text-muted-foreground/50 hover:text-[#FF6B2B] transition-all duration-150 shadow-2xs cursor-pointer active:scale-95"
+            className="group inline-flex items-center gap-1 text-left rounded-full border border-border dark:border-border bg-background/90 hover:bg-[#e32168]/5 hover:border-[#e32168]/40 px-3 py-1 text-xs font-medium text-muted-foreground dark:text-muted-foreground/50 hover:text-[#e32168] transition-all duration-150 shadow-2xs cursor-pointer active:scale-95"
           >
             <span>{preset}</span>
-            <ArrowUpRight className="size-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#FF6B2B]" />
+            <ArrowUpRight className="size-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#e32168]" />
           </button>
         ))}
       </div>

@@ -31,6 +31,7 @@ import Communication from "./pages/Communication";
 import Marketing from "./pages/Marketing";
 import Survey from "./pages/Survey";
 import DesignSystem from "./pages/DesignSystem";
+import AskHC from "./pages/AskHC";
 import HccLayout from "./pages/hcc/HccLayout";
 import HccOverview from "./pages/hcc/Overview";
 import HccPatientList from "./pages/hcc/PatientList";
@@ -56,6 +57,30 @@ import AcoProviderPerformance from "./pages/aco/AcoProviderPerformance";
 import AcoGapsTracker from "./pages/aco/AcoGapsTracker";
 import AcoUtilization from "./pages/aco/AcoUtilization";
 import AcoReports from "./pages/aco/AcoReports";
+
+// MIPS Nexus Imports
+import MipsLayout from "./pages/mips/MipsLayout";
+import MipsDashboard from "./pages/mips/MipsDashboard";
+import {
+  MipsAiAssistantPage,
+  MipsQualityMeasuresPage,
+  MipsCostPerformancePage,
+  MipsInteroperabilityPage,
+  MipsImprovementActivitiesPage,
+  MipsProviderComparisonPage,
+  MipsReportsPage,
+} from "./pages/mips/MipsSubPages";
+
+// Employer Analytics Imports
+import EmployerLayout from "./pages/employer/EmployerLayout";
+import EmployerOverview from "./pages/employer/EmployerOverview";
+import {
+  EmployerEnrollmentPage,
+  EmployerFinancialPage,
+  EmployerChronicPage,
+  EmployerHighCostPage,
+  EmployerBenchmarkingPage,
+} from "./pages/employer/EmployerSubPages";
 
 // Outcomes Imports
 import OutcomesLayout from "./pages/outcomes/OutcomesLayout";
@@ -136,6 +161,21 @@ export const router = createBrowserRouter([
       { path: "marketing", Component: Marketing },
       { path: "survey", Component: Survey },
       { path: "design-system", Component: DesignSystem },
+      { path: "ask-hc", Component: AskHC },
+      { path: "ask-ai", element: <Navigate to="/ask-hc" replace /> },
+      {
+        path: "employer",
+        Component: EmployerLayout,
+        children: [
+          { index: true, element: <Navigate to="/employer/overview" replace /> },
+          { path: "overview", Component: EmployerOverview },
+          { path: "enrollment", Component: EmployerEnrollmentPage },
+          { path: "financial", Component: EmployerFinancialPage },
+          { path: "chronic", Component: EmployerChronicPage },
+          { path: "high-cost", Component: EmployerHighCostPage },
+          { path: "benchmarking", Component: EmployerBenchmarkingPage },
+        ],
+      },
       {
         path: "hcc",
         Component: HccLayout,
@@ -175,6 +215,21 @@ export const router = createBrowserRouter([
           { path: "medication-refills", Component: MedicationRefills },
           { path: "lab-cadence", Component: LabCadence },
           { path: "report-builder", Component: ReportBuilder },
+        ],
+      },
+      {
+        path: "mips",
+        Component: MipsLayout,
+        children: [
+          { index: true, element: <Navigate to="/mips/dashboard" replace /> },
+          { path: "dashboard", Component: MipsDashboard },
+          { path: "ai-assistant", Component: MipsAiAssistantPage },
+          { path: "quality-measures", Component: MipsQualityMeasuresPage },
+          { path: "cost-performance", Component: MipsCostPerformancePage },
+          { path: "interoperability", Component: MipsInteroperabilityPage },
+          { path: "improvement-activities", Component: MipsImprovementActivitiesPage },
+          { path: "provider-comparison", Component: MipsProviderComparisonPage },
+          { path: "reports", Component: MipsReportsPage },
         ],
       },
       {

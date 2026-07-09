@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation, Link } from "react-router";
 import {
   HelpCircle,
   ChevronDown,
@@ -15,7 +15,27 @@ import {
   ClipboardCheck,
   MessageSquare,
   LayoutDashboard,
+  BarChart,
+  Stethoscope,
+  LineChart,
+  Sparkles,
+  BookOpen,
 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../components/ui/popover";
+
+const APPS_MENU = [
+  { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
+  { label: "HCC Insights", icon: BarChart, to: "/hcc", matchPath: "/hcc" },
+  { label: "ACO Insights", icon: ClipboardCheck, to: "/aco", matchPath: "/aco" },
+  { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes", matchPath: "/outcomes" },
+  { label: "Mips Nexus", icon: LineChart, to: "/mips/dashboard", matchPath: "/mips" },
+  { label: "Helix", icon: Sparkles, to: "/ask-hc", matchPath: "/ask-hc" },
+  { label: "Employer Insights", icon: Users, to: "/employer/overview", matchPath: "/employer" },
+];
 
 interface ClassicLayoutProps {
   children: React.ReactNode;
@@ -45,6 +65,8 @@ export function ClassicLayout({
   headerActions,
 }: ClassicLayoutProps) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [isAppsMenuOpen, setIsAppsMenuOpen] = useState(false);
 
   const navIcons = [
     { icon: Users, label: "Utilization Gaps", path: "/utilization-gaps-classic" },
@@ -120,9 +142,51 @@ export function ClassicLayout({
             </button>
           )}
 
-          <button className="p-1.5 rounded text-[#e61952] hover:bg-[#fff0f4] transition-colors">
-            <LayoutGrid className="size-5" />
-          </button>
+          <Popover open={isAppsMenuOpen} onOpenChange={setIsAppsMenuOpen}>
+            <PopoverTrigger className="p-1.5 rounded text-[#e61952] hover:bg-[#fff0f4] transition-colors outline-none cursor-pointer">
+              <LayoutGrid className="size-5" />
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[320px] rounded-xl border bg-white p-4 shadow-lg text-[#212529]" sideOffset={8}>
+              <div className="grid grid-cols-2 gap-y-6 gap-x-2 py-2">
+                {APPS_MENU.map((app) => {
+                  const isActive = (app.to && pathname.startsWith(app.to)) || (app.matchPath && pathname.startsWith(app.matchPath));
+                  
+                  const inner = (
+                    <>
+                      <app.icon className="size-6 text-[#212529] transition-colors group-hover:text-[#e61952]" strokeWidth={1.5} />
+                      <div className="relative">
+                        <span className="text-[13px] font-medium text-[#212529]">{app.label}</span>
+                        {isActive && (
+                          <div className="absolute -bottom-2 left-0 right-0 h-[3px] rounded-full bg-[#e61952]" />
+                        )}
+                      </div>
+                    </>
+                  );
+
+                  const className = "group flex flex-col items-center justify-center gap-2 rounded-lg p-2 outline-none transition-colors hover:bg-[#f8f9fa] cursor-pointer";
+
+                  return app.to ? (
+                    <Link 
+                      key={app.label} 
+                      to={app.to} 
+                      onClick={() => setIsAppsMenuOpen(false)}
+                      className={className}
+                    >
+                      {inner}
+                    </Link>
+                  ) : (
+                    <button 
+                      key={app.label} 
+                      onClick={() => setIsAppsMenuOpen(false)}
+                      className={className}
+                    >
+                      {inner}
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
 
           <div className="relative inline-block">
             <button className="flex items-center gap-1.5 px-3 py-1 rounded border border-[#e61952] bg-white hover:bg-[#fff0f4] text-xs font-medium text-[#e61952] transition-colors">

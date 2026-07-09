@@ -144,7 +144,7 @@ export function DataTable<T>({
       <div className="overflow-auto w-full min-w-0 flex flex-col">
         <Table className="w-full">
           <TableHeader className="sticky top-0 z-10">
-            <TableRow className="border-b bg-muted hover:bg-muted">
+            <TableRow className="border-b border-border/60 bg-[#f8f9fa] dark:bg-muted/40 hover:bg-[#f8f9fa] dark:hover:bg-muted/40">
               {columns.map((c) => {
                 const isSorted = sortConfig?.key === c.key;
                 const dir = isSorted ? sortConfig.dir : null;
@@ -153,7 +153,7 @@ export function DataTable<T>({
                   <TableHead
                     key={c.key}
                     className={cn(
-                      "h-11 whitespace-nowrap bg-muted text-sm font-medium tracking-wide text-muted-foreground uppercase select-none cursor-pointer hover:bg-muted/80 hover:text-foreground transition-colors group/th",
+                      "h-11 whitespace-nowrap bg-[#f8f9fa] dark:bg-muted/40 text-[11px] font-bold tracking-wider text-muted-foreground/90 uppercase select-none cursor-pointer hover:bg-muted/80 hover:text-foreground transition-colors group/th",
                       alignClass(c.align),
                       c.className,
                     )}
@@ -206,8 +206,8 @@ export function DataTable<T>({
                     <TableCell
                       key={c.key}
                       className={cn(
-                        dense ? "py-2" : "py-3",
-                        "text-[15px] text-foreground",
+                        dense ? "py-2 px-4" : "py-3.5 px-4",
+                        "text-xs font-medium text-foreground",
                         alignClass(c.align),
                         c.className,
                       )}
@@ -223,11 +223,11 @@ export function DataTable<T>({
       </div>
 
       {/* Footer / pagination */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-2.5 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
         <span>
-          Showing <span className="text-foreground tabular-nums">{filteredRows.length === 0 ? 0 : start + 1}</span> to{" "}
-          <span className="text-foreground tabular-nums">{Math.min(start + pageSize, filteredRows.length)}</span> of{" "}
-          <span className="text-foreground tabular-nums">{filteredRows.length}</span> entries
+          Showing <span className="text-foreground font-semibold tabular-nums">{filteredRows.length === 0 ? 0 : start + 1}</span> to{" "}
+          <span className="text-foreground font-semibold tabular-nums">{Math.min(start + pageSize, filteredRows.length)}</span> of{" "}
+          <span className="text-foreground font-semibold tabular-nums">{filteredRows.length}</span> entries
         </span>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
@@ -243,10 +243,10 @@ export function DataTable<T>({
                 key={p}
                 onClick={() => setPage(p)}
                 className={cn(
-                  "grid size-7 place-items-center rounded border text-sm",
+                  "grid size-7 place-items-center rounded border text-xs",
                   p === current
-                    ? "border-primary bg-secondary text-primary"
-                    : "bg-background hover:bg-accent",
+                    ? "border-rose-500 bg-rose-50/60 dark:bg-rose-950/20 text-rose-600 dark:text-rose-300 font-bold shadow-2xs"
+                    : "bg-background hover:bg-accent font-medium text-foreground",
                 )}
               >
                 {p}

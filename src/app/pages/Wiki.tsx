@@ -29,6 +29,8 @@ const DASHBOARD_GROUPS = [
   'HCC Insights',
   'ACO Insights',
   'Patient Outcomes',
+  'MIPS Nexus',
+  'Employer Analytics',
   'Administration',
   'Authentication & Support'
 ] as const;
@@ -75,7 +77,7 @@ export default function WikiPage() {
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col min-h-[calc(100vh-4rem)] bg-background font-sans text-foreground">
+    <div className="w-full h-screen flex flex-col overflow-hidden bg-background font-sans text-foreground">
       {/* Top Technical Navigation Header */}
       <div className="px-6 py-4 border-b border-border bg-card flex flex-wrap items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
@@ -120,7 +122,7 @@ export default function WikiPage() {
       </div>
 
       {/* Main Multi-Column Workspace */}
-      <div className="flex flex-1 min-h-[calc(100vh-10rem)] overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left Column: Index Directory & Search (Width 80 or 96 on Desktop) */}
         <div className="w-full md:w-80 lg:w-96 border-r border-border bg-card/50 flex flex-col shrink-0 overflow-hidden">
           <div className="p-4 border-b border-border space-y-3 shrink-0">

@@ -28,7 +28,7 @@ export interface WikiArticle {
   id: string;
   title: string;
   routePath: string;
-  dashboardGroup: 'Analytics' | 'HCC Insights' | 'ACO Insights' | 'Patient Outcomes' | 'Administration' | 'Authentication & Support';
+  dashboardGroup: 'Analytics' | 'HCC Insights' | 'ACO Insights' | 'Patient Outcomes' | 'Administration' | 'Authentication & Support' | 'MIPS Nexus' | 'Employer Analytics';
   targetAudience: ('Care Coordinator' | 'Physician' | 'Medical Coder' | 'Practice Manager' | 'Superadmin' | 'Patient App User')[];
   overview: string;
   features: WikiFeature[];

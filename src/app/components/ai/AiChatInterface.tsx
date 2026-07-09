@@ -18,7 +18,7 @@ export function AiChatInterface() {
     {
       id: '1',
       role: 'ai',
-      content: 'Hello! I am your HealthCompiler AI assistant. I have connected to your active workspace data across Dashboards, Encounters, and HCC Coding. How can I help you today?',
+      content: 'Hello! I am Helix, your assistant. I have connected to your active workspace data across Dashboards, Encounters, and HCC Coding. How can I help you today?',
       timestamp: 'Just now'
     }
   ]);
@@ -69,7 +69,7 @@ export function AiChatInterface() {
                 "flex size-7 shrink-0 select-none items-center justify-center rounded-lg shadow-2xs text-xs font-semibold mt-0.5",
                 msg.role === 'user' 
                   ? 'bg-card text-white dark:bg-secondary dark:text-foreground' 
-                  : 'bg-gradient-to-br from-[#FF6B2B] to-[#ff8c5a] text-white shadow-[#FF6B2B]/20'
+                  : 'bg-gradient-to-br from-[#e32168] to-[#fb5b87] text-white shadow-[#e32168]/20'
               )}>
                 {msg.role === 'user' ? <User className="size-3.5" /> : <Sparkles className="size-3.5" />}
               </div>
@@ -79,7 +79,7 @@ export function AiChatInterface() {
                   className={cn(
                     "px-3.5 py-2.5 text-xs md:text-sm leading-relaxed shadow-2xs transition-all",
                     msg.role === 'user'
-                      ? 'bg-[#FF6B2B] text-white rounded-2xl rounded-tr-xs font-normal'
+                      ? 'bg-[#e32168] text-white rounded-2xl rounded-tr-xs font-normal'
                       : 'bg-card border border-border/80 dark:border-border rounded-2xl rounded-tl-xs text-foreground font-normal'
                   )}
                 >
@@ -96,11 +96,11 @@ export function AiChatInterface() {
 
           {isTyping && (
              <div className="flex gap-3 text-sm flex-row animate-fade-in-up">
-               <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B2B] to-[#ff8c5a] text-white shadow-2xs shadow-[#FF6B2B]/20 mt-0.5">
+               <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-lg bg-gradient-to-br from-[#e32168] to-[#fb5b87] text-white shadow-2xs shadow-[#e32168]/20 mt-0.5">
                  <Sparkles className="size-3.5" />
                </div>
                <div className="flex items-center gap-2 px-4 py-3 bg-card border border-border/80 dark:border-border rounded-2xl rounded-tl-xs shadow-2xs">
-                 <Loader2 className="size-3.5 animate-spin text-[#FF6B2B]" />
+                 <Loader2 className="size-3.5 animate-spin text-[#e32168]" />
                  <span className="text-xs text-muted-foreground font-medium">Analyzing workspace data...</span>
                </div>
              </div>
@@ -121,10 +121,10 @@ export function AiChatInterface() {
         >
           <Input
             type="text"
-            placeholder="Ask HealthCompiler AI..."
+            placeholder="Ask Helix..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="h-10 w-full pl-3.5 pr-11 text-xs md:text-sm rounded-xl border-border dark:border-border bg-muted/40 dark:bg-muted/20 focus-visible:ring-1 focus-visible:ring-[#FF6B2B] focus-visible:border-[#FF6B2B] focus-visible:bg-background transition-all shadow-inner"
+            className="h-10 w-full pl-3.5 pr-11 text-xs md:text-sm rounded-xl border-border dark:border-border bg-muted/40 dark:bg-muted/20 focus-visible:ring-1 focus-visible:ring-[#e32168] focus-visible:border-[#e32168] focus-visible:bg-background transition-all shadow-inner"
           />
           <Button 
             type="submit" 
@@ -133,7 +133,7 @@ export function AiChatInterface() {
             className={cn(
               "absolute right-1 size-8 rounded-lg transition-all cursor-pointer",
               input.trim() 
-                ? "bg-[#FF6B2B] hover:bg-[#e05a1a] text-white shadow-sm shadow-[#FF6B2B]/25 scale-100" 
+                ? "bg-[#e32168] hover:bg-[#ca0055] text-white shadow-sm shadow-[#e32168]/25 scale-100" 
                 : "bg-secondary dark:bg-card text-muted-foreground/70 dark:text-muted-foreground scale-95"
             )}
             title="Submit prompt"

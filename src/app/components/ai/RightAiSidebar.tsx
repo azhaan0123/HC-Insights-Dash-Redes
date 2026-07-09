@@ -25,12 +25,12 @@ export function RightAiSidebar({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/80 dark:border-border bg-gradient-to-b from-slate-50/80 dark:from-muted/20 to-transparent shrink-0">
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#FF6B2B] to-[#ff8c5a] text-white shadow-md shadow-[#FF6B2B]/25">
+            <div className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#e32168] to-[#fb5b87] text-white shadow-md shadow-[#e32168]/25">
               <Sparkles className="size-4.5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm tracking-tight text-foreground">HealthCompiler AI</span>
+                <span className="font-bold text-sm tracking-tight text-foreground">Helix</span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Ready</span>
@@ -44,7 +44,7 @@ export function RightAiSidebar({
             size="icon" 
             onClick={() => setIsOpen(false)} 
             className="size-8 rounded-lg text-muted-foreground/70 hover:text-foreground hover:bg-secondary dark:hover:bg-card cursor-pointer"
-            title="Close AI Assistant"
+            title="Close Helix"
           >
             <X className="size-4" />
           </Button>
@@ -80,9 +80,9 @@ export function RightAiSidebar({
 
           <TabsContent value="chat" className="flex-1 mt-0 overflow-hidden outline-none flex flex-col min-h-0 h-full data-[state=inactive]:hidden">
             {/* Context Banner inside Chat */}
-            <div className="bg-[#FF6B2B]/5 px-5 py-2.5 text-xs text-foreground border-b border-[#FF6B2B]/10 shrink-0 flex items-center gap-2">
-              <Activity className="size-3.5 text-[#FF6B2B] shrink-0" />
-              <span className="truncate"><span className="font-semibold text-[#FF6B2B]">Workspace Sync:</span> Analyzing data across Dashboards, HCC, and ACO.</span>
+            <div className="bg-[#e32168]/5 px-5 py-2.5 text-xs text-foreground border-b border-[#e32168]/10 shrink-0 flex items-center gap-2">
+              <Activity className="size-3.5 text-[#e32168] shrink-0" />
+              <span className="truncate"><span className="font-semibold text-[#e32168]">Workspace Sync:</span> Analyzing data across Dashboards, HCC, and ACO.</span>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
               <AiChatInterface />
