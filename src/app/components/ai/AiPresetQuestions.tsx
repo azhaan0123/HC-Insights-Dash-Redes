@@ -1,30 +1,42 @@
-import React from 'react';
-import { Sparkles, ArrowUpRight } from "lucide-react";
+/**
+ * AiPresetQuestions — Context-aware preset question chips.
+ * Questions change based on current page/route and active agent type.
+ */
 
-const PRESETS = [
-  "Summarize patient risk profile",
-  "Show quarterly utilization gaps",
-  "Generate ACO outcomes summary",
-  "Identify HCC coding drop-offs"
-];
+import React from "react";
+import { MessageSquare, Sparkles } from "lucide-react";
+import { cn } from "../ui/utils";
+import { useAiContext } from "../../contexts/AiContext";
+import { getPresetsForRoute } from "./aiData";
 
-export function AiPresetQuestions({ onSelect }: { onSelect: (question: string) => void }) {
+interface AiPresetQuestionsProps {
+  onSelectQuestion: (question: string) => void;
+  className?: string;
+}
+
+export function AiPresetQuestions({
+  onSelectQuestion,
+  className,
+}: AiPresetQuestionsProps) {
+  const { pageContext } = useAiContext();
+  const presets = getPresetsForRoute(pageContext.route);
+
   return (
-    <div className="flex flex-col gap-2 mb-3">
-      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-muted-foreground/70 flex items-center gap-1.5">
+    <div className={cn("space-y-2", className)}>
+      <div className="flex items-center gap-1.5 px-1">
         <Sparkles className="size-3 text-[#e32168]" />
-        <span>Suggested Prompts</span>
-      </span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          Suggested for {pageContext.pageName}
+        </span>
+      </div>
       <div className="flex flex-wrap gap-1.5">
-        {PRESETS.map((preset) => (
+        {presets.map((q) => (
           <button
-            key={preset}
-            type="button"
-            onClick={() => onSelect(preset)}
-            className="group inline-flex items-center gap-1 text-left rounded-full border border-border dark:border-border bg-background/90 hover:bg-[#e32168]/5 hover:border-[#e32168]/40 px-3 py-1 text-xs font-medium text-muted-foreground dark:text-muted-foreground/50 hover:text-[#e32168] transition-all duration-150 shadow-2xs cursor-pointer active:scale-95"
+            key={q}
+            onClick={() => onSelectQuestion(q)}
+            className="rounded-lg border border-border px-3 py-2 text-[11px] text-foreground/80 hover:border-[#e32168]/40 hover:bg-[#e32168]/5 hover:text-[#e32168] transition-all cursor-pointer leading-tight text-left"
           >
-            <span>{preset}</span>
-            <ArrowUpRight className="size-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#e32168]" />
+            {q}
           </button>
         ))}
       </div>

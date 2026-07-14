@@ -4,6 +4,7 @@ import { ChevronDown, Search, PanelRight } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
 import { RightAiSidebar } from "../ai/RightAiSidebar";
 import { OnboardingTourProvider } from "../../contexts/OnboardingTourContext";
+import { AiContextProvider, useAiContext } from "../../contexts/AiContext";
 import {
   SidebarInset,
   SidebarProvider,
@@ -42,15 +43,10 @@ const APPS_MENU = [
   { label: "Employer Insights", icon: Users, to: "/employer/overview", matchPath: "/employer" },
 ];
 
-function TopBar({
-  isAiSidebarOpen,
-  setIsAiSidebarOpen,
-}: {
-  isAiSidebarOpen: boolean;
-  setIsAiSidebarOpen: (v: boolean) => void;
-}) {
+function TopBar() {
   const { pathname } = useLocation();
   const [isAppsMenuOpen, setIsAppsMenuOpen] = useState(false);
+  const { isOpen: isAiSidebarOpen, setIsOpen: setIsAiSidebarOpen, pendingCount } = useAiContext();
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-card px-4">
@@ -119,12 +115,17 @@ function TopBar({
           id="tour-step-17"
           variant="secondary"
           size="sm"
-          className="h-9 gap-2 text-primary hover:bg-primary/10 pl-3 pr-3.5 transition-[background-color] duration-150"
+          className="h-9 gap-2 text-primary hover:bg-primary/10 pl-3 pr-3.5 transition-[background-color] duration-150 relative"
           onClick={() => setIsAiSidebarOpen(!isAiSidebarOpen)}
-          title="Open Helix"
+          title="Open Helix AI Copilot"
         >
           <Sparkles className="size-4" />
           <span className="font-medium">Helix</span>
+          {pendingCount > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500/20 px-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+              {pendingCount}
+            </span>
+          )}
         </Button>
       </div>
     </header>
@@ -155,24 +156,31 @@ function Footer() {
   );
 }
 
-export function AppShell() {
-  const [isAiSidebarOpen, setIsAiSidebarOpen] = useState(false);
+function AppShellInner() {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset className="bg-muted/40 flex-row p-0 overflow-hidden relative h-svh max-h-svh">
+        <div className="flex-1 flex flex-col min-w-0 h-full min-h-0 overflow-hidden">
+          <TopBar />
+          <main className="flex-1 min-w-0 flex flex-col overflow-y-auto min-h-0">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
+        <RightAiSidebar />
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
 
+export function AppShell() {
   return (
     <OnboardingTourProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="bg-muted/40 flex-row p-0 overflow-hidden relative h-svh max-h-svh">
-          <div className="flex-1 flex flex-col min-w-0 h-full min-h-0 overflow-hidden">
-            <TopBar isAiSidebarOpen={isAiSidebarOpen} setIsAiSidebarOpen={setIsAiSidebarOpen} />
-            <main className="flex-1 min-w-0 flex flex-col overflow-y-auto min-h-0">
-              <Outlet />
-            </main>
-            <Footer />
-          </div>
-          <RightAiSidebar isOpen={isAiSidebarOpen} setIsOpen={setIsAiSidebarOpen} />
-        </SidebarInset>
-      </SidebarProvider>
+      <AiContextProvider>
+        <AppShellInner />
+      </AiContextProvider>
     </OnboardingTourProvider>
   );
 }
+

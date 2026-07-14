@@ -1,0 +1,216 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   AI Sidebar Styles — Dedicated animations and visual effects
+   for the Agentic AI Action Layer.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar entrance animation ──────────────────────────────────────── */
+.ai-sidebar-enter {
+  animation: ai-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ai-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Badge pulse (notification count) ────────────────────────────────── */
+.ai-badge-pulse {
+  animation: ai-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes ai-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(227, 33, 104, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(227, 33, 104, 0);
+  }
+}
+
+/* ── Low confidence badge shake ──────────────────────────────────────── */
+.ai-badge-low {
+  animation: ai-subtle-shake 3s ease-in-out infinite;
+}
+
+@keyframes ai-subtle-shake {
+  0%, 90%, 100% {
+    transform: translateX(0);
+  }
+  92% {
+    transform: translateX(-1px);
+  }
+  94% {
+    transform: translateX(1px);
+  }
+  96% {
+    transform: translateX(-1px);
+  }
+  98% {
+    transform: translateX(0.5px);
+  }
+}
+
+/* ── Progress step pulse ─────────────────────────────────────────────── */
+.ai-progress-pulse {
+  animation: ai-progress-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes ai-progress-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(227, 33, 104, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(227, 33, 104, 0);
+  }
+}
+
+/* ── Graduation prompt glow ──────────────────────────────────────────── */
+.ai-graduation-glow {
+  animation: ai-graduation 3s ease-in-out infinite;
+}
+
+@keyframes ai-graduation {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(227, 33, 104, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px 0 rgba(227, 33, 104, 0.08);
+  }
+}
+
+/* ── Undo countdown ring ─────────────────────────────────────────────── */
+.ai-undo-ring {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-undo-ring::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: currentColor;
+  opacity: 0.3;
+  animation: ai-undo-countdown 30s linear forwards;
+}
+
+@keyframes ai-undo-countdown {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* ── Typing dots bounce stagger ──────────────────────────────────────── */
+.ai-typing-dot {
+  animation: ai-bounce 1.2s ease-in-out infinite;
+}
+
+.ai-typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ai-typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes ai-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ── Helix button glow in top bar ────────────────────────────────────── */
+.ai-helix-glow {
+  position: relative;
+}
+
+.ai-helix-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    rgba(227, 33, 104, 0.3),
+    rgba(123, 58, 237, 0.3),
+    rgba(227, 33, 104, 0.3)
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+
+.ai-helix-glow:hover::before {
+  opacity: 1;
+  animation: ai-conic-spin 3s linear infinite;
+}
+
+@keyframes ai-conic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Insight card hover lift ─────────────────────────────────────────── */
+.ai-insight-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ai-insight-lift:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px -2px rgba(0, 0, 0, 0.08),
+    0 2px 4px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Fade-in-up (matches existing Tailwind class) ────────────────────── */
+@keyframes ai-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Scroll area styling ─────────────────────────────────────────────── */
+.ai-sidebar-enter ::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ai-sidebar-enter ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-sidebar-enter ::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.ai-sidebar-enter ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dark .ai-sidebar-enter ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .ai-sidebar-enter ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
