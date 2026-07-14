@@ -23,17 +23,17 @@ const barColors = [
 ];
 
 const PIE_COLORS = [
-  "#FF6B2B", // primary orange — Covered Visit
-  "#22a952", // green — Covered Procedures
-  "#f5a623", // orange — Low Cost Labs
-  "#f97316", // secondary orange — Free Rx
-  "#d32f2f", // red — Medication Management
-  "#f97316", // tangerine — Quality Measures
-  "#7c3aed", // violet — Messaging
-  "#0ea5e9", // sky blue — Spruce Conversation
-  "#475569", // slate — Encounter
-  "#4ade80", // light green — Covered Labs
-  "#2563eb", // blue — Low Cost Procedures
+  "#1976d2", // Bright Blue
+  "#689f38", // Grass Green
+  "#00897b", // Deep Teal
+  "#ffa000", // Amber/Orange
+  "#d81b60", // Dark Pink/Magenta
+  "#f57c00", // Orange
+  "#673ab7", // Purple
+  "#00bcd4", // Cyan
+  "#607d8b", // Slate
+  "#8bc34a", // Light Green
+  "#03a9f4", // Sky Blue
 ];
 
 const rawPieData = [
@@ -76,6 +76,64 @@ const renderActiveShape = (props: any) => {
         fill={fill}
         style={{ transition: "all 200ms cubic-bezier(0.22, 1, 0.36, 1)" }}
       />
+    </g>
+  );
+};
+
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = (props: any) => {
+  const {
+    cx,
+    cy,
+    midAngle,
+    outerRadius,
+    payload,
+    fill,
+    color,
+  } = props;
+
+  const actualValue = payload.value;
+  const formattedLabel = `$${actualValue.toLocaleString()}`;
+  const sliceColor = fill || color || payload.color || "var(--primary)";
+
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+
+  // Starting point of connector line, slightly offset from the pie slice edge
+  const sx = cx + (outerRadius + 5) * cos;
+  const sy = cy + (outerRadius + 5) * sin;
+
+  // Elbow point of the line
+  const mx = cx + (outerRadius + 18) * cos;
+  const my = cy + (outerRadius + 18) * sin;
+
+  // End horizontal line extension
+  const textAnchor = cos >= 0 ? "start" : "end";
+  const ex = mx + (cos >= 0 ? 1 : -1) * 12;
+  const ey = my;
+
+  return (
+    <g>
+      {/* Line path */}
+      <path
+        d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+        stroke={sliceColor}
+        strokeWidth={1.2}
+        fill="none"
+      />
+      {/* Endpoint dot at the slice edge */}
+      <circle cx={sx} cy={sy} r={2} fill={sliceColor} />
+      {/* Label Text */}
+      <text
+        x={ex + (cos >= 0 ? 1 : -1) * 4}
+        y={ey}
+        dy={3.5}
+        textAnchor={textAnchor}
+        fill={sliceColor}
+        className="text-[10px] font-semibold tabular-nums"
+      >
+        {formattedLabel}
+      </text>
     </g>
   );
 };
@@ -292,7 +350,7 @@ export default function CostSavings() {
           </div>
 
           {/* Pie Chart */}
-          <div className="flex-1 w-full h-[300px] flex items-center justify-center">
+          <div className="flex-1 w-full h-[380px] flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -302,6 +360,7 @@ export default function CostSavings() {
                   innerRadius={0}
                   outerRadius={120}
                   dataKey="displayValue"
+                  label={renderCustomizedLabel}
                   stroke="none"
                   activeIndex={activeIndex}
                   activeShape={renderActiveShape}

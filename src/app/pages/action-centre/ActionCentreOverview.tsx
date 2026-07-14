@@ -696,7 +696,7 @@ export default function ActionCentreOverview() {
                     <Button
                       size="sm"
                       className="h-8 font-semibold w-full shadow"
-                      onClick={() => handleTriggerAction(selectedPatient)}
+                onClick={() => handleTriggerAction(selectedPatient)}
                     >
                       <Send className="size-3.5 mr-2" /> Execute Action & Log Outreach
                     </Button>
@@ -705,37 +705,41 @@ export default function ActionCentreOverview() {
 
                 {/* Tabs for Drawer Details */}
                 <Tabs defaultValue="history" className="w-full">
-                  <TabsList className="grid grid-cols-3 w-full bg-secondary dark:bg-card">
-                    <TabsTrigger value="history" className="text-xs">
-                      Engagement History
+                  <TabsList className="inline-flex w-full bg-muted/40 p-1 rounded-lg border border-border/60 gap-1 mb-4">
+                    <TabsTrigger
+                      value="history"
+                      className="flex-1 text-xs rounded-md py-1.5 font-semibold transition-all cursor-pointer text-muted-foreground hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-2xs"
+                    >
+                      Outreach History
                     </TabsTrigger>
-                    <TabsTrigger value="encounters" className="text-xs">
+                    <TabsTrigger
+                      value="encounters"
+                      className="flex-1 text-xs rounded-md py-1.5 font-semibold transition-all cursor-pointer text-muted-foreground hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-2xs"
+                    >
                       Recent Visits ({selectedPatient.recentEncounters.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="claims" className="text-xs">
-                      External Claims ({selectedPatient.recentClaims.length})
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="history" className="pt-4 space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <TabsContent value="history" className="pt-1 space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
                       Past Outreach & Touchpoints
                     </h4>
                     {selectedPatient.engagementHistory.length === 0 ? (
                       <p className="text-xs text-muted-foreground italic">No prior touchpoints logged.</p>
                     ) : (
-                      <div className="space-y-3 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+                      <div className="relative border-l-2 border-border pl-6 ml-3.5 space-y-5">
                         {selectedPatient.engagementHistory.map((ev) => (
-                          <div key={ev.id} className="flex items-start gap-3 relative pl-1">
-                            <div className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 z-10 text-[10px] font-bold">
-                              {ev.type[0]}
-                            </div>
-                            <div className="flex-1 bg-muted/70 dark:bg-card/50 p-3 rounded-xl border border-transparent shadow-sm text-xs space-y-1">
-                              <div className="flex items-center justify-between font-semibold">
+                          <div key={ev.id} className="relative">
+                            {/* Circle dot on the left line */}
+                            <span className="absolute -left-[33px] top-1.5 flex size-4 items-center justify-center rounded-full bg-background border-2 border-primary">
+                              <span className="size-1.5 rounded-full bg-primary" />
+                            </span>
+                            <div className="bg-muted/40 p-3 rounded-xl border border-border/50 text-xs space-y-1">
+                              <div className="flex items-center justify-between font-semibold text-foreground">
                                 <span>{ev.type} Outreach</span>
                                 <span className="text-muted-foreground font-normal">{ev.date}</span>
                               </div>
-                              <p className="text-foreground/90 dark:text-muted-foreground/50">{ev.description}</p>
+                              <p className="text-muted-foreground">{ev.description}</p>
                               {ev.outcome && (
                                 <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium pt-1">
                                   Outcome: {ev.outcome}
@@ -748,8 +752,8 @@ export default function ActionCentreOverview() {
                     )}
                   </TabsContent>
 
-                  <TabsContent value="encounters" className="pt-4 space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <TabsContent value="encounters" className="pt-1 space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
                       Completed DPC Appointments
                     </h4>
                     {selectedPatient.recentEncounters.length === 0 ? (
@@ -773,26 +777,6 @@ export default function ActionCentreOverview() {
                         </div>
                       ))
                     )}
-                  </TabsContent>
-
-                  <TabsContent value="claims" className="pt-4 space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      External Utilization & Leakage Claims
-                    </h4>
-                    {selectedPatient.recentClaims.map((cl) => (
-                      <div key={cl.id} className="p-3 rounded-lg border border-purple-500/30 bg-purple-500/[0.04] text-xs space-y-1.5">
-                        <div className="flex items-center justify-between font-bold text-purple-900 dark:text-purple-300">
-                          <span className="flex items-center gap-1.5">
-                            <ShieldAlert className="size-3.5 text-purple-600" /> {cl.provider}
-                          </span>
-                          <span className="font-mono text-purple-700 dark:text-purple-400 font-bold">{cl.amount}</span>
-                        </div>
-                        <div className="text-foreground/90 dark:text-muted-foreground/50 font-medium">
-                          Diagnosis: {cl.diagnosis}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">Claim Date: {cl.date}</div>
-                      </div>
-                    ))}
                   </TabsContent>
                 </Tabs>
               </div>
