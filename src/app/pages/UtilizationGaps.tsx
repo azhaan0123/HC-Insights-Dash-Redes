@@ -143,7 +143,7 @@ export default function UtilizationGaps() {
   const isLoading = usePageLoading();
   const [activeCohort, setActiveCohort] = useState<CohortType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("highest-risk");
+  const [sortBy, setSortBy] = useState<string>("longest-inactive");
   const [selectedPatient, setSelectedPatient] = useState<ActionCentrePatientRow | null>(null);
   const [completedPatientIds, setCompletedPatientIds] = useState<Set<string>>(new Set());
   const [selectedMetricOverlay, setSelectedMetricOverlay] = useState<any | null>(null);
@@ -151,7 +151,7 @@ export default function UtilizationGaps() {
 
   // Filter patients
   const filteredPatients = useMemo(() => {
-    let list = [...ACTION_CENTRE_PATIENTS];
+    let list = ACTION_CENTRE_PATIENTS.filter((p) => p.cohort !== "external-leakage");
 
     if (activeCohort !== "all") {
       list = list.filter((p) => p.cohort === activeCohort);
@@ -171,13 +171,6 @@ export default function UtilizationGaps() {
 
     // Sort
     list.sort((a, b) => {
-      if (sortBy === "highest-risk") {
-        const pOrder: Record<string, number> = { High: 3, Medium: 2, Low: 1 };
-        if (pOrder[b.priority] !== pOrder[a.priority]) {
-          return pOrder[b.priority] - pOrder[a.priority];
-        }
-        return (b.lastVisitDaysAgo || 999) - (a.lastVisitDaysAgo || 999);
-      }
       if (sortBy === "longest-inactive") {
         return (b.lastVisitDaysAgo || 999) - (a.lastVisitDaysAgo || 999);
       }
@@ -205,40 +198,16 @@ export default function UtilizationGaps() {
     setCompletedPatientIds((prev) => new Set(prev).add(patient.id));
   };
 
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case "High":
-        return (
-          <Badge className="bg-red-500/15 text-red-600 dark:bg-red-500/20 dark:text-red-400 border border-red-500/30 font-semibold px-2 py-0.5 text-[11px]">
-            High
-          </Badge>
-        );
-      case "Medium":
-        return (
-          <Badge className="bg-amber-500/15 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/30 font-medium px-2 py-0.5 text-[11px]">
-            Medium
-          </Badge>
-        );
-      default:
-        return (
-          <Badge className="bg-sky-500/15 text-sky-700 dark:bg-sky-500/20 dark:text-sky-400 border border-sky-500/30 font-medium px-2 py-0.5 text-[11px]">
-            Low
-          </Badge>
-        );
-    }
-  };
-
   if (isLoading) {
     return (
       <Page title="Utilization Gaps">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-6">
-          <KpiCardSkeleton />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
           <KpiCardSkeleton />
           <KpiCardSkeleton />
           <KpiCardSkeleton />
           <KpiCardSkeleton />
         </div>
-        <TableSkeleton rows={8} cols={6} />
+        <TableSkeleton rows={8} cols={5} />
       </Page>
     );
   }
@@ -274,7 +243,7 @@ export default function UtilizationGaps() {
                 <Info className="size-3.5 text-muted-foreground hover:text-primary transition-colors" />
               </TooltipTrigger>
               <TooltipContent className="max-w-xs text-xs">
-                These cards synthesize patient engagement drop-offs, onboarding delays, and out-of-network claims leakage into actionable daily work queues.
+                These cards synthesize patient engagement drop-offs, onboarding delays, and low response into actionable daily work queues.
               </TooltipContent>
             </Tooltip>
           </div>
@@ -282,9 +251,10 @@ export default function UtilizationGaps() {
             Click any card below to filter the patient work queue
           </span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {COHORT_SUMMARIES.map((card) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {COHORT_SUMMARIES.filter((c) => c.id !== "external-leakage").map((card) => {
             const isSelected = activeCohort === card.id;
+            const displayCount = card.id === "all" ? 98 : card.count;
             return (
               <Card
                 key={card.id}
@@ -307,7 +277,7 @@ export default function UtilizationGaps() {
 
                     <div className="flex items-baseline justify-between mt-2">
                       <span className="text-2xl font-bold tracking-tight tabular-nums text-foreground">
-                        {card.count}
+                        {displayCount}
                       </span>
                       <span
                         className={cn(
@@ -330,7 +300,7 @@ export default function UtilizationGaps() {
 
                   <div className="mt-4 flex items-center justify-between pt-2.5 border-t border-border/40 text-[11px]">
                     <span className="text-muted-foreground truncate max-w-[110px]" title={card.description}>
-                      {card.id === "all" ? "All Gaps" : card.id === "external-leakage" ? "Claims Gap" : "Engagement"}
+                      {card.id === "all" ? "All Gaps" : "Engagement"}
                     </span>
                     <button
                       type="button"
@@ -384,7 +354,6 @@ export default function UtilizationGaps() {
                 <SelectValue placeholder="Sort queue" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="highest-risk">Highest Priority</SelectItem>
                 <SelectItem value="longest-inactive">Longest Inactive</SelectItem>
                 <SelectItem value="last-visit">Recent Visit First</SelectItem>
                 <SelectItem value="newest">Newest Member</SelectItem>
@@ -397,11 +366,10 @@ export default function UtilizationGaps() {
         <div className="px-4 py-3 border-b border-border/50 bg-background/50 overflow-x-auto">
           <div className="inline-flex flex-wrap items-center gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
             {[
-              { id: "all" as const, label: "All Attention", count: 118 },
+              { id: "all" as const, label: "All Attention", count: 98 },
               { id: "new-activation" as const, label: "New Activation", count: 28 },
               { id: "engagement-gap" as const, label: "Engagement Gap", count: 54 },
               { id: "low-response" as const, label: "Low Response", count: 16 },
-              { id: "external-leakage" as const, label: "External Leakage", count: 20 },
             ].map((tab) => {
               const isSelected = activeCohort === tab.id;
               return (
@@ -443,7 +411,6 @@ export default function UtilizationGaps() {
             <thead>
               <tr className="border-b border-border/60 bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                 <th className="py-3 px-5">Patient Member</th>
-                <th className="py-3 px-4">Priority</th>
                 <th className="py-3 px-4">Diagnosis</th>
                 <th className="py-3 px-4">Gap Reason</th>
                 <th className="py-3 px-4">Last Encounter</th>
@@ -453,7 +420,7 @@ export default function UtilizationGaps() {
             <tbody className="divide-y divide-border/40 bg-background">
               {filteredPatients.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-muted-foreground">
+                  <td colSpan={5} className="text-center py-12 text-muted-foreground">
                     <CheckCircle2 className="size-8 mx-auto text-emerald-500 mb-2 opacity-80" />
                     <p className="font-semibold text-foreground/90 dark:text-muted-foreground/50">
                       No patients pending in this queue!
@@ -495,11 +462,6 @@ export default function UtilizationGaps() {
                             </div>
                           </div>
                         </div>
-                      </td>
-
-                      {/* Priority */}
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        {getPriorityBadge(patient.priority)}
                       </td>
 
                       {/* Diagnosis & Spruce Status (Clean inline pill) */}
@@ -580,7 +542,6 @@ export default function UtilizationGaps() {
                       <SheetTitle className="text-xl font-bold">
                         {selectedPatient.name}
                       </SheetTitle>
-                      {getPriorityBadge(selectedPatient.priority)}
                     </div>
                     <SheetDescription className="text-xs flex items-center gap-2 text-muted-foreground">
                       <span>ID: {selectedPatient.id}</span>

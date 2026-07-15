@@ -20,6 +20,13 @@ import {
   MessageSquareOff,
   ShieldAlert,
   Activity,
+  ArrowRight,
+  ArrowLeft,
+  Send,
+  Mail,
+  FileText,
+  Sparkles,
+  Check,
 } from "lucide-react";
 import {
   AreaChart,
@@ -106,7 +113,7 @@ export function ClassicUtilizationGaps() {
   // Cohort & Filter States
   const [activeCohort, setActiveCohort] = useState<CohortType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("highest-risk");
+  const [sortBy, setSortBy] = useState<string>("longest-inactive");
 
   // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
@@ -118,13 +125,19 @@ export function ClassicUtilizationGaps() {
   const [activePatientDrawer, setActivePatientDrawer] = useState<ActionCentrePatientRow | null>(null);
   const [activeDrawerTab, setActiveDrawerTab] = useState<"overview" | "claims" | "encounters">("overview");
 
+  // 2-Step Action Workflow State for Patient Detail Sidebar
+  const [actionStep, setActionStep] = useState<"overview" | "step1" | "step2" | "success">("overview");
+  const [selectedChannel, setSelectedChannel] = useState<"sms" | "call" | "email" | "ehr">("sms");
+  const [actionNote, setActionNote] = useState<string>("");
+  const [assignedStaff, setAssignedStaff] = useState<string>("Sarah Jenkins, RN (Care Coordinator)");
+
   // Metric Overlay Modal State
   const [selectedMetricOverlay, setSelectedMetricOverlay] = useState<any | null>(null);
   const [metricGraphView, setMetricGraphView] = useState<"WoW" | "MoM">("WoW");
 
   // Filter and sort patients
   const filteredPatients = useMemo(() => {
-    let list = [...ACTION_CENTRE_PATIENTS];
+    let list = ACTION_CENTRE_PATIENTS.filter((p) => p.cohort !== "external-leakage");
 
     if (activeCohort !== "all") {
       list = list.filter((p) => p.cohort === activeCohort);
@@ -145,13 +158,6 @@ export function ClassicUtilizationGaps() {
 
     // Sort
     list.sort((a, b) => {
-      if (sortBy === "highest-risk") {
-        const pOrder: Record<string, number> = { High: 3, Medium: 2, Low: 1 };
-        if (pOrder[b.priority] !== pOrder[a.priority]) {
-          return pOrder[b.priority] - pOrder[a.priority];
-        }
-        return (b.lastVisitDaysAgo || 999) - (a.lastVisitDaysAgo || 999);
-      }
       if (sortBy === "longest-inactive") {
         return (b.lastVisitDaysAgo || 999) - (a.lastVisitDaysAgo || 999);
       }
@@ -201,10 +207,7 @@ export function ClassicUtilizationGaps() {
   };
 
   const handleSpruceMessage = (patient: ActionCentrePatientRow) => {
-    toast.success(`Spruce Secure Message initiated for ${patient.name}`, {
-      description: "Opening direct communication channel...",
-    });
-    setCompletedPatientIds((prev) => new Set(prev).add(patient.id));
+    openDrawerWithStep(patient, "step1", "sms");
   };
 
   const handleActionExecution = (patient: ActionCentrePatientRow, actionType: string) => {
@@ -213,6 +216,52 @@ export function ClassicUtilizationGaps() {
     });
     setCompletedPatientIds((prev) => new Set(prev).add(patient.id));
     setActivePatientDrawer(null);
+  };
+
+  const openDrawerWithStep = (
+    patient: ActionCentrePatientRow,
+    step: "overview" | "step1" | "step2" | "success" = "overview",
+    channel: "sms" | "call" | "email" | "ehr" = "sms"
+  ) => {
+    setActivePatientDrawer(patient);
+    setActiveDrawerTab("overview");
+    setActionStep(step);
+    setSelectedChannel(channel);
+    const firstName = patient.name.split(" ")[0] || patient.name;
+    if (channel === "sms") {
+      setActionNote(`Hi ${firstName}, regarding your recent ${patient.condition} care gap (${patient.reason}). Your Spruce DPC member benefits include $0 copay visits. Tap here or reply to schedule your check-in with ${patient.physician}.`);
+    } else if (channel === "call") {
+      setActionNote(`Phone Outreach for ${patient.name}: Review ${patient.condition} gap status and explain DPC $0 copay visits & lab work with ${patient.physician}.`);
+    } else if (channel === "email") {
+      setActionNote(`Subject: Care Coordination & Spruce DPC Check-in\n\nDear ${patient.name},\nWe noticed an open care gap regarding your ${patient.condition} care plan...`);
+    } else {
+      setActionNote(`EHR Care Gap Alert: Front Desk and Care Team notification for ${patient.name} (${patient.condition}) regarding ${patient.reason}.`);
+    }
+  };
+
+  const handleConfirmTwoStepAction = () => {
+    if (!activePatientDrawer) return;
+
+    const newTouchpoint = {
+      id: `ev-${Date.now()}`,
+      date: `Today, ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+      type: selectedChannel === "sms" ? "Spruce SMS" : selectedChannel === "call" ? "Phone Call" : selectedChannel === "email" ? "Email" : "EHR Task",
+      description: `Executed 2-Step Action: ${activePatientDrawer.suggestedAction} (${selectedChannel.toUpperCase()}) — Note: ${actionNote.slice(0, 100)}...`,
+      outcome: "Initiated & Queued in EHR",
+    };
+
+    const updatedPatient = {
+      ...activePatientDrawer,
+      engagementHistory: [newTouchpoint, ...activePatientDrawer.engagementHistory],
+    };
+
+    setActivePatientDrawer(updatedPatient);
+    setCompletedPatientIds((prev) => new Set(prev).add(activePatientDrawer.id));
+    setActionStep("success");
+
+    toast.success(`Outreach Action Executed for ${activePatientDrawer.name}`, {
+      description: `Logged via ${selectedChannel.toUpperCase()} (${assignedStaff}). Touchpoint recorded in EHR.`,
+    });
   };
 
   // Clean Header Actions matching legacy action centre simplicity
@@ -249,9 +298,10 @@ export function ClassicUtilizationGaps() {
       headerActions={headerActionsNode}
     >
       {/* 1. OPERATIONAL SUMMARY CARDS (Clean Legacy Design exactly like Action Centre Classic) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
-        {COHORT_SUMMARIES.map((card) => {
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        {COHORT_SUMMARIES.filter((c) => c.id !== "external-leakage").map((card) => {
           const isSelected = activeCohort === card.id;
+          const displayCount = card.id === "all" ? 98 : card.count;
           return (
             <div
               key={card.id}
@@ -275,7 +325,7 @@ export function ClassicUtilizationGaps() {
 
                 <div className="flex items-baseline gap-2 mt-2.5">
                   <span className="text-2xl font-extrabold tracking-tight tabular-nums text-[#212529]">
-                    {card.count}
+                    {displayCount}
                   </span>
                   <span
                     className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold ${
@@ -290,7 +340,7 @@ export function ClassicUtilizationGaps() {
 
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-[#dee2e6] text-[11px]">
                 <span className="text-[#6c757d] truncate max-w-[90px]" title={card.description}>
-                  {card.id === "all" ? "All Attention" : card.id === "external-leakage" ? "Claims Gap" : "Engagement"}
+                  {card.id === "all" ? "All Attention" : "Engagement"}
                 </span>
                 <button
                   type="button"
@@ -319,7 +369,6 @@ export function ClassicUtilizationGaps() {
             { id: "new-activation" as const, label: "New Activation" },
             { id: "engagement-gap" as const, label: "Engagement Gap" },
             { id: "low-response" as const, label: "Low Response" },
-            { id: "external-leakage" as const, label: "External Care Leakage" },
           ].map((tab) => {
             const isSelected = activeCohort === tab.id;
             return (
@@ -364,7 +413,6 @@ export function ClassicUtilizationGaps() {
             }}
             className="px-2.5 py-1 rounded border border-[#dee2e6] bg-white text-xs font-semibold text-[#212529] focus:outline-none focus:border-[#e61952]"
           >
-            <option value="highest-risk">Sort: Highest Priority</option>
             <option value="longest-inactive">Sort: Longest Inactive</option>
             <option value="last-visit">Sort: Recent Visit First</option>
             <option value="newest">Sort: Newest Member</option>
@@ -381,7 +429,6 @@ export function ClassicUtilizationGaps() {
                 <th className="py-3 px-3.5 w-14 text-center">Message</th>
                 <th className="py-3 px-3">Patient ID</th>
                 <th className="py-3 px-3">Patient Member</th>
-                <th className="py-3 px-3 text-center">Priority</th>
                 <th className="py-3 px-3">Age / Gender</th>
                 <th className="py-3 px-3">Phone Number</th>
                 <th className="py-3 px-3">Diagnosis & Gap Reason</th>
@@ -394,7 +441,7 @@ export function ClassicUtilizationGaps() {
             <tbody className="divide-y divide-[#dee2e6] text-xs text-[#212529]">
               {currentRows.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="py-8 text-center text-[#6c757d]">
+                  <td colSpan={10} className="py-8 text-center text-[#6c757d]">
                     No utilization gap records found in this queue.
                   </td>
                 </tr>
@@ -420,10 +467,7 @@ export function ClassicUtilizationGaps() {
                       {/* Patient ID (Blue Link) */}
                       <td className="py-3 px-3 font-medium">
                         <span
-                          onClick={() => {
-                            setActivePatientDrawer(row);
-                            setActiveDrawerTab("overview");
-                          }}
+                          onClick={() => openDrawerWithStep(row, "overview")}
                           className="text-[#007bff] hover:underline cursor-pointer flex items-center gap-1 font-mono"
                         >
                           <span>{row.id}</span>
@@ -445,21 +489,6 @@ export function ClassicUtilizationGaps() {
                             </span>
                           )}
                         </div>
-                      </td>
-
-                      {/* Priority Badge */}
-                      <td className="py-3 px-3 text-center">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                            row.priority === "High"
-                              ? "bg-[#f8d7da] text-[#721c24] border-[#f5c6cb]"
-                              : row.priority === "Medium"
-                              ? "bg-[#fff3cd] text-[#856404] border-[#ffeeba]"
-                              : "bg-[#d1ecf1] text-[#0c5460] border-[#bee5eb]"
-                          }`}
-                        >
-                          {row.priority}
-                        </span>
                       </td>
 
                       {/* Age / Gender */}
@@ -506,17 +535,18 @@ export function ClassicUtilizationGaps() {
                         {row.employer}
                       </td>
 
-                      {/* Suggested Action Button */}
+                      {/* Suggested Action Button -> Opens 2-Step Sidebar directly into Step 1 */}
                       <td className="py-3 px-3 text-right">
                         <button
-                          onClick={() => handleActionExecution(row, row.suggestedAction)}
+                          onClick={() => openDrawerWithStep(row, "step1")}
                           className={`px-2.5 py-1 rounded text-xs font-semibold transition-all shadow-2xs ${
                             isDone
                               ? "bg-[#d4edda] text-[#155724] border border-[#c3e6cb]"
-                              : "bg-[#fff0f4] text-[#e61952] border border-[#ffccd8] hover:bg-[#e61952] hover:text-white"
+                              : "bg-[#fff0f4] text-[#e61952] border border-[#ffccd8] hover:bg-[#e61952] hover:text-white flex items-center gap-1 ml-auto"
                           }`}
                         >
-                          {isDone ? "Completed ✓" : row.suggestedAction}
+                          <span>{isDone ? "Completed ✓" : row.suggestedAction}</span>
+                          {!isDone && <ArrowRight className="size-3" />}
                         </button>
                       </td>
                     </tr>
@@ -742,22 +772,11 @@ export function ClassicUtilizationGaps() {
             <div>
               <div className="bg-[#f8f9fa] border-b border-[#dee2e6] px-6 py-5 flex items-start justify-between">
                 <div className="space-y-1.5">
-                  {/* Row 1: patient name + priority badge */}
+                  {/* Row 1: patient name */}
                   <div className="flex items-center gap-2.5">
                     <h3 className="text-xl font-bold text-[#212529] leading-tight">
                       {activePatientDrawer.name}
                     </h3>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                        activePatientDrawer.priority === "High"
-                          ? "bg-[#f8d7da] text-[#721c24] border-[#f5c6cb]"
-                          : activePatientDrawer.priority === "Medium"
-                          ? "bg-[#fff3cd] text-[#856404] border-[#ffeeba]"
-                          : "bg-[#d1ecf1] text-[#0c5460] border-[#bee5eb]"
-                      }`}
-                    >
-                      {activePatientDrawer.priority} Priority
-                    </span>
                   </div>
                   {/* Row 2: ID */}
                   <span className="text-[11px] text-[#6c757d] font-mono">
@@ -894,17 +913,242 @@ export function ClassicUtilizationGaps() {
                       </div>
                     </div>
 
-                    {/* Recommended Outreach Action */}
+                    {/* Recommended Outreach Action & 2-Step Execution Workflow */}
                     <div>
-                      <h4 className="font-bold text-[#343a40] uppercase tracking-wide mb-2.5 text-[11px] border-l-2 border-[#6c757d] pl-2">
-                        Recommended Outreach Action
+                      <h4 className="font-bold text-[#343a40] uppercase tracking-wide mb-2.5 text-[11px] border-l-2 border-[#6c757d] pl-2 flex items-center justify-between">
+                        <span>Recommended Outreach Action</span>
+                        {actionStep !== "overview" && (
+                          <span className="text-[10px] bg-[#e61952] text-white px-2 py-0.5 rounded font-extrabold uppercase tracking-normal">
+                            {actionStep === "step1" ? "Step 1 of 2: Configure" : actionStep === "step2" ? "Step 2 of 2: Confirm" : "Completed ✓"}
+                          </span>
+                        )}
                       </h4>
-                      <div className="bg-[#f8f9fa] border border-[#dee2e6] text-[#343a40] p-4 rounded-md flex items-center justify-between">
-                        <span className="text-[13px] font-bold">{activePatientDrawer.suggestedAction}</span>
-                        <span className="text-[10px] font-bold uppercase px-2.5 py-1 bg-white rounded border border-[#dee2e6] text-[#495057] tracking-wide">
-                          {activePatientDrawer.suggestedActionType}
-                        </span>
-                      </div>
+
+                      {/* STATE 1: OVERVIEW */}
+                      {actionStep === "overview" && (
+                        <div className="bg-[#f8f9fa] border border-[#dee2e6] text-[#343a40] p-4 rounded-md space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[13px] font-bold text-[#212529]">{activePatientDrawer.suggestedAction}</span>
+                            <span className="text-[10px] font-bold uppercase px-2.5 py-1 bg-white rounded border border-[#dee2e6] text-[#495057] tracking-wide">
+                              {activePatientDrawer.suggestedActionType}
+                            </span>
+                          </div>
+                          <div className="pt-2 border-t border-[#dee2e6] flex items-center justify-between gap-3">
+                            <span className="text-xs text-[#6c757d] font-medium">
+                              Initiate secure two-step outreach for this care gap.
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => openDrawerWithStep(activePatientDrawer, "step1", "sms")}
+                              className="px-3.5 py-1.5 bg-[#e61952] hover:bg-[#c81345] text-white font-bold text-xs rounded shadow-2xs flex items-center gap-1.5 transition-all shrink-0 cursor-pointer"
+                            >
+                              <span>Initiate Action (Step 1 of 2)</span>
+                              <ArrowRight className="size-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* STATE 2: STEP 1 (CONFIGURE & REVIEW) */}
+                      {actionStep === "step1" && (
+                        <div className="bg-white border-2 border-[#007bff] rounded-md p-4 space-y-4 shadow-sm animate-in fade-in duration-200">
+                          <div className="flex items-center justify-between border-b border-[#dee2e6] pb-2.5">
+                            <div className="flex items-center gap-2 text-[#007bff] font-bold text-xs">
+                              <Sparkles className="size-4" />
+                              <span>Step 1: Select Channel & Customize Message</span>
+                            </div>
+                            <span className="text-[10px] bg-[#e3f2fd] text-[#0d47a1] font-bold px-2 py-0.5 rounded">
+                              Target: {activePatientDrawer.suggestedAction}
+                            </span>
+                          </div>
+
+                          {/* Channel Selector Pills */}
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-2">
+                              Outreach Channel
+                            </label>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {[
+                                { id: "sms" as const, label: "Spruce SMS ($0 Copay)", icon: MessageSquare },
+                                { id: "call" as const, label: "Direct Phone Call", icon: Phone },
+                                { id: "email" as const, label: "Secure Email", icon: Mail },
+                                { id: "ehr" as const, label: "EHR Task Queue", icon: FileText },
+                              ].map((ch) => {
+                                const Icon = ch.icon;
+                                const isSelected = selectedChannel === ch.id;
+                                return (
+                                  <button
+                                    key={ch.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedChannel(ch.id);
+                                      const firstName = activePatientDrawer.name.split(" ")[0] || activePatientDrawer.name;
+                                      if (ch.id === "sms") {
+                                        setActionNote(`Hi ${firstName}, regarding your recent ${activePatientDrawer.condition} care gap (${activePatientDrawer.reason}). Your Spruce DPC member benefits include $0 copay visits. Tap here or reply to schedule your check-in with ${activePatientDrawer.physician}.`);
+                                      } else if (ch.id === "call") {
+                                        setActionNote(`Phone Outreach for ${activePatientDrawer.name}: Review ${activePatientDrawer.condition} gap status and explain DPC $0 copay visits & lab work with ${activePatientDrawer.physician}.`);
+                                      } else if (ch.id === "email") {
+                                        setActionNote(`Subject: Care Coordination & Spruce DPC Check-in\n\nDear ${activePatientDrawer.name},\nWe noticed an open care gap regarding your ${activePatientDrawer.condition} care plan...`);
+                                      } else {
+                                        setActionNote(`EHR Care Gap Alert: Front Desk and Care Team notification for ${activePatientDrawer.name} (${activePatientDrawer.condition}) regarding ${activePatientDrawer.reason}.`);
+                                      }
+                                    }}
+                                    className={`p-2 rounded text-left border flex flex-col gap-1 transition-all text-xs font-semibold ${
+                                      isSelected
+                                        ? "border-[#007bff] bg-[#e3f2fd]/60 text-[#0d47a1] shadow-2xs"
+                                        : "border-[#dee2e6] bg-[#f8f9fa] text-[#495057] hover:bg-[#e9ecef]"
+                                    }`}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <Icon className="size-3.5" />
+                                      {isSelected && <span className="size-2 rounded-full bg-[#007bff]" />}
+                                    </div>
+                                    <span className="truncate">{ch.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Editable Message / Note */}
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-1.5">
+                              {selectedChannel === "sms" ? "Secure SMS Preview (Editable)" : selectedChannel === "call" ? "Call Script / Clinical Note" : selectedChannel === "email" ? "Email Draft (Editable)" : "EHR Task Description"}
+                            </label>
+                            <textarea
+                              rows={3}
+                              value={actionNote}
+                              onChange={(e) => setActionNote(e.target.value)}
+                              className="w-full text-xs text-[#212529] p-2.5 rounded border border-[#dee2e6] bg-[#fdfdfd] focus:outline-none focus:border-[#007bff] font-mono leading-relaxed"
+                            />
+                          </div>
+
+                          {/* Assigned Staff */}
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-1">
+                              Assigned Care Team Member
+                            </label>
+                            <select
+                              value={assignedStaff}
+                              onChange={(e) => setAssignedStaff(e.target.value)}
+                              className="w-full text-xs text-[#212529] p-2 rounded border border-[#dee2e6] bg-white font-medium focus:outline-none focus:border-[#007bff]"
+                            >
+                              <option value="Sarah Jenkins, RN (Care Coordinator)">Sarah Jenkins, RN (Care Coordinator)</option>
+                              <option value="Dr. Marcus Vance (Primary Care Physician)">Dr. Marcus Vance (Primary Care Physician)</option>
+                              <option value="Elena Rostova, MA (Front Desk / Outreach)">Elena Rostova, MA (Front Desk / Outreach)</option>
+                            </select>
+                          </div>
+
+                          {/* Step 1 Action Bar */}
+                          <div className="pt-2 border-t border-[#dee2e6] flex items-center justify-between gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setActionStep("overview")}
+                              className="px-3.5 py-1.5 rounded border border-[#dee2e6] bg-[#f8f9fa] hover:bg-[#e9ecef] text-[#495057] font-semibold text-xs transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActionStep("step2")}
+                              className="px-4 py-1.5 rounded bg-[#007bff] hover:bg-[#0056b3] text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+                            >
+                              <span>Proceed to Final Review (Step 2)</span>
+                              <ArrowRight className="size-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* STATE 3: STEP 2 (FINAL REVIEW & CONFIRMATION) */}
+                      {actionStep === "step2" && (
+                        <div className="bg-[#fff8f0] border-2 border-[#fd7e14] rounded-md p-4 space-y-3.5 shadow-sm animate-in slide-in-from-right duration-200">
+                          <div className="flex items-center justify-between border-b border-[#fd7e14]/30 pb-2">
+                            <div className="flex items-center gap-2 text-[#d96b0c] font-bold text-xs">
+                              <ShieldAlert className="size-4" />
+                              <span>Step 2 of 2: Final Confirmation & Execution</span>
+                            </div>
+                            <span className="text-[10px] bg-[#fd7e14] text-white font-bold px-2 py-0.5 rounded">
+                              Ready to Execute
+                            </span>
+                          </div>
+
+                          <div className="bg-white rounded border border-[#fd7e14]/40 p-3 space-y-2 text-xs">
+                            <div className="flex justify-between border-b border-[#f0f0f0] pb-1.5">
+                              <span className="text-[#6c757d] font-semibold">Patient:</span>
+                              <span className="font-bold text-[#212529]">{activePatientDrawer.name} ({activePatientDrawer.id})</span>
+                            </div>
+                            <div className="flex justify-between border-b border-[#f0f0f0] pb-1.5">
+                              <span className="text-[#6c757d] font-semibold">Action & Channel:</span>
+                              <span className="font-bold text-[#e61952]">{activePatientDrawer.suggestedAction} via {selectedChannel.toUpperCase()}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-[#f0f0f0] pb-1.5">
+                              <span className="text-[#6c757d] font-semibold">Assigned Care Staff:</span>
+                              <span className="font-semibold text-[#212529]">{assignedStaff}</span>
+                            </div>
+                            <div>
+                              <span className="text-[#6c757d] font-semibold block mb-1">Logged Note Preview:</span>
+                              <div className="bg-[#f8f9fa] p-2 rounded text-[11px] font-mono text-[#343a40] border border-[#dee2e6] max-h-[70px] overflow-y-auto">
+                                {actionNote}
+                              </div>
+                            </div>
+                          </div>
+
+                          <p className="text-[11px] text-[#8a531b] font-medium leading-normal flex items-start gap-1.5">
+                            <span className="text-base leading-none">ℹ️</span>
+                            <span>Confirming will queue this outreach in the practice EHR, dispatch the communication via {selectedChannel.toUpperCase()}, and log a touchpoint timestamp in the patient history.</span>
+                          </p>
+
+                          {/* Step 2 Action Bar */}
+                          <div className="pt-2 border-t border-[#fd7e14]/30 flex items-center justify-between gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setActionStep("step1")}
+                              className="px-3.5 py-1.5 rounded border border-[#dee2e6] bg-white hover:bg-[#e9ecef] text-[#495057] font-semibold text-xs transition-colors flex items-center gap-1"
+                            >
+                              <ArrowLeft className="size-3.5" />
+                              <span>Back to Edit (Step 1)</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleConfirmTwoStepAction()}
+                              className="px-4 py-2 rounded bg-[#28a745] hover:bg-[#218838] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer animate-pulse"
+                            >
+                              <CheckCircle2 className="size-4" />
+                              <span>Confirm & Log Action (Complete Step 2)</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* STATE 4: SUCCESS */}
+                      {actionStep === "success" && (
+                        <div className="bg-[#d4edda] border-2 border-[#28a745] rounded-md p-4 space-y-3 text-[#155724] shadow-sm animate-in zoom-in-95 duration-200">
+                          <div className="flex items-center gap-2 font-extrabold text-sm">
+                            <Check className="size-5 text-[#28a745] bg-white rounded-full p-0.5 shadow-2xs shrink-0" />
+                            <span>Outreach Action Successfully Executed & Logged!</span>
+                          </div>
+                          <p className="text-xs leading-relaxed bg-white/80 p-2.5 rounded border border-[#c3e6cb] font-medium text-[#212529]">
+                            Touchpoint recorded for <strong>{activePatientDrawer.name}</strong> (`{activePatientDrawer.id}`) via <strong>{selectedChannel.toUpperCase()}</strong>. Practice task created for {assignedStaff.split(" ")[0]}.
+                          </p>
+                          <div className="flex items-center justify-between pt-2 border-t border-[#c3e6cb]">
+                            <button
+                              type="button"
+                              onClick={() => setActionStep("overview")}
+                              className="text-xs font-bold underline hover:text-[#0b2e13] cursor-pointer"
+                            >
+                              View Updated History Below ↓
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActivePatientDrawer(null)}
+                              className="px-3.5 py-1 rounded bg-[#28a745] hover:bg-[#218838] text-white font-bold text-xs transition-all cursor-pointer"
+                            >
+                              Done & Close Drawer
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Recent Touchpoint History */}
@@ -1012,24 +1256,69 @@ export function ClassicUtilizationGaps() {
               </button>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    handleSpruceMessage(activePatientDrawer);
-                    setActivePatientDrawer(null);
-                  }}
-                  className="px-3.5 py-2 rounded border border-[#e61952] bg-[#fff0f4] text-[#e61952] hover:bg-[#e61952] hover:text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-2xs"
-                >
-                  <MessageSquare className="size-3.5" />
-                  <span>Send Spruce SMS</span>
-                </button>
+                {actionStep === "overview" && (
+                  <>
+                    <button
+                      onClick={() => openDrawerWithStep(activePatientDrawer, "step1", "sms")}
+                      className="px-3.5 py-2 rounded border border-[#e61952] bg-[#fff0f4] text-[#e61952] hover:bg-[#e61952] hover:text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                    >
+                      <MessageSquare className="size-3.5" />
+                      <span>Send Spruce SMS</span>
+                    </button>
 
-                <button
-                  onClick={() => handleActionExecution(activePatientDrawer, activePatientDrawer.suggestedAction)}
-                  className="px-4 py-2 rounded bg-[#e61952] hover:bg-[#c81345] text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-2xs"
-                >
-                  <CheckCircle2 className="size-3.5" />
-                  <span>Execute Action</span>
-                </button>
+                    <button
+                      onClick={() => openDrawerWithStep(activePatientDrawer, "step1")}
+                      className="px-4 py-2 rounded bg-[#e61952] hover:bg-[#c81345] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                    >
+                      <span>Initiate 2-Step Action →</span>
+                    </button>
+                  </>
+                )}
+
+                {actionStep === "step1" && (
+                  <>
+                    <button
+                      onClick={() => setActionStep("overview")}
+                      className="px-3.5 py-2 rounded border border-[#dee2e6] bg-white hover:bg-[#e9ecef] text-[#495057] font-semibold text-xs transition-colors"
+                    >
+                      Cancel Step 1
+                    </button>
+                    <button
+                      onClick={() => setActionStep("step2")}
+                      className="px-4 py-2 rounded bg-[#007bff] hover:bg-[#0056b3] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                    >
+                      <span>Proceed to Step 2 →</span>
+                    </button>
+                  </>
+                )}
+
+                {actionStep === "step2" && (
+                  <>
+                    <button
+                      onClick={() => setActionStep("step1")}
+                      className="px-3.5 py-2 rounded border border-[#dee2e6] bg-white hover:bg-[#e9ecef] text-[#495057] font-semibold text-xs transition-colors flex items-center gap-1"
+                    >
+                      <ArrowLeft className="size-3.5" />
+                      <span>Back (Step 1)</span>
+                    </button>
+                    <button
+                      onClick={() => handleConfirmTwoStepAction()}
+                      className="px-4 py-2 rounded bg-[#28a745] hover:bg-[#218838] text-white font-extrabold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer animate-pulse"
+                    >
+                      <CheckCircle2 className="size-3.5" />
+                      <span>Confirm & Log Action</span>
+                    </button>
+                  </>
+                )}
+
+                {actionStep === "success" && (
+                  <button
+                    onClick={() => setActionStep("overview")}
+                    className="px-4 py-2 rounded bg-[#e9ecef] hover:bg-[#dee2e6] text-[#212529] font-bold text-xs transition-colors"
+                  >
+                    Return to Overview
+                  </button>
+                )}
               </div>
             </div>
           </div>
