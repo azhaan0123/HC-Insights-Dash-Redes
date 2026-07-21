@@ -111,7 +111,7 @@ export function ClassicActionCentreDetail() {
             <Info className="size-4 text-[#495057]" />
           </div>
           <div className="my-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-[#212529]">{filteredPatients.length}</span>
+            <span className="text-2xl font-medium text-[#212529]">{filteredPatients.length}</span>
             <span className="text-xs font-bold text-[#495057]">
               ({Math.round((filteredPatients.length / 98) * 100)}% of queue)
             </span>
@@ -128,7 +128,7 @@ export function ClassicActionCentreDetail() {
             <Info className="size-4 text-[#495057]" />
           </div>
           <div className="my-3">
-            <span className="text-2xl font-bold text-[#212529]">100%</span>
+            <span className="text-2xl font-medium text-[#212529]">100%</span>
           </div>
           <div className="text-xs text-[#6c757d] font-medium">Direct Primary Care Coordinated</div>
         </div>

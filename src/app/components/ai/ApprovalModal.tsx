@@ -67,37 +67,38 @@ export function ApprovalModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg p-0 gap-0 overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-5xl p-0 gap-0 overflow-hidden rounded-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div
-          className="px-5 py-4 border-b border-border"
+          className="px-6 py-5 border-b border-border"
           style={{
             background: `linear-gradient(135deg, ${agentMeta.color}08, transparent)`,
           }}
         >
           <DialogHeader>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-2">
               <div
-                className="grid size-7 place-items-center rounded-lg text-white shadow-sm"
+                className="grid size-8 place-items-center rounded-lg text-white shadow-sm"
                 style={{ backgroundColor: agentMeta.color }}
               >
-                <FileText className="size-3.5" />
+                <FileText className="size-4" />
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {agentMeta.label} Agent
               </span>
             </div>
-            <DialogTitle className="text-sm font-bold text-foreground">
+            <DialogTitle className="text-xl font-bold text-foreground">
               {action.title}
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogDescription className="text-base text-muted-foreground">
               {action.description}
             </DialogDescription>
           </DialogHeader>
         </div>
 
+        <div className="overflow-y-auto flex-1 overflow-x-hidden">
         {/* Confidence */}
-        <div className="px-5 py-3 border-b border-border">
+        <div className="px-6 py-4 border-b border-border">
           <ConfidenceBadge
             tier={action.confidenceTier}
             score={action.confidence}
@@ -108,21 +109,22 @@ export function ApprovalModal({
                   ? "Data may be incomplete — please verify before acting"
                   : undefined
             }
+            variant="speedometer"
             className="w-full"
           />
         </div>
 
         {/* Reasoning Chain & Gate Policy Profile */}
-        <div className="px-5 py-3 border-b border-border space-y-2.5">
+        <div className="px-6 py-4 border-b border-border space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <AlertCircle className="size-3 text-primary" />
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <AlertCircle className="size-4 text-primary" />
               Reasoning
             </h4>
             {action.reversibility && (
               <span
                 className={cn(
-                  "text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border",
+                  "text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border",
                   action.reversibility === "irreversible"
                     ? "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400"
                     : "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
@@ -134,13 +136,13 @@ export function ApprovalModal({
               </span>
             )}
           </div>
-          <p className="text-xs text-foreground/80 leading-relaxed">
+          <p className="text-sm text-foreground/80 leading-relaxed">
             {action.reasoning}
           </p>
 
           {/* Gate Policy Profile & SLA Timeout */}
           {action.timeoutPolicy && (
-            <div className="flex items-center justify-between text-[10px] bg-muted/40 px-2.5 py-1.5 rounded border border-border/40 text-muted-foreground font-mono">
+            <div className="flex items-center justify-between text-xs bg-muted/40 px-3 py-2 rounded-md border border-border/40 text-muted-foreground font-mono">
               <span>
                 Volume Profile:{" "}
                 <strong className="text-foreground capitalize">
@@ -160,12 +162,12 @@ export function ApprovalModal({
 
         {/* Self-Reflection Grounding Verification (Hallucination Safeguard) */}
         {action.selfReflectionVerification && (
-          <div className="px-5 py-3 border-b border-border space-y-2">
+          <div className="px-6 py-4 border-b border-border space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <CheckCircle2
                   className={cn(
-                    "size-3",
+                    "size-4",
                     action.selfReflectionVerification.status === "verified"
                       ? "text-emerald-500"
                       : "text-amber-500"
@@ -175,7 +177,7 @@ export function ApprovalModal({
               </h4>
               <span
                 className={cn(
-                  "text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider",
+                  "text-[11px] font-bold px-2 py-1 rounded uppercase tracking-wider",
                   action.selfReflectionVerification.status === "verified"
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                     : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
@@ -187,26 +189,26 @@ export function ApprovalModal({
               </span>
             </div>
 
-            <div className="space-y-1 text-xs">
+            <div className="space-y-1.5 text-sm">
               {action.selfReflectionVerification.checksPassed.map((chk, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-[11px] text-foreground/80 bg-emerald-500/5 px-2.5 py-1 rounded border border-emerald-500/15">
-                  <CheckCircle2 className="size-3 text-emerald-500 mt-0.5 shrink-0" />
+                <div key={idx} className="flex items-start gap-2.5 text-xs text-foreground/80 bg-emerald-500/5 px-3 py-2 rounded-md border border-emerald-500/15">
+                  <CheckCircle2 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
                   <span className="leading-relaxed">{chk}</span>
                 </div>
               ))}
               {action.selfReflectionVerification.checksFailed?.map((fail, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2.5 py-1.5 rounded border border-amber-500/25 font-medium">
-                  <AlertCircle className="size-3 text-amber-500 mt-0.5 shrink-0" />
+                <div key={idx} className="flex items-start gap-2.5 text-xs text-amber-700 dark:text-amber-300 bg-amber-500/10 px-3 py-2 rounded-md border border-amber-500/25 font-medium">
+                  <AlertCircle className="size-4 text-amber-500 mt-0.5 shrink-0" />
                   <span className="leading-relaxed">{fail}</span>
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
               <span>Sources Verified:</span>
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-1.5">
                 {action.selfReflectionVerification.verifiedAgainst.map((src, i) => (
-                  <span key={i} className="font-mono text-[9px] bg-muted px-1.5 py-0.2 rounded border border-border/50">
+                  <span key={i} className="font-mono text-xs bg-muted px-2 py-0.5 rounded border border-border/50">
                     {src}
                   </span>
                 ))}
@@ -217,13 +219,13 @@ export function ApprovalModal({
 
         {/* Alternatives Considered (Element #4 of Five-Element Reviewer Interface) */}
         {action.alternativesConsidered && action.alternativesConsidered.length > 0 && (
-          <div className="px-5 py-3 border-b border-border space-y-1.5">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="px-6 py-4 border-b border-border space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Alternatives Evaluated & Discarded
             </h4>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {action.alternativesConsidered.map((alt, i) => (
-                <div key={i} className="text-[11px] text-muted-foreground bg-muted/30 px-2.5 py-1.5 rounded border border-border/40 italic">
+                <div key={i} className="text-sm text-muted-foreground bg-muted/30 px-3 py-2 rounded-md border border-border/40 italic">
                   &bull; {alt}
                 </div>
               ))}
@@ -232,28 +234,28 @@ export function ApprovalModal({
         )}
 
         {/* Evidence Items & RAG Citations */}
-        <div className="px-5 py-3 border-b border-border">
-          <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-border">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center justify-between">
             <span>Evidence</span>
             {action.ragCitations && (
-              <span className="text-[9px] text-[#e32168] font-mono lowercase">
+              <span className="text-[11px] text-[#e32168] font-mono lowercase">
                 {action.ragCitations.length} rag citations
               </span>
             )}
           </h4>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {action.evidenceItems.map((item, i) => (
               <div
                 key={i}
                 className={cn(
-                  "flex items-start gap-2 text-xs rounded-lg px-3 py-2",
+                  "flex items-start gap-2.5 text-sm rounded-lg px-4 py-2.5",
                   item.startsWith("⚠")
                     ? "bg-amber-500/5 border border-amber-500/15 text-amber-700 dark:text-amber-300"
                     : "bg-muted/50 text-foreground/80"
                 )}
               >
                 {!item.startsWith("⚠") && (
-                  <span className="text-muted-foreground/40 font-mono text-[10px] mt-px shrink-0">
+                  <span className="text-muted-foreground/40 font-mono text-xs mt-px shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 )}
@@ -264,13 +266,13 @@ export function ApprovalModal({
 
           {/* RAG Citations Section */}
           {action.ragCitations && action.ragCitations.length > 0 && (
-            <div className="mt-2.5 pt-2 border-t border-border/40 space-y-1">
-              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider block">
+            <div className="mt-4 pt-3 border-t border-border/40 space-y-1.5">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
                 Source System Links (PHI Grounding):
               </span>
-              <div className="grid grid-cols-1 gap-1">
+              <div className="grid grid-cols-1 gap-1.5">
                 {action.ragCitations.map((cit, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-[10px] bg-card px-2 py-1 rounded border border-border/60 font-mono">
+                  <div key={idx} className="flex items-center justify-between text-xs bg-card px-3 py-1.5 rounded-md border border-border/60 font-mono">
                     <span className="text-primary font-bold">{cit.sourceSystem}</span>
                     <span className="text-foreground truncate mx-2">{cit.description}</span>
                     <span className="text-muted-foreground shrink-0">{cit.recordId}</span>
@@ -283,16 +285,16 @@ export function ApprovalModal({
 
         {/* Target Patients (if any) */}
         {action.targetPatients && action.targetPatients.length > 0 && (
-          <div className="px-5 py-3 border-b border-border">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-              <User className="size-3" />
+          <div className="px-6 py-4 border-b border-border">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+              <User className="size-4" />
               Affected Patients ({action.targetPatients.length})
             </h4>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {action.targetPatients.slice(0, 5).map((p) => (
                 <span
                   key={p.id}
-                  className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-foreground/80"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-foreground/80"
                 >
                   {p.name}
                   {p.condition && (
@@ -303,7 +305,7 @@ export function ApprovalModal({
                 </span>
               ))}
               {action.targetPatients.length > 5 && (
-                <span className="text-[11px] text-muted-foreground font-medium px-2 py-1">
+                <span className="text-sm text-muted-foreground font-medium px-2 py-1.5">
                   +{action.targetPatients.length - 5} more
                 </span>
               )}
@@ -313,25 +315,25 @@ export function ApprovalModal({
 
         {/* Suggested Codes (for coding actions) */}
         {action.suggestedCodes && action.suggestedCodes.length > 0 && (
-          <div className="px-5 py-3 border-b border-border">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+          <div className="px-6 py-4 border-b border-border">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Suggested Codes
             </h4>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {action.suggestedCodes.map((code) => (
                 <div
                   key={code.code}
-                  className="flex items-center justify-between rounded-lg bg-purple-500/5 border border-purple-500/15 px-3 py-2"
+                  className="flex items-center justify-between rounded-lg bg-purple-500/5 border border-purple-500/15 px-4 py-3"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-400">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-base font-bold text-purple-600 dark:text-purple-400">
                       {code.code}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-sm text-muted-foreground">
                       {code.description}
                     </span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground/60 tabular-nums">
+                  <span className="text-sm text-muted-foreground/60 tabular-nums">
                     {Math.round(code.score * 100)}%
                   </span>
                 </div>
@@ -339,34 +341,35 @@ export function ApprovalModal({
             </div>
           </div>
         )}
+        </div>
 
         {/* Actions */}
-        <div className="px-5 py-4 bg-muted/20">
+        <div className="px-6 py-5 bg-muted/20 shrink-0 border-t border-border">
           {!showRejectReasons ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
-                size="sm"
-                className="flex-1 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                size="default"
+                className="flex-1 text-base font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm py-6"
                 onClick={handleApprove}
               >
-                <CheckCircle2 className="size-3.5 mr-1.5" />
+                <CheckCircle2 className="size-5 mr-2" />
                 Approve
               </Button>
               <Button
-                size="sm"
+                size="default"
                 variant="outline"
-                className="flex-1 text-xs font-medium"
+                className="flex-1 text-base font-medium py-6"
                 onClick={() => setShowRejectReasons(true)}
               >
                 Reject with Reason
               </Button>
             </div>
           ) : (
-            <div className="space-y-2">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Select rejection reason:
               </p>
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-2 gap-2">
                 {(
                   Object.entries(REJECTION_LABELS) as [
                     RejectionReason,
@@ -376,16 +379,16 @@ export function ApprovalModal({
                   <button
                     key={key}
                     onClick={() => handleReject(key)}
-                    className="text-left rounded-lg border border-border px-3 py-2 text-[11px] font-medium text-foreground/80 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-700 dark:hover:text-red-300 transition-colors cursor-pointer"
+                    className="text-left rounded-lg border border-border px-4 py-3 text-sm font-medium text-foreground/80 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-700 dark:hover:text-red-300 transition-colors cursor-pointer"
                   >
                     {label}
                   </button>
                 ))}
               </div>
               <Button
-                size="sm"
+                size="default"
                 variant="ghost"
-                className="w-full text-xs"
+                className="w-full text-base py-6"
                 onClick={() => setShowRejectReasons(false)}
               >
                 Cancel

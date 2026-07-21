@@ -48,7 +48,7 @@ export function KpiSparklineCard({
       </div>
       
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-3xl font-bold tracking-tight text-foreground tabular-nums">{value}</span>
+        <span className="text-3xl font-medium tracking-tight text-foreground tabular-nums">{value}</span>
         {change && (
           <span className={cn(
             "inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium",

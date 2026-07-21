@@ -16,6 +16,89 @@ interface ConfidenceBadgeProps {
   explanation?: string;
   compact?: boolean;
   className?: string;
+  variant?: "default" | "speedometer";
+}
+
+export function ConfidenceSpeedometer({
+  tier,
+  score = 0.95,
+  explanation,
+  className,
+}: {
+  tier: ConfidenceTier;
+  score?: number;
+  explanation?: string;
+  className?: string;
+}) {
+  const totalBars = 40;
+  const filledBars = Math.round(score * totalBars);
+
+  // Colors based on tier
+  const activeBgClass =
+    tier === "high"
+      ? "bg-emerald-500 dark:bg-emerald-400"
+      : tier === "medium"
+        ? "bg-amber-500 dark:bg-amber-400"
+        : "bg-red-500 dark:bg-red-400";
+
+  const textClass =
+    tier === "high"
+      ? "text-emerald-600 dark:text-emerald-400"
+      : tier === "medium"
+        ? "text-amber-600 dark:text-amber-400"
+        : "text-red-600 dark:text-red-400";
+
+  const labelText =
+    tier === "high"
+      ? "High Confidence"
+      : tier === "medium"
+        ? "Verify Details"
+        : "Low Confidence";
+
+  return (
+    <div className={cn("w-full py-4 space-y-3.5", className)}>
+      {/* Top Title */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          AI Confidence Rating
+        </span>
+      </div>
+
+      {/* Main Score and Rating Text */}
+      <div className="flex items-baseline gap-2.5">
+        <span className={cn("text-4xl font-medium tracking-tight leading-none", textClass)}>
+          {Math.round(score * 100)}%
+        </span>
+        <span className={cn("text-base font-normal tracking-wide leading-none", textClass)}>
+          {labelText}
+        </span>
+      </div>
+
+      {/* Segmented Progress Bar */}
+      <div className="flex items-center gap-[3px] w-full">
+        {Array.from({ length: totalBars }).map((_, i) => {
+          const isActive = i < filledBars;
+          return (
+            <div
+              key={i}
+              className={cn(
+                "h-6 flex-1 rounded-[1px] transition-all duration-300",
+                isActive
+                  ? activeBgClass
+                  : "bg-zinc-200 dark:bg-zinc-800"
+              )}
+            />
+          );
+        })}
+      </div>
+
+      {explanation && (
+        <p className="text-sm text-muted-foreground leading-relaxed pt-1.5 border-t border-border/40 mt-1">
+          {explanation}
+        </p>
+      )}
+    </div>
+  );
 }
 
 export function ConfidenceBadge({
@@ -24,7 +107,19 @@ export function ConfidenceBadge({
   explanation,
   compact = false,
   className,
+  variant = "default",
 }: ConfidenceBadgeProps) {
+  if (variant === "speedometer") {
+    return (
+      <ConfidenceSpeedometer
+        tier={tier}
+        score={score}
+        explanation={explanation}
+        className={className}
+      />
+    );
+  }
+
   if (compact) {
     return (
       <span

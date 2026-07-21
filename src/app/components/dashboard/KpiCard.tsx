@@ -96,7 +96,7 @@ export function KpiCard({
             const content = (
               <div className={cn("flex flex-col", s.tooltip && "cursor-help")}>
                 <span
-                  className={cn("tracking-tight text-foreground tabular-nums", s.className)}
+                  className={cn("tracking-tight text-foreground tabular-nums font-medium", s.className)}
                   style={{ fontSize: "1.4rem", lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}
                 >
                   {s.value}
@@ -130,7 +130,7 @@ export function KpiCard({
       ) : (
         <div className="mt-3">
           <div
-            className="tracking-tight text-foreground tabular-nums"
+            className="tracking-tight text-foreground tabular-nums font-medium"
             style={{ fontSize: "1.85rem", lineHeight: 1.05, fontVariantNumeric: "tabular-nums" }}
           >
             {value}

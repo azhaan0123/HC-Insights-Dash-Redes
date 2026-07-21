@@ -189,7 +189,7 @@ export function ClassicActionCentreOverview() {
                 </div>
 
                 <div className="flex items-baseline gap-2 mt-3">
-                  <span className="text-2xl font-bold tracking-tight tabular-nums text-[#212529]">
+                  <span className="text-2xl font-medium tracking-tight tabular-nums text-[#212529]">
                     {card.count}
                   </span>
                   <span
@@ -527,7 +527,7 @@ export function ClassicActionCentreOverview() {
                 <div className="flex items-center justify-between bg-[#f8f9fa] p-3 rounded border border-[#dee2e6]">
                   <div>
                     <span className="text-xs text-[#6c757d] font-semibold block">Current Active Queue</span>
-                    <span className="text-2xl font-bold text-[#212529]">{selectedMetricOverlay.count}</span>
+                    <span className="text-2xl font-medium text-[#212529]">{selectedMetricOverlay.count}</span>
                   </div>
                   <div className="flex items-center gap-1 bg-white p-1 rounded border border-[#dee2e6]">
                     <button

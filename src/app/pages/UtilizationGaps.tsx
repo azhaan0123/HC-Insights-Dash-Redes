@@ -276,7 +276,7 @@ export default function UtilizationGaps() {
                     </div>
 
                     <div className="flex items-baseline justify-between mt-2">
-                      <span className="text-2xl font-bold tracking-tight tabular-nums text-foreground">
+                      <span className="text-2xl font-medium tracking-tight tabular-nums text-foreground">
                         {displayCount}
                       </span>
                       <span
@@ -729,14 +729,14 @@ export default function UtilizationGaps() {
               <div className="grid grid-cols-3 gap-3">
                 <div className="p-3.5 rounded-xl border bg-muted/70 dark:bg-card/40 space-y-1">
                   <span className="text-[11px] font-medium text-muted-foreground">Current Volume</span>
-                  <div className="text-2xl font-bold text-foreground tabular-nums">{selectedMetricOverlay.count}</div>
+                  <div className="text-2xl font-medium text-foreground tabular-nums">{selectedMetricOverlay.count}</div>
                   <span className="text-[10px] text-muted-foreground">Active in queue today</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl border bg-muted/70 dark:bg-card/40 space-y-1">
                   <span className="text-[11px] font-medium text-muted-foreground">WoW Trend</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xl font-bold text-foreground tabular-nums">{selectedMetricOverlay.wowChange}</span>
+                    <span className="text-xl font-medium text-foreground tabular-nums">{selectedMetricOverlay.wowChange}</span>
                     <Badge className={cn("text-[10px] px-1.5 py-0 border-none", selectedMetricOverlay.wowPositive ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600")}>
                       {selectedMetricOverlay.wowPositive ? "Improving" : "Elevated"}
                     </Badge>
@@ -747,7 +747,7 @@ export default function UtilizationGaps() {
                 <div className="p-3.5 rounded-xl border bg-muted/70 dark:bg-card/40 space-y-1">
                   <span className="text-[11px] font-medium text-muted-foreground">MoM Trend</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xl font-bold text-foreground tabular-nums">{selectedMetricOverlay.momChange}</span>
+                    <span className="text-xl font-medium text-foreground tabular-nums">{selectedMetricOverlay.momChange}</span>
                     <Badge className={cn("text-[10px] px-1.5 py-0 border-none", selectedMetricOverlay.momPositive ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600")}>
                       {selectedMetricOverlay.momPositive ? "Improving" : "Elevated"}
                     </Badge>

@@ -236,7 +236,7 @@ export default function CostSavings() {
               <Info className="size-4 text-muted-foreground" />
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-tight text-emerald-600 mb-1 tabular-nums">
+              <div className="text-3xl font-medium tracking-tight text-emerald-600 mb-1 tabular-nums">
                 $1,577,117
               </div>
               <p className="text-xs text-muted-foreground">

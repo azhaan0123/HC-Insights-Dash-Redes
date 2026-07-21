@@ -169,7 +169,7 @@ function KpiSparklineCard({
       </div>
       
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-3xl font-bold tracking-tight text-foreground tabular-nums">{value}</span>
+        <span className="text-3xl font-medium tracking-tight text-foreground tabular-nums">{value}</span>
         <span className={cn(
           "inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium",
           changeType === "positive" ? "bg-emerald-50 text-emerald-600" : "bg-destructive/10 text-destructive"
@@ -489,7 +489,7 @@ export default function Home() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Cost Savings</h3>
-                <div className="text-2xl font-bold tracking-tight text-emerald-600 tabular-nums">
+                <div className="text-2xl font-medium tracking-tight text-emerald-600 tabular-nums">
                   $1,577,117 <span className="text-sm font-medium text-emerald-600/80">saved</span>
                 </div>
               </div>

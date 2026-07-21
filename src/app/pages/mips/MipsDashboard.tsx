@@ -317,7 +317,7 @@ export default function MipsDashboard() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-extrabold text-foreground tabular-nums tracking-tight">77.9</span>
+                <span className="text-2xl font-medium text-foreground tabular-nums tracking-tight">77.9</span>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total</span>
               </div>
             </div>
@@ -329,7 +329,7 @@ export default function MipsDashboard() {
                   <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                   <span className="text-muted-foreground">{cat.name}</span>
                 </div>
-                <span className="font-bold text-foreground tabular-nums">{cat.score.toFixed(1)}</span>
+                <span className="font-medium text-foreground tabular-nums">{cat.score.toFixed(1)}</span>
               </div>
             ))}
           </div>
@@ -361,14 +361,14 @@ export default function MipsDashboard() {
                 <span>Payment Prediction</span>
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-foreground tabular-nums tracking-tight">~ 0%</span>
+                <span className="text-2xl font-medium text-foreground tabular-nums tracking-tight">~ 0%</span>
                 <span className="text-xs font-medium text-muted-foreground">Estimated: $0</span>
               </div>
             </div>
             <div className="mt-4 pt-3 border-t border-border/60">
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="text-muted-foreground font-medium">Confidence:</span>
-                <span className="font-bold text-foreground tabular-nums">87%</span>
+                <span className="font-medium text-foreground tabular-nums">87%</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
                 <div className="bg-primary h-full rounded-full" style={{ width: "87%" }} />
@@ -389,7 +389,7 @@ export default function MipsDashboard() {
                 <span>Compliance Risks</span>
               </div>
               <div className="mt-3">
-                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
                   No compliance risks identified
                 </span>
               </div>
@@ -410,14 +410,14 @@ export default function MipsDashboard() {
                 <div>
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="text-foreground">Controlling Blood Pressure</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">~ Predicted: 95.93%</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-medium tabular-nums">~ Predicted: 95.93%</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Improvement potential +3.20%</p>
                 </div>
                 <div className="pt-2 border-t border-border/40">
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="text-foreground">Depression Remission</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">~ Predicted: 97.00%</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-medium tabular-nums">~ Predicted: 97.00%</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Improvement potential +2.54%</p>
                 </div>
@@ -483,7 +483,7 @@ export default function MipsDashboard() {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right">
-                      <span className="text-sm font-bold text-foreground tabular-nums block">{measure.rate}</span>
+                      <span className="text-sm font-medium text-foreground tabular-nums block">{measure.rate}</span>
                       <span className="text-[10px] text-muted-foreground block">Performance Rate</span>
                     </div>
                     <div className={cn("grid size-8 place-items-center rounded-full border-2 text-xs font-bold shadow-sm", measure.colorClass)}>
@@ -508,7 +508,7 @@ export default function MipsDashboard() {
             <div className="pb-4 border-b border-border/60">
               <div className="flex items-center justify-between text-xs font-medium mb-2">
                 <span className="text-muted-foreground">Current Progress</span>
-                <span className="font-bold text-foreground tabular-nums">2 / 3 activities</span>
+                <span className="font-medium text-foreground tabular-nums">2 / 3 activities</span>
               </div>
               <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
                 <div className="bg-primary h-full rounded-full transition-all duration-500" style={{ width: "66.6%" }} />

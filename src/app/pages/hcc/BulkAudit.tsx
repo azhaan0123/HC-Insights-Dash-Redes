@@ -249,15 +249,15 @@ export default function HccBulkAudit() {
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col gap-1 rounded-xl border bg-muted p-4 shadow-xs">
                 <span className="text-[13px] font-medium text-muted-foreground">Patients Audited</span>
-                <span className="text-2xl font-bold text-foreground">{auditResult.patientsAudited}</span>
+                <span className="text-2xl font-medium text-foreground">{auditResult.patientsAudited}</span>
               </div>
               <div className="flex flex-col gap-1 rounded-xl border border-primary/20 bg-primary/5 p-4 shadow-xs">
                 <span className="text-[13px] font-medium text-muted-foreground">Potential Gaps</span>
-                <span className="text-2xl font-bold text-primary">{auditResult.potentialGaps}</span>
+                <span className="text-2xl font-medium text-primary">{auditResult.potentialGaps}</span>
               </div>
               <div className="flex flex-col gap-1 rounded-xl border border-red-50 bg-red-50/50 p-4 shadow-xs">
                 <span className="text-[13px] font-medium text-muted-foreground">Potential Overcodes/Compliance</span>
-                <span className="text-2xl font-bold text-foreground">{auditResult.potentialCompliance}</span>
+                <span className="text-2xl font-medium text-foreground">{auditResult.potentialCompliance}</span>
               </div>
             </div>
 
