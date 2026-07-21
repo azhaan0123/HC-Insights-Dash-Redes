@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {
   Info,
@@ -13,7 +13,6 @@ import {
   Stethoscope,
   X,
   Search,
-  SlidersHorizontal,
   ArrowUpRight,
   ArrowDownRight,
   UserPlus,
@@ -22,10 +21,7 @@ import {
   Activity,
   ArrowRight,
   ArrowLeft,
-  Send,
   Mail,
-  FileText,
-  Sparkles,
   Check,
 } from "lucide-react";
 import {
@@ -123,17 +119,29 @@ export function ClassicUtilizationGaps() {
   // Action / Completion States
   const [completedPatientIds, setCompletedPatientIds] = useState<Set<string>>(new Set());
   const [activePatientDrawer, setActivePatientDrawer] = useState<ActionCentrePatientRow | null>(null);
-  const [activeDrawerTab, setActiveDrawerTab] = useState<"overview" | "claims" | "encounters">("overview");
 
   // 2-Step Action Workflow State for Patient Detail Sidebar
   const [actionStep, setActionStep] = useState<"overview" | "step1" | "step2" | "success">("overview");
-  const [selectedChannel, setSelectedChannel] = useState<"sms" | "call" | "email" | "ehr">("sms");
+  const [selectedChannel, setSelectedChannel] = useState<"call" | "email" | "sms">("call");
+  const [outreachError, setOutreachError] = useState<string | null>(null);
   const [actionNote, setActionNote] = useState<string>("");
   const [assignedStaff, setAssignedStaff] = useState<string>("Sarah Jenkins, RN (Care Coordinator)");
 
   // Metric Overlay Modal State
   const [selectedMetricOverlay, setSelectedMetricOverlay] = useState<any | null>(null);
   const [metricGraphView, setMetricGraphView] = useState<"WoW" | "MoM">("WoW");
+
+  // Lock body scroll when patient detail sidebar is open
+  useEffect(() => {
+    if (activePatientDrawer) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [activePatientDrawer]);
 
   // Filter and sort patients
   const filteredPatients = useMemo(() => {
@@ -180,7 +188,8 @@ export function ClassicUtilizationGaps() {
   const currentRows = useMemo(() => {
     const startIndex = (currentPage - 1) * recordsPerPage;
     return filteredPatients.slice(startIndex, startIndex + recordsPerPage).map((row, idx) => {
-      const cleanPhone = row.contactPhone.replace(/\D/g, "").slice(0, 10) || "5652677598";
+      const isPhoneAvail = Boolean(row.contactPhone && row.contactPhone !== "Unavailable" && row.contactPhone.replace(/\D/g, "") !== "");
+      const cleanPhone = isPhoneAvail ? row.contactPhone.replace(/\D/g, "").slice(0, 10) : "Unavailable";
       const monthStr = ((idx % 2) + 1).toString().padStart(2, "0");
       const dayStr = ((idx * 3 + 12) % 28 + 1).toString().padStart(2, "0");
       const hourStr = ((idx * 2 + 2) % 12 + 1).toString().padStart(2, "0");
@@ -206,10 +215,6 @@ export function ClassicUtilizationGaps() {
     }
   };
 
-  const handleSpruceMessage = (patient: ActionCentrePatientRow) => {
-    openDrawerWithStep(patient, "step1", "sms");
-  };
-
   const handleActionExecution = (patient: ActionCentrePatientRow, actionType: string) => {
     toast.success(`Action Executed: ${actionType}`, {
       description: `Logged for ${patient.name} (${patient.id}). Task queued in practice EHR.`,
@@ -221,21 +226,37 @@ export function ClassicUtilizationGaps() {
   const openDrawerWithStep = (
     patient: ActionCentrePatientRow,
     step: "overview" | "step1" | "step2" | "success" = "overview",
-    channel: "sms" | "call" | "email" | "ehr" = "sms"
+    channel?: "call" | "email" | "sms"
   ) => {
     setActivePatientDrawer(patient);
-    setActiveDrawerTab("overview");
     setActionStep(step);
-    setSelectedChannel(channel);
-    const firstName = patient.name.split(" ")[0] || patient.name;
-    if (channel === "sms") {
-      setActionNote(`Hi ${firstName}, regarding your recent ${patient.condition} care gap (${patient.reason}). Your Spruce DPC member benefits include $0 copay visits. Tap here or reply to schedule your check-in with ${patient.physician}.`);
-    } else if (channel === "call") {
+    setOutreachError(null);
+
+    const isPhoneAvail = Boolean(patient.contactPhone && patient.contactPhone !== "Unavailable" && patient.contactPhone.replace(/\D/g, "") !== "");
+    const isEmailAvail = Boolean(patient.contactEmail && patient.contactEmail !== "Unavailable" && patient.contactEmail.trim() !== "");
+
+    let chosenChannel: "call" | "email" | "sms" = channel || (patient.suggestedActionType === "sms" ? "sms" : patient.suggestedActionType === "email" ? "email" : "call");
+    if ((chosenChannel === "call" || chosenChannel === "sms") && !isPhoneAvail) {
+      if (isEmailAvail) {
+        chosenChannel = "email";
+      } else {
+        setOutreachError("phone number is unavailable please use other method for outreach");
+      }
+    } else if (chosenChannel === "email" && !isEmailAvail) {
+      if (isPhoneAvail) {
+        chosenChannel = "sms";
+      } else {
+        setOutreachError("email is unavailable please use other method for outreach");
+      }
+    }
+
+    setSelectedChannel(chosenChannel);
+    if (chosenChannel === "call") {
       setActionNote(`Phone Outreach for ${patient.name}: Review ${patient.condition} gap status and explain DPC $0 copay visits & lab work with ${patient.physician}.`);
-    } else if (channel === "email") {
-      setActionNote(`Subject: Care Coordination & Spruce DPC Check-in\n\nDear ${patient.name},\nWe noticed an open care gap regarding your ${patient.condition} care plan...`);
+    } else if (chosenChannel === "email") {
+      setActionNote(`Subject: Care Coordination & DPC Check-in\n\nDear ${patient.name},\nWe noticed an open care gap regarding your ${patient.condition} care plan...`);
     } else {
-      setActionNote(`EHR Care Gap Alert: Front Desk and Care Team notification for ${patient.name} (${patient.condition}) regarding ${patient.reason}.`);
+      setActionNote(`SMS Outreach to ${patient.name}: Hi ${patient.name.split(" ")[0]}, your DPC care team noticed an open care gap for ${patient.condition}. Please reply to schedule your $0 copay check-in or lab work.`);
     }
   };
 
@@ -245,7 +266,7 @@ export function ClassicUtilizationGaps() {
     const newTouchpoint = {
       id: `ev-${Date.now()}`,
       date: `Today, ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
-      type: selectedChannel === "sms" ? "Spruce SMS" : selectedChannel === "call" ? "Phone Call" : selectedChannel === "email" ? "Email" : "EHR Task",
+      type: selectedChannel === "call" ? "Phone Call" : selectedChannel === "email" ? "Email" : "SMS Outreach",
       description: `Executed 2-Step Action: ${activePatientDrawer.suggestedAction} (${selectedChannel.toUpperCase()}) — Note: ${actionNote.slice(0, 100)}...`,
       outcome: "Initiated & Queued in EHR",
     };
@@ -292,9 +313,9 @@ export function ClassicUtilizationGaps() {
   return (
     <ClassicLayout
       title="Utilization Gaps"
-      subtitleNote="Note: Click a card or tab to filter the actionable queue. Click Patient ID to view full clinical details, claims leakage, and encounter notes."
+      subtitleNote="Note: Click a card or tab to filter the actionable queue. Click Patient ID to view full clinical details and execute outreach."
       modernRoute="/utilization-gaps"
-      activeNavIndex={0}
+      activeNavIndex={1}
       headerActions={headerActionsNode}
     >
       {/* 1. OPERATIONAL SUMMARY CARDS (Clean Legacy Design exactly like Action Centre Classic) */}
@@ -426,13 +447,10 @@ export function ClassicUtilizationGaps() {
           <table className="w-full text-left border-collapse min-w-[1100px]">
             <thead>
               <tr className="bg-[#e9ecef] text-[#343a40] text-xs font-semibold border-b border-[#dee2e6]">
-                <th className="py-3 px-3.5 w-14 text-center">Message</th>
                 <th className="py-3 px-3">Patient ID</th>
                 <th className="py-3 px-3">Patient Member</th>
                 <th className="py-3 px-3">Age / Gender</th>
-                <th className="py-3 px-3">Phone Number</th>
-                <th className="py-3 px-3">Diagnosis & Gap Reason</th>
-                <th className="py-3 px-3">Spruce App</th>
+                <th className="py-3 px-3">Diagnosis</th>
                 <th className="py-3 px-3">Last Encounter</th>
                 <th className="py-3 px-3">Employer</th>
                 <th className="py-3 px-3 text-right">Suggested Action</th>
@@ -441,7 +459,7 @@ export function ClassicUtilizationGaps() {
             <tbody className="divide-y divide-[#dee2e6] text-xs text-[#212529]">
               {currentRows.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-8 text-center text-[#6c757d]">
+                  <td colSpan={7} className="py-8 text-center text-[#6c757d]">
                     No utilization gap records found in this queue.
                   </td>
                 </tr>
@@ -453,17 +471,6 @@ export function ClassicUtilizationGaps() {
                       key={row.id}
                       className={`hover:bg-[#f8f9fa] transition-colors ${isDone ? "bg-[#d4edda]/30" : ""}`}
                     >
-                      {/* Message Icon Button */}
-                      <td className="py-3 px-3.5 text-center">
-                        <button
-                          onClick={() => handleSpruceMessage(row)}
-                          className="p-1.5 rounded bg-[#fff0f4] text-[#e61952] hover:bg-[#e61952] hover:text-white transition-all shadow-2xs"
-                          title={`Send Spruce Message to ${row.name}`}
-                        >
-                          <MessageSquare className="size-3.5" />
-                        </button>
-                      </td>
-
                       {/* Patient ID (Blue Link) */}
                       <td className="py-3 px-3 font-medium">
                         <span
@@ -496,33 +503,14 @@ export function ClassicUtilizationGaps() {
                         {row.age} Yrs ({row.gender})
                       </td>
 
-                      {/* Phone Number */}
-                      <td className="py-3 px-3 text-[#495057] font-mono">
-                        {row.formattedPhone}
-                      </td>
-
-                      {/* Diagnosis & Gap Reason */}
-                      <td className="py-3 px-3 max-w-xs">
-                        <div className="font-semibold text-[#212529] truncate" title={getDiagnosisDesc(row.condition)}>
-                          {row.condition ? `${row.condition} - ${getDiagnosisDesc(row.condition)}` : "Preventive Screening"}
-                        </div>
-                        <div className="text-[11px] text-[#6c757d] truncate" title={row.reason}>
-                          {row.reason}
-                        </div>
-                      </td>
-
-                      {/* Spruce App */}
+                      {/* Diagnosis (code only, description on hover) */}
                       <td className="py-3 px-3">
-                        {row.spruce === "Yes" ? (
-                          <span className="text-[#28a745] font-semibold">Yes</span>
-                        ) : (
-                          <span
-                            onClick={() => handleSpruceMessage(row)}
-                            className="text-[#007bff] hover:underline cursor-pointer"
-                          >
-                            No
-                          </span>
-                        )}
+                        <span
+                          className="font-semibold text-[#212529] cursor-help underline decoration-dotted underline-offset-4"
+                          title={getDiagnosisDesc(row.condition)}
+                        >
+                          {row.condition || "Preventive"}
+                        </span>
                       </td>
 
                       {/* Last Encounter */}
@@ -791,125 +779,99 @@ export function ClassicUtilizationGaps() {
                 </button>
               </div>
 
-              {/* Drawer Navigation Tabs */}
-              <div className="bg-white border-b border-[#dee2e6] px-6 flex items-center gap-1">
-                <button
-                  onClick={() => setActiveDrawerTab("overview")}
-                  className={`py-2.5 px-3.5 text-xs font-bold border-b-2 transition-colors ${
-                    activeDrawerTab === "overview"
-                      ? "border-[#e61952] text-[#e61952]"
-                      : "border-transparent text-[#6c757d] hover:text-[#212529]"
-                  }`}
-                >
-                  Overview & Action
-                </button>
-                <button
-                  onClick={() => setActiveDrawerTab("claims")}
-                  className={`py-2.5 px-3.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 ${
-                    activeDrawerTab === "claims"
-                      ? "border-[#e61952] text-[#e61952]"
-                      : "border-transparent text-[#6c757d] hover:text-[#212529]"
-                  }`}
-                >
-                  <span>Claims Leakage</span>
-                  <span className="bg-[#e9ecef] text-[#495057] px-1.5 py-0.5 rounded-full text-[9px] font-bold leading-none">
-                    {activePatientDrawer.recentClaims.length}
-                  </span>
-                </button>
-                <button
-                  onClick={() => setActiveDrawerTab("encounters")}
-                  className={`py-2.5 px-3.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 ${
-                    activeDrawerTab === "encounters"
-                      ? "border-[#e61952] text-[#e61952]"
-                      : "border-transparent text-[#6c757d] hover:text-[#212529]"
-                  }`}
-                >
-                  <span>Clinical Encounters</span>
-                  <span className="bg-[#e9ecef] text-[#495057] px-1.5 py-0.5 rounded-full text-[9px] font-bold leading-none">
-                    {activePatientDrawer.recentEncounters.length}
-                  </span>
-                </button>
-              </div>
-
               {/* Drawer Content Area */}
               <div className="px-6 py-5 space-y-5 overflow-y-auto max-h-[calc(100vh-260px)] text-xs text-[#495057]">
-                {activeDrawerTab === "overview" && (
-                  <>
-                    {/* Patient Overview Box — tighter rows with better rhythm */}
-                    <div className="bg-[#f8f9fa] rounded border border-[#dee2e6] overflow-hidden">
-                      {[
-                        {
-                          label: "Age / Gender:",
-                          value: (
-                            <span className="font-semibold text-[#212529]">
-                              {activePatientDrawer.age} Yrs ({activePatientDrawer.gender})
-                            </span>
-                          ),
-                        },
-                        {
-                          label: "Employer / Sponsor:",
-                          value: (
-                            <span className="font-semibold text-[#212529] flex items-center gap-1.5">
-                              <Building2 className="size-3.5 text-[#adb5bd]" />
-                              {activePatientDrawer.employer}
-                            </span>
-                          ),
-                        },
-                        {
-                          label: "Assigned Physician:",
-                          value: (
-                            <span className="font-semibold text-[#212529] flex items-center gap-1.5">
-                              <Stethoscope className="size-3.5 text-[#adb5bd]" />
-                              {activePatientDrawer.physician}
-                            </span>
-                          ),
-                        },
-                        {
-                          label: "Phone Number:",
-                          value: (
-                            <span className="font-semibold text-[#212529] font-mono flex items-center gap-1.5">
+                {/* Patient Overview Box — with diagnosis at top */}
+                <div className="bg-[#f8f9fa] rounded border border-[#dee2e6] overflow-hidden">
+                  {[
+                    {
+                      label: "Diagnosis:",
+                      value: (
+                        <span className="font-semibold text-[#212529] flex items-center gap-1.5">
+                          <Info className="size-3.5 text-[#adb5bd] shrink-0" />
+                          <span>{activePatientDrawer.condition || "Preventive Care Gap"} — {getDiagnosisDesc(activePatientDrawer.condition)}</span>
+                        </span>
+                      ),
+                    },
+                    {
+                      label: "Age / Gender:",
+                      value: (
+                        <span className="font-semibold text-[#212529]">
+                          {activePatientDrawer.age} Yrs ({activePatientDrawer.gender})
+                        </span>
+                      ),
+                    },
+                    {
+                      label: "Employer / Sponsor:",
+                      value: (
+                        <span className="font-semibold text-[#212529] flex items-center gap-1.5">
+                          <Building2 className="size-3.5 text-[#adb5bd]" />
+                          {activePatientDrawer.employer}
+                        </span>
+                      ),
+                    },
+                    {
+                      label: "Assigned Physician:",
+                      value: (
+                        <span className="font-semibold text-[#212529] flex items-center gap-1.5">
+                          <Stethoscope className="size-3.5 text-[#adb5bd]" />
+                          {activePatientDrawer.physician}
+                        </span>
+                      ),
+                    },
+                    {
+                      label: "Phone Number:",
+                      value: (
+                        <span className="font-semibold text-[#212529] font-mono flex items-center gap-1.5">
+                          {activePatientDrawer.contactPhone !== "Unavailable" && activePatientDrawer.contactPhone ? (
+                            <>
                               <Phone className="size-3.5 text-[#adb5bd]" />
-                              {activePatientDrawer.contactPhone.replace(/\D/g, "").slice(0, 10) || "5652677598"}
-                            </span>
-                          ),
-                        },
-                        {
-                          label: "Spruce App Active:",
-                          value: (
-                            <span className={`font-semibold ${activePatientDrawer.spruce === "Yes" ? "text-[#28a745]" : "text-[#212529]"}`}>
-                              {activePatientDrawer.spruce}
-                            </span>
-                          ),
-                        },
-                      ].map((row, i) => (
-                        <div
-                          key={i}
-                          className={`flex items-center justify-between px-4 py-2.5 ${
-                            i < 4 ? "border-b border-[#e9ecef]" : ""
-                          }`}
-                        >
-                          <span className="text-[#6c757d]">{row.label}</span>
-                          {row.value}
-                        </div>
-                      ))}
+                              {activePatientDrawer.contactPhone.replace(/\D/g, "").slice(0, 10)}
+                            </>
+                          ) : (
+                            <span className="text-[#adb5bd] italic font-sans text-xs">Unavailable (Email Only)</span>
+                          )}
+                        </span>
+                      ),
+                    },
+                    {
+                      label: "Email Address:",
+                      value: (
+                        <span className="font-semibold text-[#212529] font-sans text-xs flex items-center gap-1.5 truncate max-w-[200px]">
+                          {activePatientDrawer.contactEmail !== "Unavailable" && activePatientDrawer.contactEmail ? (
+                            <>
+                              <Mail className="size-3.5 text-[#adb5bd] shrink-0" />
+                              <span className="truncate">{activePatientDrawer.contactEmail}</span>
+                            </>
+                          ) : (
+                            <span className="text-[#adb5bd] italic text-xs">Unavailable (Phone Only)</span>
+                          )}
+                        </span>
+                      ),
+                    },
+                  ].map((row, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-center justify-between px-4 py-2.5 ${
+                        i < 5 ? "border-b border-[#e9ecef]" : ""
+                      }`}
+                    >
+                      <span className="text-[#6c757d]">{row.label}</span>
+                      {row.value}
                     </div>
+                  ))}
+                </div>
 
-                    {/* Diagnosis & Gap Reason — accent left border for hierarchy */}
+                    {/* Gap Reason — red accent card */}
                     <div>
                       <h4 className="font-bold text-[#343a40] uppercase tracking-wide mb-2.5 text-[11px] border-l-2 border-[#e61952] pl-2">
-                        Diagnosis & Gap Reason
+                        Gap Reason
                       </h4>
-                      <div className="bg-[#fff8e1] border border-[#ffe082] text-[#7b6b2e] p-4 rounded-md space-y-1.5">
+                      <div className="bg-[#fff0f4] border border-[#ffccd8] text-[#8b1a34] p-4 rounded-md">
                         <div className="font-bold flex items-center gap-1.5 text-[13px]">
-                          <AlertTriangle className="size-4 text-[#e6a817] shrink-0" />
-                          <span>ICD-10 Condition: {activePatientDrawer.condition || "Preventive Care Gap"}</span>
+                          <AlertTriangle className="size-4 text-[#e61952] shrink-0" />
+                          <span>{activePatientDrawer.reason}</span>
                         </div>
-                        <div className="text-xs font-medium text-[#8d7a32] pl-[22px]">
-                          {getDiagnosisDesc(activePatientDrawer.condition)}
-                        </div>
-                        <p className="text-xs text-[#7b6b2e] mt-1.5 pt-2 border-t border-[#ffe082]/60 pl-[22px]">
-                          {activePatientDrawer.reason}
-                        </p>
                       </div>
                     </div>
 
@@ -950,94 +912,121 @@ export function ClassicUtilizationGaps() {
                       )}
 
                       {/* STATE 2: STEP 1 (CONFIGURE & REVIEW) */}
-                      {actionStep === "step1" && (
-                        <div className="bg-white border-2 border-[#007bff] rounded-md p-4 space-y-4 shadow-sm animate-in fade-in duration-200">
-                          <div className="flex items-center justify-between border-b border-[#dee2e6] pb-2.5">
-                            <div className="flex items-center gap-2 text-[#007bff] font-bold text-xs">
-                              <Sparkles className="size-4" />
-                              <span>Step 1: Select Channel & Customize Message</span>
+                      {actionStep === "step1" && (() => {
+                        const isPhoneAvail = Boolean(activePatientDrawer.contactPhone && activePatientDrawer.contactPhone !== "Unavailable" && activePatientDrawer.contactPhone.replace(/\D/g, "") !== "");
+                        const isEmailAvail = Boolean(activePatientDrawer.contactEmail && activePatientDrawer.contactEmail !== "Unavailable" && activePatientDrawer.contactEmail.trim() !== "");
+
+                        return (
+                          <div className="bg-white border-2 border-[#007bff] rounded-md p-4 space-y-5 shadow-sm animate-in fade-in duration-200 relative">
+                            <div className="flex items-center justify-between border-b border-[#dee2e6] pb-2.5">
+                              <div className="flex items-center gap-2 text-[#007bff] font-bold text-xs">
+                                <span>Select Channel & Customize Message</span>
+                              </div>
                             </div>
-                            <span className="text-[10px] bg-[#e3f2fd] text-[#0d47a1] font-bold px-2 py-0.5 rounded">
-                              Target: {activePatientDrawer.suggestedAction}
-                            </span>
-                          </div>
 
-                          {/* Channel Selector Pills */}
-                          <div>
-                            <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-2">
-                              Outreach Channel
-                            </label>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                              {[
-                                { id: "sms" as const, label: "Spruce SMS ($0 Copay)", icon: MessageSquare },
-                                { id: "call" as const, label: "Direct Phone Call", icon: Phone },
-                                { id: "email" as const, label: "Secure Email", icon: Mail },
-                                { id: "ehr" as const, label: "EHR Task Queue", icon: FileText },
-                              ].map((ch) => {
-                                const Icon = ch.icon;
-                                const isSelected = selectedChannel === ch.id;
-                                return (
-                                  <button
-                                    key={ch.id}
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedChannel(ch.id);
-                                      const firstName = activePatientDrawer.name.split(" ")[0] || activePatientDrawer.name;
-                                      if (ch.id === "sms") {
-                                        setActionNote(`Hi ${firstName}, regarding your recent ${activePatientDrawer.condition} care gap (${activePatientDrawer.reason}). Your Spruce DPC member benefits include $0 copay visits. Tap here or reply to schedule your check-in with ${activePatientDrawer.physician}.`);
-                                      } else if (ch.id === "call") {
-                                        setActionNote(`Phone Outreach for ${activePatientDrawer.name}: Review ${activePatientDrawer.condition} gap status and explain DPC $0 copay visits & lab work with ${activePatientDrawer.physician}.`);
-                                      } else if (ch.id === "email") {
-                                        setActionNote(`Subject: Care Coordination & Spruce DPC Check-in\n\nDear ${activePatientDrawer.name},\nWe noticed an open care gap regarding your ${activePatientDrawer.condition} care plan...`);
-                                      } else {
-                                        setActionNote(`EHR Care Gap Alert: Front Desk and Care Team notification for ${activePatientDrawer.name} (${activePatientDrawer.condition}) regarding ${activePatientDrawer.reason}.`);
-                                      }
-                                    }}
-                                    className={`p-2 rounded text-left border flex flex-col gap-1 transition-all text-xs font-semibold ${
-                                      isSelected
-                                        ? "border-[#007bff] bg-[#e3f2fd]/60 text-[#0d47a1] shadow-2xs"
-                                        : "border-[#dee2e6] bg-[#f8f9fa] text-[#495057] hover:bg-[#e9ecef]"
-                                    }`}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <Icon className="size-3.5" />
-                                      {isSelected && <span className="size-2 rounded-full bg-[#007bff]" />}
-                                    </div>
-                                    <span className="truncate">{ch.label}</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
+                            {/* Red Error Banner when unavailable contact method is clicked */}
+                            {outreachError && (
+                              <div className="bg-[#fff0f4] border-2 border-[#e61952] text-[#c91244] p-3 rounded-md flex items-center justify-between gap-3 shadow-md mb-2 animate-in fade-in duration-200 z-10 relative">
+                                <div className="flex items-center gap-2 font-bold text-xs">
+                                  <ShieldAlert className="size-4 text-[#e61952] shrink-0" />
+                                  <span>{outreachError}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => setOutreachError(null)}
+                                  className="px-2.5 py-1 bg-white border border-[#e61952] text-[#e61952] hover:bg-[#e61952] hover:text-white font-bold text-xs rounded shadow-2xs transition-colors shrink-0 cursor-pointer pointer-events-auto"
+                                >
+                                  Clear
+                                </button>
+                              </div>
+                            )}
 
-                          {/* Editable Message / Note */}
-                          <div>
-                            <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-1.5">
-                              {selectedChannel === "sms" ? "Secure SMS Preview (Editable)" : selectedChannel === "call" ? "Call Script / Clinical Note" : selectedChannel === "email" ? "Email Draft (Editable)" : "EHR Task Description"}
-                            </label>
-                            <textarea
-                              rows={3}
-                              value={actionNote}
-                              onChange={(e) => setActionNote(e.target.value)}
-                              className="w-full text-xs text-[#212529] p-2.5 rounded border border-[#dee2e6] bg-[#fdfdfd] focus:outline-none focus:border-[#007bff] font-mono leading-relaxed"
-                            />
-                          </div>
+                            {/* Main Section Content - Grayed out if outreachError is set */}
+                            <div className={`space-y-5 transition-all duration-200 ${outreachError ? "opacity-40 grayscale pointer-events-none select-none" : ""}`}>
+                              {/* Channel Selector Pills */}
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-2">
+                                  Outreach Channel
+                                </label>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                  {[
+                                    { id: "call" as const, label: "Direct Phone Call", icon: Phone },
+                                    { id: "email" as const, label: "Secure Email", icon: Mail },
+                                    { id: "sms" as const, label: "Direct SMS Outreach", icon: MessageSquare },
+                                  ].map((ch) => {
+                                    const Icon = ch.icon;
+                                    const isSelected = selectedChannel === ch.id;
+                                    const isOptionDisabled = ch.id === "email" ? !isEmailAvail : !isPhoneAvail;
 
-                          {/* Assigned Staff */}
-                          <div>
-                            <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-1">
-                              Assigned Care Team Member
-                            </label>
-                            <select
-                              value={assignedStaff}
-                              onChange={(e) => setAssignedStaff(e.target.value)}
-                              className="w-full text-xs text-[#212529] p-2 rounded border border-[#dee2e6] bg-white font-medium focus:outline-none focus:border-[#007bff]"
-                            >
-                              <option value="Sarah Jenkins, RN (Care Coordinator)">Sarah Jenkins, RN (Care Coordinator)</option>
-                              <option value="Dr. Marcus Vance (Primary Care Physician)">Dr. Marcus Vance (Primary Care Physician)</option>
-                              <option value="Elena Rostova, MA (Front Desk / Outreach)">Elena Rostova, MA (Front Desk / Outreach)</option>
-                            </select>
-                          </div>
+                                    return (
+                                      <button
+                                        key={ch.id}
+                                        type="button"
+                                        onClick={() => {
+                                          if (isOptionDisabled) {
+                                            const missingType = ch.id === "email" ? "email" : "phone number";
+                                            setOutreachError(`${missingType} is unavailable please use other method for outreach`);
+                                            return;
+                                          }
+                                          setOutreachError(null);
+                                          setSelectedChannel(ch.id);
+                                          if (ch.id === "call") {
+                                            setActionNote(`Phone Outreach for ${activePatientDrawer.name}: Review ${activePatientDrawer.condition} gap status and explain DPC $0 copay visits & lab work with ${activePatientDrawer.physician}.`);
+                                          } else if (ch.id === "email") {
+                                            setActionNote(`Subject: Care Coordination & DPC Check-in\n\nDear ${activePatientDrawer.name},\nWe noticed an open care gap regarding your ${activePatientDrawer.condition} care plan...`);
+                                          } else {
+                                            setActionNote(`SMS Outreach to ${activePatientDrawer.name}: Hi ${activePatientDrawer.name.split(" ")[0]}, your DPC care team noticed an open care gap for ${activePatientDrawer.condition}. Please reply to schedule your $0 copay check-in or lab work.`);
+                                          }
+                                        }}
+                                        className={`p-2.5 rounded text-left border flex flex-col gap-1.5 transition-all text-xs font-semibold ${
+                                          isOptionDisabled
+                                            ? "border-dashed border-[#dee2e6] bg-[#f1f3f5] text-[#adb5bd] cursor-not-allowed opacity-60 pointer-events-auto"
+                                            : isSelected
+                                            ? "border-[#007bff] bg-[#e3f2fd]/70 text-[#0d47a1] shadow-2xs ring-1 ring-[#007bff]/30 cursor-pointer pointer-events-auto"
+                                            : "border-[#dee2e6] bg-[#f8f9fa] text-[#495057] hover:bg-[#e9ecef] cursor-pointer pointer-events-auto"
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          {!isOptionDisabled ? (
+                                            <Icon className={`size-4 ${isSelected ? "text-[#007bff]" : "text-[#6c757d]"}`} />
+                                          ) : (
+                                            <span className="text-[9px] font-bold uppercase bg-[#e9ecef] text-[#868e96] px-1.5 py-0.5 rounded">
+                                              Unavailable
+                                            </span>
+                                          )}
+                                          {isSelected && !isOptionDisabled && <span className="size-2 rounded-full bg-[#007bff]" />}
+                                        </div>
+                                        <span className="truncate">{ch.label}</span>
+                                        {isOptionDisabled && (
+                                          <span className="text-[10px] font-normal text-[#868e96]">
+                                            {ch.id === "email" ? "No Email ID" : "No Phone #"}
+                                          </span>
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Target Action Pill */}
+                              <div className="flex items-center">
+                                <span className="text-[10px] bg-[#e3f2fd] text-[#0d47a1] font-bold px-2.5 py-1 rounded">
+                                  Target: {activePatientDrawer.suggestedAction}
+                                </span>
+                              </div>
+
+                              {/* Editable Message / Note */}
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase text-[#6c757d] tracking-wide mb-1.5">
+                                  {selectedChannel === "sms" ? "Secure SMS Preview (Editable)" : selectedChannel === "call" ? "Call Script / Clinical Note" : "Email Draft (Editable)"}
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  value={actionNote}
+                                  onChange={(e) => setActionNote(e.target.value)}
+                                  className="w-full text-xs text-[#212529] p-2.5 rounded border border-[#dee2e6] bg-[#fdfdfd] focus:outline-none focus:border-[#007bff] font-mono leading-relaxed"
+                                />
+                              </div>
 
                           {/* Step 1 Action Bar */}
                           <div className="pt-2 border-t border-[#dee2e6] flex items-center justify-between gap-3">
@@ -1058,7 +1047,9 @@ export function ClassicUtilizationGaps() {
                             </button>
                           </div>
                         </div>
-                      )}
+                      </div>
+                    );
+                  })()}
 
                       {/* STATE 3: STEP 2 (FINAL REVIEW & CONFIRMATION) */}
                       {actionStep === "step2" && (
@@ -1066,11 +1057,8 @@ export function ClassicUtilizationGaps() {
                           <div className="flex items-center justify-between border-b border-[#fd7e14]/30 pb-2">
                             <div className="flex items-center gap-2 text-[#d96b0c] font-bold text-xs">
                               <ShieldAlert className="size-4" />
-                              <span>Step 2 of 2: Final Confirmation & Execution</span>
+                              <span>Final Confirmation & Execution</span>
                             </div>
-                            <span className="text-[10px] bg-[#fd7e14] text-white font-bold px-2 py-0.5 rounded">
-                              Ready to Execute
-                            </span>
                           </div>
 
                           <div className="bg-white rounded border border-[#fd7e14]/40 p-3 space-y-2 text-xs">
@@ -1172,77 +1160,6 @@ export function ClassicUtilizationGaps() {
                         ))}
                       </div>
                     </div>
-                  </>
-                )}
-
-                {activeDrawerTab === "claims" && (
-                  <div>
-                    <h4 className="font-bold text-[#343a40] uppercase tracking-wide mb-2.5 text-[11px] flex items-center justify-between border-l-2 border-[#e61952] pl-2">
-                      <span>Out-of-Network Claims Leakage</span>
-                      <span className="text-xs text-[#e61952] font-semibold normal-case">{activePatientDrawer.recentClaims.length} claims</span>
-                    </h4>
-                    {activePatientDrawer.recentClaims.length === 0 ? (
-                      <div className="bg-[#f8f9fa] border border-[#dee2e6] rounded-md p-6 text-center text-[#6c757d]">
-                        No external claims leakage recorded for this patient.
-                      </div>
-                    ) : (
-                      <div className="border border-[#dee2e6] rounded-md overflow-hidden bg-white">
-                        <table className="w-full text-left border-collapse">
-                          <thead>
-                            <tr className="bg-[#f8f9fa] text-[#6c757d] text-[11px] font-semibold border-b border-[#dee2e6]">
-                              <th className="py-2.5 px-3">Date</th>
-                              <th className="py-2.5 px-3">External Provider</th>
-                              <th className="py-2.5 px-3">Diagnosis / Procedure</th>
-                              <th className="py-2.5 px-3 text-right">Amount</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#f0f0f0]">
-                            {activePatientDrawer.recentClaims.map((claim) => (
-                              <tr key={claim.id} className="hover:bg-[#f8f9fa] transition-colors">
-                                <td className="py-2.5 px-3 font-mono text-[11px] text-[#6c757d]">{claim.date}</td>
-                                <td className="py-2.5 px-3 font-semibold text-[#212529]">{claim.provider}</td>
-                                <td className="py-2.5 px-3 text-[#495057]">{claim.diagnosis}</td>
-                                <td className="py-2.5 px-3 text-right font-bold text-[#e61952]">{claim.amount}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {activeDrawerTab === "encounters" && (
-                  <div>
-                    <h4 className="font-bold text-[#343a40] uppercase tracking-wide mb-2.5 text-[11px] flex items-center justify-between border-l-2 border-[#007bff] pl-2">
-                      <span>Recent Clinical Encounters & Notes</span>
-                      <span className="text-xs text-[#007bff] font-semibold normal-case">{activePatientDrawer.recentEncounters.length} visits</span>
-                    </h4>
-                    {activePatientDrawer.recentEncounters.length === 0 ? (
-                      <div className="bg-[#f8f9fa] border border-[#dee2e6] rounded-md p-6 text-center text-[#6c757d]">
-                        No completed DPC clinical encounters on file.
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {activePatientDrawer.recentEncounters.map((enc) => (
-                          <div key={enc.id} className="bg-[#f8f9fa] border border-[#dee2e6] rounded-md p-4 space-y-2">
-                            <div className="flex items-center justify-between pb-2 border-b border-[#e9ecef]">
-                              <span className="font-bold text-[#212529] text-[13px]">{enc.type}</span>
-                              <span className="font-mono text-[11px] text-[#adb5bd]">{enc.date}</span>
-                            </div>
-                            <div className="text-xs font-semibold text-[#495057] flex items-center gap-1.5">
-                              <Stethoscope className="size-3.5 text-[#adb5bd]" />
-                              <span>Provider: {enc.provider}</span>
-                            </div>
-                            <p className="text-xs text-[#343a40] bg-white p-2.5 rounded border border-[#e9ecef] leading-relaxed">
-                              "{enc.notes}"
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
 
@@ -1257,22 +1174,12 @@ export function ClassicUtilizationGaps() {
 
               <div className="flex items-center gap-2">
                 {actionStep === "overview" && (
-                  <>
-                    <button
-                      onClick={() => openDrawerWithStep(activePatientDrawer, "step1", "sms")}
-                      className="px-3.5 py-2 rounded border border-[#e61952] bg-[#fff0f4] text-[#e61952] hover:bg-[#e61952] hover:text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
-                    >
-                      <MessageSquare className="size-3.5" />
-                      <span>Send Spruce SMS</span>
-                    </button>
-
-                    <button
-                      onClick={() => openDrawerWithStep(activePatientDrawer, "step1")}
-                      className="px-4 py-2 rounded bg-[#e61952] hover:bg-[#c81345] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
-                    >
-                      <span>Initiate 2-Step Action →</span>
-                    </button>
-                  </>
+                  <button
+                    onClick={() => openDrawerWithStep(activePatientDrawer, "step1")}
+                    className="px-4 py-2 rounded bg-[#e61952] hover:bg-[#c81345] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                  >
+                    <span>Initiate 2-Step Action →</span>
+                  </button>
                 )}
 
                 {actionStep === "step1" && (

@@ -14,6 +14,7 @@ import {
   Download,
   MoreHorizontal,
   Sparkles,
+  Layers,
 } from "lucide-react";
 import { 
   AreaChart, Area, LineChart, Line, BarChart, Bar, Cell,
@@ -265,39 +266,22 @@ export default function Home() {
   }
 
   return (
-    <Page title={greeting} subtitle={subtitleText}>
+    <Page
+      title={greeting}
+      subtitle={subtitleText}
+      actions={
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/home-classic")}
+          className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40 font-semibold"
+        >
+          <Layers className="size-3.5" />
+          <span>Legacy UI</span>
+        </Button>
+      }
+    >
 
-
-      {/* Quick Actions Row */}
-      <div className="mb-6 stagger-section">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="size-4 text-primary animate-pulse" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">AI Powered Quick Actions</h3>
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <QuickActionCard 
-            title="Auto-Close Care Gaps"
-            description="AI detected 14 patients overdue for preventive diabetic screenings. Pre-draft outreach templates."
-            impact="+$2,400 Bonus"
-            icon={ListTodo}
-            onAction={() => setActiveAction("care-gaps")}
-          />
-          <QuickActionCard 
-            title="Resolve Claims Denials"
-            description="Claim #4020 rejected due to missing secondary ICD-10 code. Auto-fill and re-submit."
-            impact="$1,280 Recoverable"
-            icon={FileCheck}
-            onAction={() => setActiveAction("claims")}
-          />
-          <QuickActionCard 
-            title="Fill Schedule Cancellation"
-            description="Dr. Evans has an empty slot tomorrow at 2:00 PM. 3 high-priority waitlist patients matched."
-            impact="100% Utilization"
-            icon={Calendar}
-            onAction={() => setActiveAction("cancellation")}
-          />
-        </div>
-      </div>
 
       {/* Performance Overview Heading */}
       <div className="flex items-center gap-2 mb-3 stagger-section">

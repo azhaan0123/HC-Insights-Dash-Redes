@@ -232,8 +232,8 @@ export const ACTION_CENTRE_PATIENTS: ActionCentrePatientRow[] = Array.from({ len
     reason: pick(REASONS_BY_COHORT[cohort]),
     suggestedAction: actionObj.text,
     suggestedActionType: actionObj.type,
-    contactPhone: phone(),
-    contactEmail: email(name),
+    contactPhone: (idx % 6 === 1 || idx % 12 === 5) ? "Unavailable" : phone(),
+    contactEmail: (idx % 6 === 2 || idx % 12 === 5) ? "Unavailable" : email(name),
     employer: pick(EMPLOYERS),
     physician: pick(PHYSICIANS),
     engagementHistory: [

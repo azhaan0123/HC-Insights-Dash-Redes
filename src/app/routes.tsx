@@ -94,6 +94,7 @@ import MedicationRefills from "./pages/outcomes/MedicationRefills";
 import LabCadence from "./pages/outcomes/LabCadence";
 import ReportBuilder from "./pages/outcomes/ReportBuilder";
 import { ClassicUtilizationGaps } from "./pages/action-centre-classic/ClassicUtilizationGaps";
+import { ClassicHome } from "./pages/action-centre-classic/ClassicHome";
 
 export const router = createBrowserRouter([
   {
@@ -119,6 +120,10 @@ export const router = createBrowserRouter([
   {
     path: "/utilization-gaps-classic",
     Component: ClassicUtilizationGaps,
+  },
+  {
+    path: "/home-classic",
+    Component: ClassicHome,
   },
   {
     path: "/wiki",

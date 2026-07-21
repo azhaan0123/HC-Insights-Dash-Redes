@@ -161,6 +161,7 @@ export function ClassicActionCentreOverview() {
     <ClassicLayout
       title="Utilization Gaps"
       subtitleNote="Note: Click a card to view details, cards without data are not clickable."
+      activeNavIndex={1}
     >
       {/* SECTION 1: OPERATIONAL SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
@@ -648,17 +649,10 @@ export function ClassicActionCentreOverview() {
                   <div className="grid grid-cols-1 gap-2">
                     <button
                       onClick={() => executeAction(selectedPatient)}
-                      className="w-full py-2.5 px-4 rounded bg-[#e61952] hover:bg-[#c91244] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
+                      className="w-full py-2.5 px-4 rounded bg-[#e61952] hover:bg-[#c91244] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                     >
                       <Send className="size-3.5" />
                       <span>Execute Primary Action ({selectedPatient.suggestedAction})</span>
-                    </button>
-                    <button
-                      onClick={() => executeAction(selectedPatient, "Spruce Direct Secure SMS")}
-                      className="w-full py-2 px-4 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[#212529] font-semibold text-xs flex items-center justify-center gap-2"
-                    >
-                      <Phone className="size-3.5 text-[#6c757d]" />
-                      <span>Launch Spruce Direct SMS / Call</span>
                     </button>
                   </div>
                 </div>

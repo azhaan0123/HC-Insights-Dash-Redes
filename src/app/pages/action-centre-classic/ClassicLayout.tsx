@@ -69,6 +69,7 @@ export function ClassicLayout({
   const [isAppsMenuOpen, setIsAppsMenuOpen] = useState(false);
 
   const navIcons = [
+    { icon: LayoutDashboard, label: "Home Dashboard", path: "/home-classic" },
     { icon: Users, label: "Utilization Gaps", path: "/utilization-gaps-classic" },
     { icon: Activity, label: "Engagement & Utilization", path: "/engagement" },
     { icon: FileText, label: "Claims Utilization", path: "/claims" },
@@ -111,7 +112,11 @@ export function ClassicLayout({
         <nav className="hidden xl:flex items-center gap-1 px-4">
           {navIcons.map((item, idx) => {
             const Icon = item.icon;
-            const isSelected = idx === activeNavIndex;
+            const isSelected =
+              pathname === item.path ||
+              (item.path === "/home-classic" && pathname.startsWith("/home-classic")) ||
+              (item.path === "/utilization-gaps-classic" && (pathname.startsWith("/utilization-gaps-classic") || pathname.startsWith("/action-centre-classic"))) ||
+              (activeNavIndex !== undefined && idx === activeNavIndex && !navIcons.some(n => pathname.startsWith(n.path)));
             return (
               <button
                 key={idx}
