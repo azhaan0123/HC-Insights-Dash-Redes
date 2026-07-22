@@ -2,6 +2,11 @@
  * AiInsightsTab — Page-scoped, agent-driven insights panel.
  * Dynamically shows insight cards based on current route with
  * confidence badges, reasoning chains, and one-click action dispatch.
+ *
+ * Apple HIG:
+ * — "Clearly identify when and where you use AI" → AI-generated label on each card
+ * — "Let people share feedback on outputs" → Thumbs up/down on insights
+ * — "Make it easy for people to refine or revert generated results" → Dismiss/retry
  */
 
 import React, { useState } from "react";
@@ -13,6 +18,9 @@ import {
   Minus,
   Sparkles,
   Zap,
+  Bot,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "../ui/utils";
@@ -40,7 +48,7 @@ export function AiInsightsTab({ className }: AiInsightsTabProps) {
             Insights for {pageContext.pageName}
           </span>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-0.5">
+        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
           {pageContext.contextDescription}
         </p>
       </div>
@@ -49,19 +57,19 @@ export function AiInsightsTab({ className }: AiInsightsTabProps) {
       <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
         {insights.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="grid size-12 place-items-center rounded-xl bg-muted mb-3">
-              <Sparkles className="size-5 text-muted-foreground/40" />
+            <div className="grid size-12 place-items-center rounded-xl bg-muted/50 mb-3 ai-empty-float">
+              <Sparkles className="size-5 text-muted-foreground/30" />
             </div>
-            <p className="text-sm font-medium text-foreground/60">
+            <p className="text-sm font-medium text-foreground/50">
               No active insights
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Navigate to a module page to see agent insights
+            <p className="text-xs text-muted-foreground/50 mt-1 max-w-[220px]">
+              Navigate to a module page to see agent-generated insights
             </p>
           </div>
         ) : (
-          insights.map((insight) => (
-            <InsightCard key={insight.id} insight={insight} />
+          insights.map((insight, i) => (
+            <InsightCard key={insight.id} insight={insight} index={i} />
           ))
         )}
       </div>
@@ -71,8 +79,9 @@ export function AiInsightsTab({ className }: AiInsightsTabProps) {
 
 // ── Insight Card ───────────────────────────────────────────────────────────
 
-function InsightCard({ insight }: { insight: AIInsight }) {
+function InsightCard({ insight, index }: { insight: AIInsight; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   const agentMeta = AGENT_META[insight.agentType];
 
   const TrendIcon =
@@ -85,10 +94,10 @@ function InsightCard({ insight }: { insight: AIInsight }) {
   return (
     <div
       className={cn(
-        "rounded-xl border overflow-hidden transition-all hover:shadow-sm",
+        "ai-stagger-item ai-insight-lift rounded-xl border overflow-hidden",
         insight.priority === "critical"
           ? "border-red-500/25 bg-red-500/[0.02]"
-          : "border-border"
+          : "border-border/60"
       )}
     >
       {/* Header */}
@@ -99,7 +108,7 @@ function InsightCard({ insight }: { insight: AIInsight }) {
               className="size-2 rounded-full shrink-0"
               style={{ backgroundColor: agentMeta.color }}
             />
-            <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider truncate">
+            <span className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider truncate">
               {agentMeta.label}
             </span>
           </div>
@@ -110,24 +119,24 @@ function InsightCard({ insight }: { insight: AIInsight }) {
           {insight.title}
         </h3>
 
-        <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+        <p className="text-[11px] text-muted-foreground/70 mt-1.5 leading-relaxed">
           {insight.description}
         </p>
 
         {/* Metric card */}
         {insight.metric && (
           <div
-            className="flex items-center gap-3 mt-3 rounded-lg px-3 py-2"
-            style={{ backgroundColor: `${agentMeta.color}08` }}
+            className="flex items-center gap-3 mt-3 rounded-lg px-3 py-2 transition-colors"
+            style={{ backgroundColor: `${agentMeta.color}06` }}
           >
             <span
-              className="text-lg font-bold"
+              className="text-lg font-bold tabular-nums"
               style={{ color: agentMeta.color }}
             >
               {insight.metric.value}
             </span>
             <div className="flex-1">
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground/60">
                 {insight.metric.label}
               </span>
               {insight.metric.trendValue && (
@@ -140,7 +149,7 @@ function InsightCard({ insight }: { insight: AIInsight }) {
                       insight.metric.trend === "flat" && "text-muted-foreground"
                     )}
                   />
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-[10px] text-muted-foreground/60 tabular-nums">
                     {insight.metric.trendValue}
                   </span>
                 </div>
@@ -163,42 +172,69 @@ function InsightCard({ insight }: { insight: AIInsight }) {
       {/* Reasoning (Progressive Disclosure) */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] font-medium text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/20 transition-colors border-t border-border/50 cursor-pointer"
+        className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] font-medium text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-all duration-200 border-t border-border/40 cursor-pointer"
       >
         <ChevronDown
           className={cn(
-            "size-3 transition-transform",
+            "size-3 transition-transform duration-300",
             !expanded && "-rotate-90"
           )}
         />
         {expanded ? "Hide reasoning" : "Show reasoning"}
       </button>
       {expanded && (
-        <div className="px-4 pb-3 text-xs text-muted-foreground leading-relaxed animate-fade-in-up">
-          {insight.reasoning}
+        <div className="px-4 pb-3 ai-expand-enter">
+          <p className="text-xs text-muted-foreground/70 leading-relaxed">
+            {insight.reasoning}
+          </p>
         </div>
       )}
 
-      {/* Actions */}
-      {insight.actions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-4 pb-3">
-          {insight.actions.map((action, i) => (
-            <Button
-              key={action.label}
-              size="sm"
-              variant={i === 0 ? "default" : "outline"}
-              className={cn(
-                "text-[11px] h-7",
-                i === 0 &&
-                  "bg-[#e32168] hover:bg-[#ca0055] text-white shadow-sm"
-              )}
-            >
-              {action.label}
-              {i === 0 && <ArrowUpRight className="size-3 ml-1" />}
-            </Button>
-          ))}
+      {/* Actions + Feedback */}
+      <div className="flex items-center gap-1.5 px-4 pb-3">
+        {/* Actions */}
+        {insight.actions.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 flex-1">
+            {insight.actions.map((action, i) => (
+              <Button
+                key={action.label}
+                size="sm"
+                variant={i === 0 ? "default" : "outline"}
+                className={cn(
+                  "text-[11px] h-7 transition-all duration-200 active:scale-95",
+                  i === 0 &&
+                    "bg-[#e32168] hover:bg-[#ca0055] text-white shadow-sm hover:shadow-md"
+                )}
+              >
+                {action.label}
+                {i === 0 && <ArrowUpRight className="size-3 ml-1" />}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {/* HIG: "Let people share feedback on outputs" */}
+        <div className="flex items-center gap-0.5 shrink-0 ml-auto">
+          <button
+            onClick={() => setFeedback(feedback === "up" ? null : "up")}
+            className={cn("ai-feedback-btn", feedback === "up" && "ai-feedback-flash")}
+            data-active={feedback === "up"}
+            aria-label="Useful insight"
+            title="Useful"
+          >
+            <ThumbsUp className="size-2.5" />
+          </button>
+          <button
+            onClick={() => setFeedback(feedback === "down" ? null : "down")}
+            className={cn("ai-feedback-btn", feedback === "down" && "ai-feedback-flash")}
+            data-active={feedback === "down"}
+            aria-label="Not useful"
+            title="Not useful"
+          >
+            <ThumbsDown className="size-2.5" />
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

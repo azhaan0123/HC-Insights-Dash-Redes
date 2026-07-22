@@ -2,6 +2,12 @@
  * PlanPreview — Multi-step plan preview before agent execution.
  * Shows plan summary, assumptions, scope, and individually editable steps.
  * This is the most critical UX moment in agentic interaction.
+ *
+ * Apple HIG:
+ * — "Consider consequences and get permission before performing irreversible tasks"
+ * — "Keep people in control" → every step is editable/skippable
+ * — "Make it easy for people to refine or revert generated results"
+ *   → Edit/Skip controls on each step
  */
 
 import React, { useState } from "react";
@@ -13,6 +19,8 @@ import {
   X,
   CheckCircle2,
   ChevronDown,
+  ShieldCheck,
+  Info,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "../ui/utils";
@@ -55,7 +63,7 @@ export function PlanPreview({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card overflow-hidden",
+        "rounded-xl border border-border/60 bg-card overflow-hidden",
         className
       )}
     >
@@ -63,13 +71,14 @@ export function PlanPreview({
       <SectionHeader
         icon={<FileText className="size-3.5 text-[#e32168]" />}
         title="Plan Summary"
+        stepNumber={1}
         isOpen={expandedSections.has("summary")}
         onToggle={() => toggle("summary")}
       />
       {expandedSections.has("summary") && (
-        <div className="px-4 pb-3 text-xs text-muted-foreground leading-relaxed">
-          <div className="bg-[#e32168]/5 border border-[#e32168]/10 rounded-lg p-3 mt-1">
-            <p className="text-foreground/90">
+        <div className="px-4 pb-3 text-xs text-muted-foreground/70 leading-relaxed ai-expand-enter">
+          <div className="bg-[#e32168]/[0.03] border border-[#e32168]/8 rounded-lg p-3 mt-1">
+            <p className="text-foreground/80">
               I will{" "}
               {steps.map((s, i) => (
                 <span key={s.id}>
@@ -87,10 +96,10 @@ export function PlanPreview({
 
             {/* Gate Ranking & SLA Timeout Profile */}
             {(action.reversibility || action.timeoutPolicy) && (
-              <div className="mt-3 pt-2.5 border-t border-border/40 grid grid-cols-2 gap-2 text-[10px] font-mono">
+              <div className="mt-3 pt-2.5 border-t border-border/30 grid grid-cols-2 gap-2 text-[10px] font-mono">
                 {action.reversibility && (
-                  <div className="bg-card px-2 py-1 rounded border border-border/60">
-                    <span className="text-muted-foreground block">Gate Type:</span>
+                  <div className="bg-card px-2 py-1.5 rounded border border-border/40">
+                    <span className="text-muted-foreground/50 block text-[9px]">Gate Type:</span>
                     <strong className={cn(
                       "capitalize",
                       action.reversibility === "irreversible" ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"
@@ -100,9 +109,9 @@ export function PlanPreview({
                   </div>
                 )}
                 {action.timeoutPolicy && (
-                  <div className="bg-card px-2 py-1 rounded border border-border/60">
-                    <span className="text-muted-foreground block">SLA Timeout:</span>
-                    <strong className="text-foreground">
+                  <div className="bg-card px-2 py-1.5 rounded border border-border/40">
+                    <span className="text-muted-foreground/50 block text-[9px]">SLA Timeout:</span>
+                    <strong className="text-foreground/80">
                       {action.timeoutPolicy.durationHours}h ({action.timeoutPolicy.actionOnTimeout})
                     </strong>
                   </div>
@@ -112,25 +121,25 @@ export function PlanPreview({
 
             {/* Grounding Verification Check */}
             {action.selfReflectionVerification && (
-              <div className="mt-2.5 pt-2 border-t border-border/40 flex items-center justify-between text-[10px]">
+              <div className="mt-2.5 pt-2 border-t border-border/30 flex items-center justify-between text-[10px]">
                 <span className="font-semibold flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="size-3" />
                   Grounding Pass: {action.selfReflectionVerification.status.toUpperCase()}
                 </span>
-                <span className="font-mono text-[9px] text-muted-foreground">
+                <span className="font-mono text-[9px] text-muted-foreground/50">
                   Verified against: {action.selfReflectionVerification.verifiedAgainst.join(", ")}
                 </span>
               </div>
             )}
 
-            {/* Alternatives Evaluated & Discarded (Element #4 of Five-Element Reviewer Interface) */}
+            {/* Alternatives Evaluated & Discarded */}
             {action.alternativesConsidered && action.alternativesConsidered.length > 0 && (
-              <div className="mt-2.5 pt-2 border-t border-border/40 space-y-1">
-                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider block">
+              <div className="mt-2.5 pt-2 border-t border-border/30 space-y-1">
+                <span className="text-[9px] font-semibold text-muted-foreground/50 uppercase tracking-wider block">
                   Alternatives Considered & Discarded:
                 </span>
                 {action.alternativesConsidered.map((alt, i) => (
-                  <div key={i} className="text-[10px] text-muted-foreground/90 bg-muted/30 px-2 py-1 rounded border border-border/30 italic">
+                  <div key={i} className="text-[10px] text-muted-foreground/60 bg-muted/20 px-2 py-1 rounded border border-border/20 italic">
                     &bull; {alt}
                   </div>
                 ))}
@@ -144,11 +153,12 @@ export function PlanPreview({
       <SectionHeader
         icon={<Lightbulb className="size-3.5 text-amber-500" />}
         title="Assumptions"
+        stepNumber={2}
         isOpen={expandedSections.has("assumptions")}
         onToggle={() => toggle("assumptions")}
       />
       {expandedSections.has("assumptions") && (
-        <div className="px-4 pb-3 text-xs text-muted-foreground leading-relaxed">
+        <div className="px-4 pb-3 text-xs text-muted-foreground/70 leading-relaxed ai-expand-enter">
           <ul className="space-y-1.5 mt-1">
             <li className="flex items-start gap-2">
               <span className="text-amber-500 mt-0.5">•</span>
@@ -185,31 +195,32 @@ export function PlanPreview({
       <SectionHeader
         icon={<Target className="size-3.5 text-blue-500" />}
         title="Scope"
+        stepNumber={3}
         isOpen={expandedSections.has("scope")}
         onToggle={() => toggle("scope")}
       />
       {expandedSections.has("scope") && (
-        <div className="px-4 pb-3">
+        <div className="px-4 pb-3 ai-expand-enter">
           <div className="grid grid-cols-3 gap-2 mt-1">
-            <div className="rounded-lg bg-blue-500/5 border border-blue-500/10 p-2 text-center">
-              <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+            <div className="rounded-lg bg-blue-500/[0.04] border border-blue-500/10 p-2 text-center">
+              <p className="text-lg font-bold text-blue-600 dark:text-blue-400 ai-counter-pulse tabular-nums">
                 {totalPatients || "23"}
               </p>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground/60">
                 Patients affected
               </p>
             </div>
-            <div className="rounded-lg bg-purple-500/5 border border-purple-500/10 p-2 text-center">
-              <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+            <div className="rounded-lg bg-purple-500/[0.04] border border-purple-500/10 p-2 text-center">
+              <p className="text-lg font-bold text-purple-600 dark:text-purple-400 ai-counter-pulse tabular-nums">
                 {steps.length}
               </p>
-              <p className="text-[10px] text-muted-foreground">Steps</p>
+              <p className="text-[10px] text-muted-foreground/60">Steps</p>
             </div>
-            <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/10 p-2 text-center">
-              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="rounded-lg bg-emerald-500/[0.04] border border-emerald-500/10 p-2 text-center">
+              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 ai-counter-pulse tabular-nums">
                 {steps.filter((s) => s.isSkippable).length}
               </p>
-              <p className="text-[10px] text-muted-foreground">Optional</p>
+              <p className="text-[10px] text-muted-foreground/60">Optional</p>
             </div>
           </div>
         </div>
@@ -219,27 +230,28 @@ export function PlanPreview({
       <SectionHeader
         icon={<Edit3 className="size-3.5 text-purple-500" />}
         title="Editable Plan"
+        stepNumber={4}
         isOpen={expandedSections.has("plan")}
         onToggle={() => toggle("plan")}
       />
       {expandedSections.has("plan") && (
-        <div className="px-4 pb-3 space-y-2 mt-1">
+        <div className="px-4 pb-3 space-y-2 mt-1 ai-expand-enter">
           {steps.map((step, i) => (
             <div
               key={step.id}
               className={cn(
-                "flex items-start gap-2.5 rounded-lg border px-3 py-2 text-xs transition-colors",
+                "ai-stagger-item flex items-start gap-2.5 rounded-lg border px-3 py-2 text-xs transition-all duration-200",
                 step.isEditable
-                  ? "border-border hover:border-[#e32168]/30 bg-card"
-                  : "border-border/50 bg-muted/30"
+                  ? "border-border/50 hover:border-[#e32168]/25 bg-card"
+                  : "border-border/30 bg-muted/20"
               )}
             >
-              <span className="text-muted-foreground/50 font-mono text-[10px] mt-0.5 shrink-0">
+              <span className="text-muted-foreground/40 font-mono text-[10px] mt-0.5 shrink-0 tabular-nums">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-foreground/80">
                     {step.label}
                   </span>
                   <ConfidenceBadge
@@ -247,7 +259,7 @@ export function PlanPreview({
                     compact
                   />
                 </div>
-                <p className="text-muted-foreground mt-0.5 leading-relaxed">
+                <p className="text-muted-foreground/60 mt-0.5 leading-relaxed">
                   {step.description}
                 </p>
               </div>
@@ -255,7 +267,7 @@ export function PlanPreview({
                 {step.isEditable && onEdit && (
                   <button
                     onClick={() => onEdit(step.id)}
-                    className="grid size-6 place-items-center rounded text-muted-foreground/50 hover:text-[#e32168] hover:bg-[#e32168]/5 transition-colors cursor-pointer"
+                    className="grid size-6 place-items-center rounded text-muted-foreground/40 hover:text-[#e32168] hover:bg-[#e32168]/5 transition-all duration-200 cursor-pointer"
                     title="Edit step"
                   >
                     <Edit3 className="size-3" />
@@ -264,7 +276,7 @@ export function PlanPreview({
                 {step.isSkippable && onRemoveStep && (
                   <button
                     onClick={() => onRemoveStep(step.id)}
-                    className="grid size-6 place-items-center rounded text-muted-foreground/30 hover:text-red-500 hover:bg-red-500/5 transition-colors cursor-pointer"
+                    className="grid size-6 place-items-center rounded text-muted-foreground/20 hover:text-red-500 hover:bg-red-500/5 transition-all duration-200 cursor-pointer"
                     title="Skip step"
                   >
                     <X className="size-3" />
@@ -276,20 +288,20 @@ export function PlanPreview({
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 px-4 py-3 border-t border-border bg-muted/20">
+      {/* Actions — HIG: careful language for execution */}
+      <div className="flex items-center gap-2 px-4 py-3 border-t border-border/40 bg-muted/10">
         <Button
           size="sm"
-          className="flex-1 text-xs font-medium bg-[#e32168] hover:bg-[#ca0055] text-white shadow-sm"
+          className="flex-1 text-xs font-medium bg-[#e32168] hover:bg-[#ca0055] text-white shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.97]"
           onClick={onApprove}
         >
-          <CheckCircle2 className="size-3.5 mr-1.5" />
-          Execute Plan
+          <ShieldCheck className="size-3.5 mr-1.5" />
+          Approve & Execute
         </Button>
         <Button
           size="sm"
           variant="outline"
-          className="text-xs font-medium"
+          className="text-xs font-medium transition-all duration-200 active:scale-[0.97]"
           onClick={onReject}
         >
           Cancel
@@ -299,29 +311,34 @@ export function PlanPreview({
   );
 }
 
-// ── Section Header ─────────────────────────────────────────────────────────
+// ── Section Header — with step numbering ───────────────────────────────────
 
 function SectionHeader({
   icon,
   title,
+  stepNumber,
   isOpen,
   onToggle,
 }: {
   icon: React.ReactNode;
   title: string;
+  stepNumber: number;
   isOpen: boolean;
   onToggle: () => void;
 }) {
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/30 transition-colors border-b border-border/50 cursor-pointer"
+      className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-foreground/80 hover:bg-muted/20 transition-all duration-200 border-b border-border/30 cursor-pointer"
     >
+      <span className="text-[9px] font-bold text-muted-foreground/30 tabular-nums shrink-0 w-4">
+        {stepNumber}.
+      </span>
       {icon}
       <span>{title}</span>
       <ChevronDown
         className={cn(
-          "size-3.5 ml-auto text-muted-foreground transition-transform",
+          "size-3.5 ml-auto text-muted-foreground/30 transition-transform duration-300",
           !isOpen && "-rotate-90"
         )}
       />

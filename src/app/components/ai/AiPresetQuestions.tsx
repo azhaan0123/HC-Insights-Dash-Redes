@@ -1,10 +1,13 @@
 /**
  * AiPresetQuestions — Context-aware preset question chips.
  * Questions change based on current page/route and active agent type.
+ *
+ * Apple HIG: "Offer diverse, predefined example inputs that hint
+ * at what's possible for a feature."
  */
 
 import React from "react";
-import { MessageSquare, Sparkles } from "lucide-react";
+import { Sparkles, MessageCircle } from "lucide-react";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";
 import { getPresetsForRoute } from "./aiData";
@@ -22,19 +25,23 @@ export function AiPresetQuestions({
   const presets = getPresetsForRoute(pageContext.route);
 
   return (
-    <div className={cn("space-y-2", className)}>
-      <div className="flex items-center gap-1.5 px-1">
-        <Sparkles className="size-3 text-[#e32168]" />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-          Suggested for {pageContext.pageName}
+    <div className={cn("space-y-2 px-1", className)}>
+      <div className="flex items-center gap-1.5">
+        <MessageCircle className="size-3 text-[#e32168]/60" />
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">
+          Try asking
         </span>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {presets.map((q) => (
+        {presets.map((q, i) => (
           <button
             key={q}
             onClick={() => onSelectQuestion(q)}
-            className="rounded-lg border border-border px-3 py-2 text-[11px] text-foreground/80 hover:border-[#e32168]/40 hover:bg-[#e32168]/5 hover:text-[#e32168] transition-all cursor-pointer leading-tight text-left"
+            className={cn(
+              "ai-stagger-item rounded-lg border border-border/60 px-3 py-2 text-[11px] text-foreground/70 leading-tight text-left transition-all duration-200 cursor-pointer",
+              "hover:border-[#e32168]/30 hover:bg-[#e32168]/[0.03] hover:text-[#e32168] hover:shadow-sm",
+              "active:scale-[0.97]"
+            )}
           >
             {q}
           </button>

@@ -3,6 +3,10 @@
  * Four tabs: Chat | Insights | Actions | Audit
  * Dynamic header showing current agent context and active page.
  * Notification badge on Actions tab for pending approval count.
+ *
+ * Apple HIG: "Communicate where your app uses AI."
+ * — Displays AI-powered disclosure pill in header.
+ * — Sets clear expectations via context description.
  */
 
 import React, { useState } from "react";
@@ -12,7 +16,7 @@ import {
   Zap,
   Shield,
   X,
-  ChevronLeft,
+  Bot,
 } from "lucide-react";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";
@@ -52,54 +56,65 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
     >
       {/* Header */}
       <div
-        className="shrink-0 border-b border-border"
+        className="shrink-0 border-b border-border ai-glass-header"
         style={{
-          background: `linear-gradient(135deg, ${agentMeta.color}08, transparent)`,
+          background: `linear-gradient(135deg, ${agentMeta.color}06, ${agentMeta.color}02, transparent)`,
         }}
       >
         {/* Top bar */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 pt-3.5 pb-2.5">
           <div className="flex items-center gap-2.5">
             <div
               className="grid size-8 place-items-center rounded-xl text-white shadow-sm"
-              style={{ backgroundColor: agentMeta.color }}
+              style={{
+                backgroundColor: agentMeta.color,
+                boxShadow: `0 2px 8px -2px ${agentMeta.color}40`,
+              }}
             >
               <Sparkles className="size-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-foreground leading-none">
-                Helix
-              </h2>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-foreground leading-none">
+                  Helix
+                </h2>
+                {/* Apple HIG: "Communicate where your app uses AI" */}
+                <span className="ai-disclosure-pill">
+                  <Bot className="size-2.5" />
+                  AI-Powered
+                </span>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1 leading-none">
                 {agentMeta.label} · {pageContext.pageName}
               </p>
             </div>
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="grid size-7 place-items-center rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="grid size-7 place-items-center rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-muted/80 transition-all duration-200 cursor-pointer"
+            aria-label="Close AI sidebar"
           >
             <X className="size-4" />
           </button>
         </div>
 
-        {/* Context Banner */}
-        <div className="px-4 pb-2">
+        {/* Context Banner — HIG: "Set clear expectations" */}
+        <div className="px-4 pb-2.5">
           <div
-            className="rounded-lg px-3 py-1.5 text-[10px] text-foreground/60 leading-relaxed"
+            className="rounded-lg px-3 py-1.5 text-[10px] text-foreground/60 leading-relaxed flex items-start gap-1.5"
             style={{ backgroundColor: `${agentMeta.color}06` }}
           >
             <span
-              className="font-semibold"
+              className="font-semibold shrink-0"
               style={{ color: agentMeta.color }}
             >
               Active:
-            </span>{" "}
-            {pageContext.contextDescription}
+            </span>
+            <span>{pageContext.contextDescription}</span>
           </div>
         </div>
 
-        {/* Tab Bar */}
+        {/* Tab Bar — polished with sliding indicator */}
         <div className="flex px-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -108,17 +123,18 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
+                data-active={isActive}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-medium border-b-2 transition-all cursor-pointer relative",
+                  "ai-tab-indicator flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-medium transition-all duration-300 cursor-pointer relative",
                   isActive
-                    ? "border-[#e32168] text-[#e32168]"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                    ? "text-[#e32168]"
+                    : "text-muted-foreground/60 hover:text-foreground"
                 )}
               >
-                <Icon className="size-3.5" />
+                <Icon className={cn("size-3.5 transition-transform duration-200", isActive && "scale-110")} />
                 <span>{tab.label}</span>
                 {tab.badge !== undefined && tab.badge > 0 && (
-                  <span className="absolute top-1.5 right-2 grid size-4 place-items-center rounded-full bg-[#e32168] text-white text-[9px] font-bold leading-none ai-badge-pulse">
+                  <span className="absolute top-1 right-1.5 grid size-4 place-items-center rounded-full bg-[#e32168] text-white text-[9px] font-bold leading-none ai-badge-pulse shadow-sm">
                     {tab.badge}
                   </span>
                 )}

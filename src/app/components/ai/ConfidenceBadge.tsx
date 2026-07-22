@@ -3,10 +3,14 @@
  * High (90%+): Solid emerald with checkmark
  * Medium (70-89%): Hatched amber with explanation tooltip
  * Low (<70%): Red warning with micro-confirmation
+ *
+ * Apple HIG:
+ * — "Raise awareness about and minimize the chance of hallucinations"
+ * — Confidence labels help users calibrate trust in AI outputs.
  */
 
 import React from "react";
-import { CheckCircle2, AlertTriangle, ShieldAlert } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ShieldAlert, Info } from "lucide-react";
 import { cn } from "../ui/utils";
 import type { ConfidenceTier } from "./aiTypes";
 
@@ -59,14 +63,19 @@ export function ConfidenceSpeedometer({
     <div className={cn("w-full py-4 space-y-3.5", className)}>
       {/* Top Title */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+        <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-wider">
           AI Confidence Rating
+        </span>
+        {/* HIG: Disclose AI nature */}
+        <span className="ai-disclosure-pill">
+          <Info className="size-2.5" />
+          AI-assessed
         </span>
       </div>
 
       {/* Main Score and Rating Text */}
       <div className="flex items-baseline gap-2.5">
-        <span className={cn("text-4xl font-medium tracking-tight leading-none", textClass)}>
+        <span className={cn("text-4xl font-medium tracking-tight leading-none tabular-nums", textClass)}>
           {Math.round(score * 100)}%
         </span>
         <span className={cn("text-base font-normal tracking-wide leading-none", textClass)}>
@@ -74,7 +83,7 @@ export function ConfidenceSpeedometer({
         </span>
       </div>
 
-      {/* Segmented Progress Bar */}
+      {/* Segmented Progress Bar — polished with subtle transitions */}
       <div className="flex items-center gap-[3px] w-full">
         {Array.from({ length: totalBars }).map((_, i) => {
           const isActive = i < filledBars;
@@ -82,18 +91,21 @@ export function ConfidenceSpeedometer({
             <div
               key={i}
               className={cn(
-                "h-6 flex-1 rounded-[1px] transition-all duration-300",
+                "h-6 flex-1 rounded-[2px] transition-all duration-500",
                 isActive
                   ? activeBgClass
-                  : "bg-zinc-200 dark:bg-zinc-800"
+                  : "bg-zinc-200/80 dark:bg-zinc-800/80"
               )}
+              style={{
+                transitionDelay: isActive ? `${i * 12}ms` : "0ms",
+              }}
             />
           );
         })}
       </div>
 
       {explanation && (
-        <p className="text-sm text-muted-foreground leading-relaxed pt-1.5 border-t border-border/40 mt-1">
+        <p className="text-sm text-muted-foreground/70 leading-relaxed pt-1.5 border-t border-border/30 mt-1">
           {explanation}
         </p>
       )}
@@ -124,16 +136,16 @@ export function ConfidenceBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+          "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none transition-all duration-200",
           tier === "high" &&
-            "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+            "bg-emerald-500/8 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15",
           tier === "medium" &&
-            "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 border-dashed",
+            "bg-amber-500/8 text-amber-600 dark:text-amber-400 border border-amber-500/15 border-dashed",
           tier === "low" &&
-            "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
+            "bg-red-500/8 text-red-600 dark:text-red-400 border border-red-500/15",
           className
         )}
-        title={explanation}
+        title={explanation || `${tier === "high" ? "High" : tier === "medium" ? "Medium" : "Low"} confidence — AI outputs should be verified by a clinician`}
       >
         {tier === "high" && <span className="size-1.5 rounded-full bg-emerald-500" />}
         {tier === "medium" && <span className="size-1.5 rounded-full bg-amber-500" />}
@@ -148,13 +160,13 @@ export function ConfidenceBadge({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+        "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200",
         tier === "high" &&
-          "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25",
+          "bg-emerald-500/8 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20",
         tier === "medium" &&
-          "bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 border-dashed",
+          "bg-amber-500/8 text-amber-700 dark:text-amber-300 border border-amber-500/20 border-dashed",
         tier === "low" &&
-          "bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/25 ai-badge-low",
+          "bg-red-500/8 text-red-700 dark:text-red-300 border border-red-500/20 ai-badge-low",
         className
       )}
     >
@@ -175,14 +187,14 @@ export function ConfidenceBadge({
           {tier === "low" && "Low Confidence — Verify"}
         </span>
         {explanation && (
-          <span className="text-[10px] opacity-70 leading-tight font-normal">
+          <span className="text-[10px] opacity-60 leading-tight font-normal">
             {explanation}
           </span>
         )}
       </div>
 
       {score !== undefined && (
-        <span className="ml-auto text-[10px] opacity-50 tabular-nums">
+        <span className="ml-auto text-[10px] opacity-40 tabular-nums">
           {Math.round(score * 100)}%
         </span>
       )}

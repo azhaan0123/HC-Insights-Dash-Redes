@@ -1,17 +1,18 @@
 /* ═══════════════════════════════════════════════════════════════════════
    AI Sidebar Styles — Dedicated animations and visual effects
    for the Agentic AI Action Layer.
+   Follows Apple HIG for Generative AI: inclusive, dynamic, premium.
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── Sidebar entrance animation ──────────────────────────────────────── */
 .ai-sidebar-enter {
-  animation: ai-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ai-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes ai-slide-in {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(24px);
   }
   to {
     opacity: 1;
@@ -29,7 +30,7 @@
     box-shadow: 0 0 0 0 rgba(227, 33, 104, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(227, 33, 104, 0);
+    box-shadow: 0 0 0 5px rgba(227, 33, 104, 0);
   }
 }
 
@@ -80,7 +81,7 @@
     box-shadow: 0 0 0 0 rgba(227, 33, 104, 0);
   }
   50% {
-    box-shadow: 0 0 12px 0 rgba(227, 33, 104, 0.08);
+    box-shadow: 0 0 16px 0 rgba(227, 33, 104, 0.08);
   }
 }
 
@@ -167,25 +168,265 @@
 
 /* ── Insight card hover lift ─────────────────────────────────────────── */
 .ai-insight-lift {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ai-insight-lift:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow:
-    0 4px 12px -2px rgba(0, 0, 0, 0.08),
-    0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    0 8px 24px -4px rgba(0, 0, 0, 0.06),
+    0 4px 8px -2px rgba(0, 0, 0, 0.03);
 }
 
-/* ── Fade-in-up (matches existing Tailwind class) ────────────────────── */
+/* ── Fade-in-up ──────────────────────────────────────────────────────── */
 @keyframes ai-fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.ai-fade-in-up {
+  animation: ai-fade-in-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── NEW: Stagger reveal for lists (preset chips, insight cards) ────── */
+.ai-stagger-item {
+  opacity: 0;
+  animation: ai-fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ai-stagger-item:nth-child(1) { animation-delay: 0ms; }
+.ai-stagger-item:nth-child(2) { animation-delay: 50ms; }
+.ai-stagger-item:nth-child(3) { animation-delay: 100ms; }
+.ai-stagger-item:nth-child(4) { animation-delay: 150ms; }
+.ai-stagger-item:nth-child(5) { animation-delay: 200ms; }
+.ai-stagger-item:nth-child(6) { animation-delay: 250ms; }
+.ai-stagger-item:nth-child(7) { animation-delay: 300ms; }
+.ai-stagger-item:nth-child(8) { animation-delay: 350ms; }
+
+/* ── NEW: Chat message entrance ──────────────────────────────────────── */
+.ai-msg-enter {
+  animation: ai-msg-entrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes ai-msg-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── NEW: Smooth expand/collapse ─────────────────────────────────────── */
+.ai-expand-enter {
+  animation: ai-expand 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  overflow: hidden;
+}
+
+@keyframes ai-expand {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+/* ── NEW: Feedback flash (thumbs up/down response) ───────────────────── */
+.ai-feedback-flash {
+  animation: ai-flash 0.5s ease-out;
+}
+
+@keyframes ai-flash {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── NEW: Counter pulse (for scope tiles) ────────────────────────────── */
+.ai-counter-pulse {
+  animation: ai-counter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes ai-counter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── NEW: Tab sliding indicator ──────────────────────────────────────── */
+.ai-tab-indicator {
+  position: relative;
+}
+
+.ai-tab-indicator::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: #e32168;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(-50%);
+}
+
+.ai-tab-indicator[data-active="true"]::after {
+  width: 60%;
+}
+
+/* ── NEW: AI disclosure pill ─────────────────────────────────────────── */
+.ai-disclosure-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, rgba(227, 33, 104, 0.08), rgba(123, 58, 237, 0.06));
+  color: rgba(227, 33, 104, 0.7);
+  border: 1px solid rgba(227, 33, 104, 0.12);
+  user-select: none;
+}
+
+.dark .ai-disclosure-pill {
+  background: linear-gradient(135deg, rgba(227, 33, 104, 0.12), rgba(123, 58, 237, 0.08));
+  color: rgba(251, 91, 135, 0.8);
+  border-color: rgba(227, 33, 104, 0.18);
+}
+
+/* ── NEW: Glassmorphism header ───────────────────────────────────────── */
+.ai-glass-header {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+}
+
+/* ── NEW: Feedback button base ───────────────────────────────────────── */
+.ai-feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted-foreground, #888);
+  opacity: 0.4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-feedback-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.dark .ai-feedback-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.ai-feedback-btn[data-active="true"] {
+  opacity: 1;
+  color: #e32168;
+  background: rgba(227, 33, 104, 0.08);
+  border-color: rgba(227, 33, 104, 0.15);
+}
+
+/* ── NEW: Shimmer loading effect ─────────────────────────────────────── */
+.ai-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.03) 25%,
+    rgba(0, 0, 0, 0.06) 50%,
+    rgba(0, 0, 0, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: ai-shimmer 1.5s ease-in-out infinite;
+}
+
+.dark .ai-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes ai-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── NEW: Empty state float animation ────────────────────────────────── */
+.ai-empty-float {
+  animation: ai-float 4s ease-in-out infinite;
+}
+
+@keyframes ai-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ── NEW: Checkmark success animation ────────────────────────────────── */
+.ai-check-success {
+  animation: ai-check-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes ai-check-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -199,18 +440,58 @@
 }
 
 .ai-sidebar-enter ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
 }
 
 .ai-sidebar-enter ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.15);
 }
 
 .dark .ai-sidebar-enter ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .dark .ai-sidebar-enter ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Accessibility: Reduced Motion
+   Apple HIG: "Ensure an inclusive experience for all."
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-sidebar-enter,
+  .ai-badge-pulse,
+  .ai-badge-low,
+  .ai-progress-pulse,
+  .ai-graduation-glow,
+  .ai-typing-dot,
+  .ai-insight-lift,
+  .ai-stagger-item,
+  .ai-msg-enter,
+  .ai-expand-enter,
+  .ai-feedback-flash,
+  .ai-counter-pulse,
+  .ai-empty-float,
+  .ai-check-success,
+  .ai-shimmer {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .ai-tab-indicator::after {
+    transition: none !important;
+  }
+
+  .ai-helix-glow::before {
+    animation: none !important;
+  }
+
+  .ai-undo-ring::after {
+    animation: none !important;
+  }
 }
