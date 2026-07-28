@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import {
   Search,
   Plus,
-  Copy,
   Download,
   Zap,
-  Mail,
-  MessageSquare,
   Users,
   TrendingUp,
   TrendingDown,
@@ -74,18 +71,20 @@ export function SPSegmentation() {
             <div
               key={seg.id}
               onClick={() => setSelectedSegment(isSelected ? null : seg)}
-              className={`bg-white rounded border shadow-2xs p-4 cursor-pointer transition-all group flex flex-col gap-3 ${
-                isSelected ? "border-[#e61952] ring-1 ring-[#e61952]/20" : "border-[#dee2e6] hover:border-[#e61952]/50"
+              className={`bg-white rounded-lg border shadow-2xs hover:shadow-md p-4 cursor-pointer transition-all group flex flex-col justify-between gap-3 ${
+                isSelected ? "border-[#e61952] ring-2 ring-[#e61952]/20" : "border-[#dee2e6] hover:border-[#e61952]/50"
               }`}
             >
               {/* Header */}
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <div className="size-3 rounded-full shrink-0" style={{ backgroundColor: seg.color }} />
-                  <span className="text-xs font-bold text-[#212529] leading-tight">{seg.name}</span>
+                  <div className="size-3 rounded-full shrink-0 shadow-2xs" style={{ backgroundColor: seg.color }} />
+                  <span className="text-xs font-bold text-[#212529] group-hover:text-[#e61952] transition-colors leading-tight">
+                    {seg.name}
+                  </span>
                 </div>
                 <span
-                  className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-bold ${
+                  className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${
                     isNeg ? "bg-[#d4edda] text-[#155724]" : "bg-[#f8d7da] text-[#721c24]"
                   }`}
                 >
@@ -94,73 +93,19 @@ export function SPSegmentation() {
                 </span>
               </div>
 
-              {/* Count */}
-              <div className="flex items-baseline gap-2">
-                <Users className="size-4 text-[#6c757d]" />
-                <span className="text-2xl font-extrabold text-[#212529] tabular-nums">{seg.patientCount.toLocaleString()}</span>
-                <span className="text-[10px] text-[#6c757d]">patients</span>
-              </div>
+              {/* Patient Count & View Details Callout */}
+              <div className="flex items-end justify-between pt-1">
+                <div className="flex items-baseline gap-1.5">
+                  <Users className="size-4 text-[#6c757d]" />
+                  <span className="text-2xl font-extrabold text-[#212529] tabular-nums">
+                    {seg.patientCount.toLocaleString()}
+                  </span>
+                  <span className="text-[10px] text-[#6c757d] font-medium">patients</span>
+                </div>
 
-              {/* Metrics */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-1.5 rounded bg-[#f8f9fa] border border-[#dee2e6]">
-                  <div className="text-[9px] text-[#6c757d] font-medium flex items-center gap-1">
-                    <Activity className="size-2.5" /> Engagement
-                  </div>
-                  <div className="text-xs font-bold text-[#212529] mt-0.5">{seg.avgEngagement}%</div>
-                </div>
-                <div className="p-1.5 rounded bg-[#f8f9fa] border border-[#dee2e6]">
-                  <div className="text-[9px] text-[#6c757d] font-medium flex items-center gap-1">
-                    <DollarSign className="size-2.5" /> Avg Claims
-                  </div>
-                  <div className="text-xs font-bold text-[#212529] mt-0.5">{seg.avgClaims}</div>
-                </div>
-                <div className="p-1.5 rounded bg-[#f8f9fa] border border-[#dee2e6]">
-                  <div className="text-[9px] text-[#6c757d] font-medium flex items-center gap-1">
-                    <CalendarCheck className="size-2.5" /> Avg Visits
-                  </div>
-                  <div className="text-xs font-bold text-[#212529] mt-0.5">{seg.avgVisits}</div>
-                </div>
-                <div className="p-1.5 rounded bg-[#f8f9fa] border border-[#dee2e6]">
-                  <div className="text-[9px] text-[#6c757d] font-medium flex items-center gap-1">
-                    <Megaphone className="size-2.5" /> Campaigns
-                  </div>
-                  <div className="text-xs font-bold text-[#212529] mt-0.5">{seg.campaigns}</div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1.5 pt-2 border-t border-[#dee2e6]">
-                <button
-                  onClick={(e) => { e.stopPropagation(); toast.info(`Cloning "${seg.name}" segment...`); }}
-                  className="flex items-center gap-1 px-2 py-1 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[9px] font-semibold text-[#495057]"
-                >
-                  <Copy className="size-2.5" /> Clone
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); toast.success(`Exporting "${seg.name}" segment...`); }}
-                  className="flex items-center gap-1 px-2 py-1 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[9px] font-semibold text-[#495057]"
-                >
-                  <Download className="size-2.5" /> Export
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); toast.info(`Attaching automation to "${seg.name}"...`); }}
-                  className="flex items-center gap-1 px-2 py-1 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[9px] font-semibold text-[#495057]"
-                >
-                  <Zap className="size-2.5" /> Automate
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); toast.info(`Bulk email to "${seg.name}"...`); }}
-                  className="flex items-center gap-1 px-2 py-1 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[9px] font-semibold text-[#007bff]"
-                >
-                  <Mail className="size-2.5" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); toast.info(`Bulk text to "${seg.name}"...`); }}
-                  className="flex items-center gap-1 px-2 py-1 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[9px] font-semibold text-[#28a745]"
-                >
-                  <MessageSquare className="size-2.5" />
-                </button>
+                <span className="text-[11px] font-semibold text-[#6c757d] group-hover:text-[#e61952] flex items-center gap-1 transition-colors">
+                  View details <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </div>
             </div>
           );
