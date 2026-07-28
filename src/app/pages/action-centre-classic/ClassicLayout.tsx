@@ -29,6 +29,7 @@ import {
 
 const APPS_MENU = [
   { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
+  { label: "SmartyPants Hub", icon: Users, to: "/smartypants/dashboard", matchPath: "/smartypants" },
   { label: "HCC Insights", icon: BarChart, to: "/hcc", matchPath: "/hcc" },
   { label: "ACO Insights", icon: ClipboardCheck, to: "/aco", matchPath: "/aco" },
   { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes", matchPath: "/outcomes" },
@@ -70,6 +71,7 @@ export function ClassicLayout({
 
   const navIcons = [
     { icon: LayoutDashboard, label: "Home Dashboard", path: "/home-classic" },
+    { icon: Users, label: "SmartyPants DPC Hub", path: "/smartypants/dashboard" },
     { icon: Users, label: "Utilization Gaps", path: "/utilization-gaps-classic" },
     { icon: Activity, label: "Engagement & Utilization", path: "/engagement" },
     { icon: FileText, label: "Claims Utilization", path: "/claims" },
@@ -218,6 +220,43 @@ export function ClassicLayout({
 
       {/* Main Content Area */}
       <main className="flex-1 px-6 py-5 max-w-[1600px] w-full mx-auto flex flex-col gap-4">
+        {/* SmartyPants Sub-Navigation Bar */}
+        {pathname.startsWith("/smartypants") && (
+          <div className="bg-white border border-[#dee2e6] rounded shadow-2xs p-2 flex items-center gap-1.5 overflow-x-auto select-none">
+            <span className="text-[11px] font-bold text-[#e61952] uppercase tracking-wider px-2.5 shrink-0 border-r border-[#dee2e6] pr-3">
+              Care Hub
+            </span>
+            {[
+              { label: "Dashboard", path: "/smartypants/dashboard" },
+              { label: "Internal CRM", path: "/smartypants/crm" },
+              { label: "Segmentation", path: "/smartypants/segmentation" },
+              { label: "Campaigns", path: "/smartypants/campaigns" },
+              { label: "Tasks", path: "/smartypants/tasks" },
+              { label: "Communications", path: "/smartypants/communications" },
+              { label: "External CRM", path: "/smartypants/leads" },
+              { label: "Employer Analytics", path: "/smartypants/employer-analytics" },
+              { label: "Automation Builder", path: "/smartypants/automations" },
+              { label: "Reports", path: "/smartypants/reports" },
+              { label: "Settings", path: "/smartypants/settings" },
+            ].map((subItem) => {
+              const isActive = pathname === subItem.path;
+              return (
+                <button
+                  key={subItem.path}
+                  onClick={() => navigate(subItem.path)}
+                  className={`px-3 py-1.5 rounded text-xs transition-all shrink-0 font-medium cursor-pointer ${
+                    isActive
+                      ? "bg-[#e61952] text-white font-bold shadow-2xs"
+                      : "text-[#495057] hover:bg-[#f8f9fa] hover:text-[#e61952]"
+                  }`}
+                >
+                  {subItem.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Title Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-transparent pb-1">
           <div className="flex items-center gap-2">

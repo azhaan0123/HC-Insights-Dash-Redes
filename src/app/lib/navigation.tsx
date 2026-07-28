@@ -25,6 +25,7 @@ import {
   Sliders,
   FileText,
   ShieldCheck,
+  UserPlus,
   type LucideIcon,
 } from "lucide-react";
 
@@ -131,3 +132,18 @@ export const EMPLOYER_NAV_ITEMS: NavItem[] = [
   { key: "emp-high-cost", label: "High-Cost Claimants", icon: ShieldAlert, path: "/employer/high-cost" },
   { key: "emp-benchmarking", label: "Risk Benchmarking", icon: LineChart, path: "/employer/benchmarking" },
 ];
+
+export const SMARTYPANTS_NAV_ITEMS: NavItem[] = [
+  { key: "sp-dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/smartypants/dashboard" },
+  { key: "sp-crm", label: "Internal CRM", icon: Users, path: "/smartypants/crm" },
+  { key: "sp-segmentation", label: "Patient Segmentation", icon: Layers, path: "/smartypants/segmentation" },
+  { key: "sp-campaigns", label: "Campaign Center", icon: Megaphone, path: "/smartypants/campaigns" },
+  { key: "sp-tasks", label: "Task & Reminders", icon: ListTodo, path: "/smartypants/tasks" },
+  { key: "sp-communications", label: "Communications Center", icon: MessageSquare, path: "/smartypants/communications" },
+  { key: "sp-leads", label: "External CRM (Leads)", icon: UserPlus, path: "/smartypants/leads" },
+  { key: "sp-employer", label: "Employer Analytics", icon: BarChart3, path: "/smartypants/employer-analytics" },
+  { key: "sp-automations", label: "Automation Builder", icon: Workflow, path: "/smartypants/automations" },
+  { key: "sp-reports", label: "Reports & Insights", icon: FileText, path: "/smartypants/reports" },
+  { key: "sp-settings", label: "Settings", icon: Sliders, path: "/smartypants/settings" },
+];
+

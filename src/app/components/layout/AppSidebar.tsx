@@ -24,7 +24,7 @@ import {
   FileText,
   Shield,
 } from "lucide-react";
-import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
+import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SMARTYPANTS_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -146,6 +146,7 @@ export function AppSidebar() {
   const isOutcomes = pathname.startsWith("/outcomes");
   const isMips = pathname.startsWith("/mips");
   const isEmployer = pathname.startsWith("/employer");
+  const isSmartyPants = pathname.startsWith("/smartypants");
 
   const { 
     primaryColor, setPrimaryColor, 
@@ -172,6 +173,9 @@ export function AppSidebar() {
   } else if (isEmployer) {
     navItems = EMPLOYER_NAV_ITEMS;
     groupLabel = "Employer Analytics";
+  } else if (isSmartyPants) {
+    navItems = SMARTYPANTS_NAV_ITEMS;
+    groupLabel = "SmartyPants DPC";
   }
 
   return (
@@ -212,6 +216,13 @@ export function AppSidebar() {
           <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
           <NavMenu items={navItems} />
         </SidebarGroup>
+
+        {!isSmartyPants && (
+          <SidebarGroup>
+            <SidebarGroupLabel>SmartyPants DPC</SidebarGroupLabel>
+            <NavMenu items={SMARTYPANTS_NAV_ITEMS} />
+          </SidebarGroup>
+        )}
 
         <SidebarGroup>
           <SidebarGroupLabel>System</SidebarGroupLabel>

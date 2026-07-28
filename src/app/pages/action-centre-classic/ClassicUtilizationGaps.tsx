@@ -40,6 +40,7 @@ import {
   COHORT_SUMMARIES,
   type ActionCentrePatientRow,
   type CohortType,
+  type TouchpointEvent,
 } from "../../data/actionCentreData";
 
 const DIAGNOSIS_MAP: Record<string, string> = {
@@ -263,10 +264,10 @@ export function ClassicUtilizationGaps() {
   const handleConfirmTwoStepAction = () => {
     if (!activePatientDrawer) return;
 
-    const newTouchpoint = {
+    const newTouchpoint: TouchpointEvent = {
       id: `ev-${Date.now()}`,
       date: `Today, ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
-      type: selectedChannel === "call" ? "Phone Call" : selectedChannel === "email" ? "Email" : "SMS Outreach",
+      type: selectedChannel === "call" ? "Call" : selectedChannel === "email" ? "Email" : "SMS",
       description: `Executed 2-Step Action: ${activePatientDrawer.suggestedAction} (${selectedChannel.toUpperCase()}) — Note: ${actionNote.slice(0, 100)}...`,
       outcome: "Initiated & Queued in EHR",
     };

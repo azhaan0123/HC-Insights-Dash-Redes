@@ -97,6 +97,19 @@ import ReportBuilder from "./pages/outcomes/ReportBuilder";
 import { ClassicUtilizationGaps } from "./pages/action-centre-classic/ClassicUtilizationGaps";
 import { ClassicHome } from "./pages/action-centre-classic/ClassicHome";
 
+// SmartyPants DPC Imports
+import { SPDashboard } from "./pages/smartypants/SPDashboard";
+import { SPInternalCRM } from "./pages/smartypants/SPInternalCRM";
+import { SPSegmentation } from "./pages/smartypants/SPSegmentation";
+import { SPCampaigns } from "./pages/smartypants/SPCampaigns";
+import { SPTasks } from "./pages/smartypants/SPTasks";
+import { SPCommunications } from "./pages/smartypants/SPCommunications";
+import { SPLeads } from "./pages/smartypants/SPLeads";
+import { SPEmployerAnalytics } from "./pages/smartypants/SPEmployerAnalytics";
+import { SPAutomations } from "./pages/smartypants/SPAutomations";
+import { SPReports } from "./pages/smartypants/SPReports";
+import { SPSettings } from "./pages/smartypants/SPSettings";
+
 export const router = createBrowserRouter([
   {
     path: "/support",
@@ -126,6 +139,22 @@ export const router = createBrowserRouter([
     path: "/home-classic",
     Component: ClassicHome,
   },
+  {
+    path: "/smartypants",
+    element: <Navigate to="/smartypants/dashboard" replace />,
+  },
+  { path: "/smartypants/dashboard", Component: SPDashboard },
+  { path: "/smartypants/crm", Component: SPInternalCRM },
+  { path: "/smartypants/segmentation", Component: SPSegmentation },
+  { path: "/smartypants/campaigns", Component: SPCampaigns },
+  { path: "/smartypants/tasks", Component: SPTasks },
+  { path: "/smartypants/communications", Component: SPCommunications },
+  { path: "/smartypants/leads", Component: SPLeads },
+  { path: "/smartypants/employer-analytics", Component: SPEmployerAnalytics },
+  { path: "/smartypants/automations", Component: SPAutomations },
+  { path: "/smartypants/reports", Component: SPReports },
+  { path: "/smartypants/settings", Component: SPSettings },
+
   {
     path: "/wiki",
     Component: WikiPage,

@@ -35,6 +35,7 @@ import {
 
 const APPS_MENU = [
   { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
+  { label: "SmartyPants Hub", icon: Users, to: "/smartypants/dashboard", matchPath: "/smartypants" },
   { label: "HCC Insights", icon: BarChart, to: "/hcc", matchPath: "/hcc" },
   { label: "ACO Insights", icon: ClipboardCheck, to: "/aco", matchPath: "/aco" },
   { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes", matchPath: "/outcomes" },
