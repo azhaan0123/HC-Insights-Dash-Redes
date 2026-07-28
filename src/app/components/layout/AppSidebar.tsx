@@ -22,6 +22,7 @@ import {
   HelpCircle,
   ClipboardList,
   FileText,
+  Shield,
 } from "lucide-react";
 import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
@@ -296,6 +297,12 @@ export function AppSidebar() {
                   <Link to="/admin/templates" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
                     <FileText className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
                     <span>Templates</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin/audit-log" className="flex items-center cursor-pointer w-full text-foreground hover:text-primary transition-colors">
+                    <Shield className="mr-2 size-4 text-muted-foreground group-hover:text-primary" />
+                    <span>Trust & Audit Log</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

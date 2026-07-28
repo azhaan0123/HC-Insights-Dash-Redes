@@ -14,7 +14,6 @@ import {
   MessageSquare,
   Sparkles,
   Zap,
-  Shield,
   X,
   Bot,
 } from "lucide-react";
@@ -24,9 +23,8 @@ import { AGENT_META } from "./aiTypes";
 import { AiChatInterface } from "./AiChatInterface";
 import { AiInsightsTab } from "./AiInsightsTab";
 import { AiActionsTab } from "./AiActionsTab";
-import { AiAuditTab } from "./AiAuditTab";
 
-type SidebarTab = "chat" | "insights" | "actions" | "audit";
+type SidebarTab = "chat" | "insights" | "actions";
 
 interface RightAiSidebarProps {
   className?: string;
@@ -44,7 +42,6 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
     { key: "chat", label: "Chat", icon: MessageSquare },
     { key: "insights", label: "Insights", icon: Sparkles },
     { key: "actions", label: "Actions", icon: Zap, badge: pendingCount },
-    { key: "audit", label: "Audit", icon: Shield },
   ];
 
   return (
@@ -127,8 +124,8 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
                 className={cn(
                   "ai-tab-indicator flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-medium transition-all duration-300 cursor-pointer relative",
                   isActive
-                    ? "text-[#e32168]"
-                    : "text-muted-foreground/60 hover:text-foreground"
+                     ? "text-[#e32168]"
+                     : "text-muted-foreground/60 hover:text-foreground"
                 )}
               >
                 <Icon className={cn("size-3.5 transition-transform duration-200", isActive && "scale-110")} />
@@ -149,7 +146,6 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
         {activeTab === "chat" && <AiChatInterface />}
         {activeTab === "insights" && <AiInsightsTab />}
         {activeTab === "actions" && <AiActionsTab />}
-        {activeTab === "audit" && <AiAuditTab />}
       </div>
     </div>
   );

@@ -74,21 +74,33 @@ export function ApprovalModal({
 }: ApprovalModalProps) {
   const [showRejectReasons, setShowRejectReasons] = useState(false);
   const [rejectNote, setRejectNote] = useState("");
+  const [animatingState, setAnimatingState] = useState<"idle" | "approved" | "rejected">("idle");
+  const [selectedReasonForAnim, setSelectedReasonForAnim] = useState<RejectionReason | null>(null);
 
   if (!action) return null;
 
   const agentMeta = AGENT_META[action.agentType];
 
   const handleReject = (reason: RejectionReason) => {
-    onReject(action.id, reason, rejectNote || undefined);
-    setShowRejectReasons(false);
-    setRejectNote("");
-    onOpenChange(false);
+    setSelectedReasonForAnim(reason);
+    setAnimatingState("rejected");
+    setTimeout(() => {
+      onReject(action.id, reason, rejectNote || undefined);
+      setShowRejectReasons(false);
+      setRejectNote("");
+      setAnimatingState("idle");
+      setSelectedReasonForAnim(null);
+      onOpenChange(false);
+    }, 1200);
   };
 
   const handleApprove = () => {
-    onApprove(action.id);
-    onOpenChange(false);
+    setAnimatingState("approved");
+    setTimeout(() => {
+      onApprove(action.id);
+      setAnimatingState("idle");
+      onOpenChange(false);
+    }, 1200);
   };
 
   return (
@@ -152,8 +164,8 @@ export function ApprovalModal({
         {/* ═══ BENTO GRID — Main content area ═══ */}
         <div className="px-5 py-5 space-y-4">
 
-          {/* ── Row 1: Reasoning + Verification (side-by-side) ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* ── Row 1: Reasoning + Verification (vertical layout) ── */}
+          <div className="flex flex-col gap-4">
 
             {/* Cell: Reasoning & Gate Policy */}
             <div className="rounded-xl border border-border/30 bg-card p-5 space-y-3 shadow-2xs flex flex-col transition-all duration-200 hover:border-border/50">
@@ -533,6 +545,38 @@ export function ApprovalModal({
             </div>
           )}
         </div>
+
+        {/* Final Confirmation Overlay Animation */}
+        {animatingState !== "idle" && (
+          <div className="ai-confirmation-overlay">
+            {animatingState === "approved" ? (
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="ai-success-scale grid size-20 place-items-center rounded-full bg-emerald-500/10 border-2 border-emerald-500 shadow-[0_0_24px_rgba(16,185,129,0.3)]">
+                  <CheckCircle2 className="size-10 text-emerald-500" />
+                </div>
+                <div className="ai-text-reveal space-y-1 px-6">
+                  <h3 className="text-lg font-bold text-foreground">Action Approved & Scheduled</h3>
+                  <p className="text-xs text-muted-foreground/75">Initializing execution sequence across clinical channels.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="ai-reject-scale grid size-20 place-items-center rounded-full bg-red-500/10 border-2 border-red-500 shadow-[0_0_24px_rgba(239,68,68,0.3)]">
+                  <X className="size-10 text-red-500" />
+                </div>
+                <div className="ai-text-reveal space-y-1 px-6">
+                  <h3 className="text-lg font-bold text-foreground">Action Rejected</h3>
+                  {selectedReasonForAnim && (
+                    <p className="text-xs text-red-600 dark:text-red-400 font-semibold">
+                      Reason: {REJECTION_LABELS[selectedReasonForAnim]}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground/50">Recommendation removed from pending queue.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

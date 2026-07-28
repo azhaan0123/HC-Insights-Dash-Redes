@@ -48,6 +48,7 @@ import OrgPatientCounts from "./pages/admin/OrgPatientCounts";
 import InboundIntegrationBatches from "./pages/admin/InboundIntegrationBatches";
 import SurveyConfiguration from "./pages/admin/SurveyConfiguration";
 import SurveyTemplates from "./pages/admin/SurveyTemplates";
+import AdminAuditLog from "./pages/admin/AuditLog";
 
 // ACO Insights Imports
 import AcoLayout from "./pages/aco/AcoLayout";
@@ -248,6 +249,7 @@ export const router = createBrowserRouter([
           { path: "integration-batches", Component: InboundIntegrationBatches },
           { path: "survey-config", Component: SurveyConfiguration },
           { path: "templates", Component: SurveyTemplates },
+          { path: "audit-log", Component: AdminAuditLog },
         ],
       },
       { path: "*", element: <Navigate to="/engagement" replace /> },
