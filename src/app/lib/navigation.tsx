@@ -67,8 +67,6 @@ export const NAV_ITEMS: NavItem[] = [
     ]
   },
   { key: "utilization-gaps", label: "Utilization Gaps", icon: Activity, path: "/utilization-gaps", tourId: "tour-step-3" },
-  { key: "utilization-gaps-classic", label: "Utilization Gaps (Classic UI)", icon: Layers, path: "/utilization-gaps-classic" },
-  { key: "home-classic", label: "Home Dashboard (Classic UI)", icon: Layers, path: "/home-classic" },
   { key: "cost-savings", label: "Cost Savings", icon: BadgeDollarSign, path: "/cost-savings", tourId: "tour-step-6" },
   { key: "chronic-risk", label: "Chronic Risk", icon: HeartPulse, path: "/chronic-risk", tourId: "tour-step-4" },
   { key: "claims", label: "Claims Utilization", icon: ReceiptText, path: "/claims", tourId: "tour-step-7" },

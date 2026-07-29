@@ -23,6 +23,7 @@ import {
   ClipboardList,
   FileText,
   Shield,
+  LayoutGrid,
 } from "lucide-react";
 import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SMARTYPANTS_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
@@ -197,16 +198,23 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        <SidebarGroup className="pb-0">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Workspace Portal">
+                <Link to="/" className="text-primary font-bold hover:bg-primary/10 transition-colors">
+                  <LayoutGrid className="size-4 text-primary" />
+                  <span>Workspace Portal</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+
         {isMips && !collapsed && (
-          <div className="px-3 pt-3 pb-1.5 border-b border-sidebar-border/60">
-            <span className="text-[11px] font-medium text-muted-foreground block mb-1.5">Select Provider</span>
-            <select
-              className="w-full h-8 px-2.5 text-xs rounded-md border bg-background text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer"
-              defaultValue="Dr. Amanda Johnson"
-            >
+          <div className="px-3 pt-2">
+            <select className="w-full text-xs font-semibold bg-muted/50 border border-border rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary">
               <option value="Dr. Amanda Johnson">Dr. Amanda Johnson</option>
-              <option value="Dr. Andrew Anderson">Dr. Andrew Anderson</option>
-              <option value="Dr. Laura Hill">Dr. Laura Hill</option>
               <option value="Dr. Christopher Nelson">Dr. Christopher Nelson</option>
               <option value="All Providers">All Providers</option>
             </select>
@@ -216,13 +224,6 @@ export function AppSidebar() {
           <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
           <NavMenu items={navItems} />
         </SidebarGroup>
-
-        {!isSmartyPants && (
-          <SidebarGroup>
-            <SidebarGroupLabel>SmartyPants DPC</SidebarGroupLabel>
-            <NavMenu items={SMARTYPANTS_NAV_ITEMS} />
-          </SidebarGroup>
-        )}
 
         <SidebarGroup>
           <SidebarGroupLabel>System</SidebarGroupLabel>

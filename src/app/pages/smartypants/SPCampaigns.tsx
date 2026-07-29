@@ -15,6 +15,10 @@ import {
   ExternalLink,
   BarChart3,
   ArrowRight,
+  Paperclip,
+  FileText,
+  UploadCloud,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
@@ -35,6 +39,29 @@ export function SPCampaigns() {
   const [activeTab, setActiveTab] = useState<TabKey>("patient");
   const [searchQuery, setSearchQuery] = useState("");
   const [showBuilder, setShowBuilder] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<{ id: string; name: string; size: string; type: string }[]>([]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files);
+    const newFiles = files.map((file) => {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      const sizeStr = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${Math.round(file.size / 1024)} KB`;
+      return {
+        id: Math.random().toString(36).substring(2, 9),
+        name: file.name,
+        size: sizeStr,
+        type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
+      };
+    });
+    setAttachedFiles((prev) => [...prev, ...newFiles]);
+    toast.success(`Attached ${files.length} document(s) to campaign`);
+  };
+
+  const handleRemoveFile = (id: string) => {
+    setAttachedFiles((prev) => prev.filter((f) => f.id !== id));
+    toast.info("Attachment removed");
+  };
 
   const filteredCampaigns = useMemo(() => {
     let list = [...SP_CAMPAIGNS];
@@ -176,14 +203,86 @@ export function SPCampaigns() {
                 <option>Link Clicked</option>
               </select>
             </div>
+
+            {/* Attachment Section */}
+            <div className="md:col-span-2 lg:col-span-3">
+              <label className="block text-[11px] font-semibold text-[#495057] mb-1">
+                Attach Campaign Documents / PDF (Optional)
+              </label>
+              <div className="border border-dashed border-[#dee2e6] rounded-lg p-3 bg-[#f8f9fa] hover:bg-[#fff0f4]/40 hover:border-[#e61952]/40 transition-colors">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="size-8 rounded bg-[#e61952]/10 flex items-center justify-center text-[#e61952] shrink-0">
+                      <Paperclip className="size-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-[#212529]">
+                        Attach Patient Flyers, Educational PDFs, or Onboarding Guides
+                      </div>
+                      <div className="text-[10px] text-[#6c757d]">
+                        Supports PDF, DOCX, XLSX, PNG, JPG (Max 25MB per file)
+                      </div>
+                    </div>
+                  </div>
+                  <label className="px-3 py-1.5 rounded bg-white border border-[#dee2e6] hover:bg-[#f8f9fa] text-xs font-bold text-[#495057] cursor-pointer shadow-2xs flex items-center gap-1.5 shrink-0 transition-colors">
+                    <UploadCloud className="size-3.5 text-[#e61952]" />
+                    <span>Attach Files</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.xlsx,.png,.jpg,.jpeg"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                  </label>
+                </div>
+
+                {/* Attached File List */}
+                {attachedFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3 pt-2.5 border-t border-[#dee2e6]">
+                    {attachedFiles.map((file) => (
+                      <div
+                        key={file.id}
+                        className="flex items-center gap-2 px-2.5 py-1 rounded bg-white border border-[#c3e6cb] shadow-2xs text-xs"
+                      >
+                        <FileText className="size-3.5 text-[#28a745]" />
+                        <span className="font-semibold text-[#212529] max-w-[180px] truncate" title={file.name}>
+                          {file.name}
+                        </span>
+                        <span className="text-[9px] font-bold text-[#6c757d] uppercase bg-[#e9ecef] px-1 py-0.2 rounded">
+                          {file.type}
+                        </span>
+                        <span className="text-[10px] text-[#6c757d]">({file.size})</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFile(file.id)}
+                          className="text-[#6c757d] hover:text-[#dc3545] p-0.5 rounded hover:bg-[#f8f9fa] transition-colors"
+                          title="Remove attachment"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#dee2e6]">
             <button
-              onClick={() => { toast.success("Campaign saved as draft!"); setShowBuilder(false); }}
+              onClick={() => {
+                toast.success(attachedFiles.length > 0 ? `Campaign saved as draft with ${attachedFiles.length} attachment(s)!` : "Campaign saved as draft!");
+                setShowBuilder(false);
+                setAttachedFiles([]);
+              }}
               className="px-4 py-2 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-xs font-semibold text-[#495057]"
             >Save Draft</button>
             <button
-              onClick={() => { toast.success("Campaign launched!"); setShowBuilder(false); }}
+              onClick={() => {
+                toast.success(attachedFiles.length > 0 ? `Campaign launched with ${attachedFiles.length} attachment(s)!` : "Campaign launched!");
+                setShowBuilder(false);
+                setAttachedFiles([]);
+              }}
               className="px-4 py-2 rounded bg-[#e61952] hover:bg-[#c41344] text-white text-xs font-bold shadow-2xs"
             >Launch Campaign</button>
           </div>

@@ -138,6 +138,15 @@ export function ClassicLayout({
 
         {/* Right Controls matching screenshots */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded bg-[#e61952] text-white hover:bg-[#c41344] transition-colors shadow-2xs"
+            title="Return to Workspace Portal Selection"
+          >
+            <LayoutGrid className="size-3.5" />
+            <span>Workspace Portal</span>
+          </button>
+
           {showSwitchToModern && (
             <button
               onClick={() => navigate(modernRoute)}
