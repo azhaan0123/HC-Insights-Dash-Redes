@@ -30,21 +30,7 @@ const pieData = [
   { name: "Hormone Replacement Therapy", value: 18, color: "#c2410c" },
 ];
 
-const CustomPieTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0];
-    return (
-      <div className="flex items-center justify-between gap-6 rounded-lg border bg-card px-3 py-2 shadow-md">
-        <div className="flex items-center gap-2">
-          <div className="size-3.5 rounded-[3px]" style={{ backgroundColor: data.payload.color }} />
-          <span className="text-[13px] font-medium text-muted-foreground">{data.name}</span>
-        </div>
-        <span className="text-[13px] text-foreground">{data.payload.value}</span>
-      </div>
-    );
-  }
-  return null;
-};
+import { ChartTooltip } from "../../components/dashboard/ChartTooltip";
 
 export default function DashboardOverview() {
   const isLoading = usePageLoading();
@@ -103,7 +89,7 @@ export default function DashboardOverview() {
                       <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                     ))}
                   </Pie>
-                  <RechartsTooltip content={<CustomPieTooltip />} cursor={{ fill: "transparent" }} />
+                  <RechartsTooltip content={<ChartTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>

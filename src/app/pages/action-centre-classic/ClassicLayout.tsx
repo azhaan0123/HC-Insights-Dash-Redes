@@ -354,7 +354,7 @@ export function ClassicLayout({
 
           {/* Center Links */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-[#6c757d]">
-            <span>©2025 Healthcompiler, Inc.</span>
+            <span>©{new Date().getFullYear()} Healthcompiler, Inc.</span>
             <a href="#" className="hover:underline">Privacy Policy</a>
             <a href="#" className="hover:underline">Terms of Service</a>
             <a href="https://intercom.help/health-compiler-inc/en" target="_blank" rel="noopener noreferrer" className="hover:underline">Help</a>

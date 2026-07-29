@@ -36,7 +36,16 @@ const tooltipStyle = {
   color: "var(--foreground)",
 };
 
-const CustomPieTooltip = ({ active, payload }: any) => {
+type CustomPieTooltipProps = {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number | string;
+    payload: { fill?: string; color?: string };
+  }>;
+};
+
+const CustomPieTooltip = ({ active, payload }: CustomPieTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0];
     return (

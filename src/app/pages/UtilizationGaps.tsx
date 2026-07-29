@@ -192,7 +192,7 @@ export default function UtilizationGaps() {
       description: `${patient.suggestedAction} has been queued or logged successfully.`,
       action: {
         label: "Undo",
-        onClick: () => console.log("Undo action"),
+        onClick: () => { /* undo handler placeholder */ },
       },
     });
     setCompletedPatientIds((prev) => new Set(prev).add(patient.id));

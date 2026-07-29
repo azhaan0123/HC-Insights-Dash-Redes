@@ -1,10 +1,3 @@
-import React from "react";
-import { Outlet } from "react-router";
+import ModuleLayout from "../../components/layout/ModuleLayout";
 
-export default function EmployerLayout() {
-  return (
-    <div className="flex h-full w-full flex-col min-w-0 bg-muted/20">
-      <Outlet />
-    </div>
-  );
-}
+export default ModuleLayout;

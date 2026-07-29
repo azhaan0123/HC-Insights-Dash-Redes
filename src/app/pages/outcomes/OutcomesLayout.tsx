@@ -1,5 +1,3 @@
-import { Outlet } from "react-router";
+import ModuleLayout from "../../components/layout/ModuleLayout";
 
-export default function OutcomesLayout() {
-  return <Outlet />;
-}
+export default ModuleLayout;

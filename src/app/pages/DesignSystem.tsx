@@ -23,7 +23,7 @@ import { Panel } from "../components/dashboard/EmptyState";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { cn } from "../lib/utils";
+import { cn } from "../components/ui/utils";
 
 /* ------------------------------------------------------------------ */
 /* Token data — mirrors src/styles/theme.css so the docs stay truthful */

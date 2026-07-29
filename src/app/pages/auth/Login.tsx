@@ -259,7 +259,7 @@ export default function Login() {
 
         {/* Center Copyright & Links */}
         <div className="flex items-center flex-wrap gap-4 text-center">
-          <span>©2025 Healthcompiler, Inc.</span>
+          <span>©{new Date().getFullYear()} Healthcompiler, Inc.</span>
           <a href="#privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
           <a href="#terms" className="hover:text-gray-900 transition-colors">Terms of Service</a>
           <a href="#help" className="hover:text-gray-900 transition-colors">Help</a>

@@ -24,7 +24,7 @@ import {
 import { Page } from "../components/layout/Page";
 import { Button } from "../components/ui/button";
 import { ChartTooltip } from "../components/dashboard/ChartTooltip";
-import { cn } from "../lib/utils";
+import { cn } from "../components/ui/utils";
 import {
   Dialog,
   DialogContent,
@@ -110,7 +110,16 @@ function StatusDot({ status }: { status: string }) {
   return <span className="mr-2 inline-block size-2 rounded-full bg-muted-foreground/40" />;
 }
 
-function QuickActionCard({ title, description, impact, icon: Icon, onAction, badgeText = "AI Recommendation" }: any) {
+interface QuickActionCardProps {
+  title: string;
+  description: string;
+  impact: string;
+  icon: React.ComponentType<{ className?: string }>;
+  onAction: () => void;
+  badgeText?: string;
+}
+
+function QuickActionCard({ title, description, impact, icon: Icon, onAction, badgeText = "AI Recommendation" }: QuickActionCardProps) {
   return (
     <div className="relative overflow-hidden rounded-xl border border-transparent bg-gradient-to-br from-card to-primary/5 p-4 shadow-sm transition-[box-shadow,transform,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-md hover:border-primary/20 flex flex-col justify-between group">
       <div className="absolute right-0 top-0 h-16 w-16 rounded-bl-full bg-primary/5 opacity-50 transition-all group-hover:scale-110" />
@@ -146,6 +155,17 @@ function QuickActionCard({ title, description, impact, icon: Icon, onAction, bad
   );
 }
 
+interface KpiSparklineCardProps {
+  title: string;
+  value: string;
+  change: string;
+  changeType: "positive" | "negative" | "neutral";
+  data: Record<string, any>[];
+  dataKey: string;
+  color: string;
+  onClick?: () => void;
+}
+
 function KpiSparklineCard({ 
   title, 
   value, 
@@ -155,7 +175,7 @@ function KpiSparklineCard({
   dataKey,
   color,
   onClick
-}: any) {
+}: KpiSparklineCardProps) {
   return (
     <div 
       onClick={onClick}

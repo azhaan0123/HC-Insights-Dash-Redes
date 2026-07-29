@@ -24,6 +24,7 @@ import {
   Stethoscope,
   ExternalLink,
   SlidersHorizontal,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Page } from "../../components/layout/Page";
@@ -165,7 +166,7 @@ export default function ActionCentreOverview() {
       description: `${patient.suggestedAction} has been queued or logged successfully.`,
       action: {
         label: "Undo",
-        onClick: () => console.log("Undo action"),
+        onClick: () => { /* undo handler placeholder */ },
       },
     });
     setCompletedPatientIds((prev) => new Set(prev).add(patient.id));

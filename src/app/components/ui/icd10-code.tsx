@@ -1,4 +1,3 @@
-import React from "react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./tooltip";
 
 export const ICD10_MAP: Record<string, string> = {

@@ -141,7 +141,7 @@ function Footer() {
         <img src={hipaaBadge} alt="HIPAA Compliance" className="h-9 w-auto object-contain" />
       </div>
       <div className="flex items-center gap-2">
-        <span>©2025 Healthcompiler, Inc.</span>
+        <span>©{new Date().getFullYear()} Healthcompiler, Inc.</span>
         <span className="text-border">·</span>
         <a className="hover:text-primary" href="#">Privacy Policy</a>
         <span className="text-border">·</span>

@@ -4,7 +4,7 @@
  * tracking, action queue state, audit trail, and trust metrics.
  */
 
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -119,8 +119,39 @@ export function AiContextProvider({ children }: { children: ReactNode }) {
 
   const approveAction = useCallback(
     (id: string, finalOutput?: string) => {
-      setActions((prev) =>
-        prev.map((a) =>
+      setActions((prev) => {
+        const action = prev.find((a) => a.id === id);
+        if (action) {
+          // Side-effects triggered from the found action
+          setApprovalCounts((prevCounts) => ({
+            ...prevCounts,
+            [action.agentType]: (prevCounts[action.agentType] || 0) + 1,
+          }));
+          const newRecord: AuditRecord = {
+            ai_decision_id: `aud-${Date.now()}`,
+            workflow: action.agentType,
+            input_ref: action.targetPatients?.[0]?.name || action.title,
+            model_version: "helix-v2.4.1",
+            prompt_version: "action-v1",
+            raw_output: action.suggestedAction,
+            final_output: finalOutput || action.suggestedAction,
+            confidence: action.confidence,
+            confidence_tier: action.confidenceTier,
+            risk_tier:
+              action.priority === "critical" || action.priority === "high"
+                ? "high"
+                : action.priority === "medium"
+                  ? "medium"
+                  : "low",
+            status: "approved",
+            reviewer_id: "current-user",
+            created_at: action.createdAt,
+            decided_at: new Date().toISOString(),
+            review_duration_ms: Math.floor(Math.random() * 30000 + 15000),
+          };
+          setAuditRecords((prevRecords) => [newRecord, ...prevRecords]);
+        }
+        return prev.map((a) =>
           a.id === id
             ? {
                 ...a,
@@ -129,48 +160,42 @@ export function AiContextProvider({ children }: { children: ReactNode }) {
                 finalOutput: finalOutput || a.suggestedAction,
               }
             : a
-        )
-      );
-      // Increment approval count for this agent type
-      const action = actions.find((a) => a.id === id);
-      if (action) {
-        setApprovalCounts((prev) => ({
-          ...prev,
-          [action.agentType]: (prev[action.agentType] || 0) + 1,
-        }));
-        // Add audit record
-        const newRecord: AuditRecord = {
-          ai_decision_id: `aud-${Date.now()}`,
-          workflow: action.agentType,
-          input_ref: action.targetPatients?.[0]?.name || action.title,
-          model_version: "helix-v2.4.1",
-          prompt_version: "action-v1",
-          raw_output: action.suggestedAction,
-          final_output: finalOutput || action.suggestedAction,
-          confidence: action.confidence,
-          confidence_tier: action.confidenceTier,
-          risk_tier:
-            action.priority === "critical" || action.priority === "high"
-              ? "high"
-              : action.priority === "medium"
-                ? "medium"
-                : "low",
-          status: "approved",
-          reviewer_id: "current-user",
-          created_at: action.createdAt,
-          decided_at: new Date().toISOString(),
-          review_duration_ms: Math.floor(Math.random() * 30000 + 15000),
-        };
-        setAuditRecords((prev) => [newRecord, ...prev]);
-      }
+        );
+      });
     },
-    [actions]
+    []
   );
 
   const rejectAction = useCallback(
     (id: string, reason: RejectionReason, note?: string) => {
-      setActions((prev) =>
-        prev.map((a) =>
+      setActions((prev) => {
+        const action = prev.find((a) => a.id === id);
+        if (action) {
+          const newRecord: AuditRecord = {
+            ai_decision_id: `aud-${Date.now()}`,
+            workflow: action.agentType,
+            input_ref: action.targetPatients?.[0]?.name || action.title,
+            model_version: "helix-v2.4.1",
+            prompt_version: "action-v1",
+            raw_output: action.suggestedAction,
+            final_output: "Rejected",
+            confidence: action.confidence,
+            confidence_tier: action.confidenceTier,
+            risk_tier:
+              action.priority === "critical" || action.priority === "high"
+                ? "high"
+                : "medium",
+            status: "rejected",
+            reviewer_id: "current-user",
+            reviewer_reason: reason,
+            reviewer_note: note,
+            created_at: action.createdAt,
+            decided_at: new Date().toISOString(),
+            review_duration_ms: Math.floor(Math.random() * 60000 + 20000),
+          };
+          setAuditRecords((prevRecords) => [newRecord, ...prevRecords]);
+        }
+        return prev.map((a) =>
           a.id === id
             ? {
                 ...a,
@@ -180,36 +205,10 @@ export function AiContextProvider({ children }: { children: ReactNode }) {
                 decidedAt: new Date().toISOString(),
               }
             : a
-        )
-      );
-      const action = actions.find((a) => a.id === id);
-      if (action) {
-        const newRecord: AuditRecord = {
-          ai_decision_id: `aud-${Date.now()}`,
-          workflow: action.agentType,
-          input_ref: action.targetPatients?.[0]?.name || action.title,
-          model_version: "helix-v2.4.1",
-          prompt_version: "action-v1",
-          raw_output: action.suggestedAction,
-          final_output: "Rejected",
-          confidence: action.confidence,
-          confidence_tier: action.confidenceTier,
-          risk_tier:
-            action.priority === "critical" || action.priority === "high"
-              ? "high"
-              : "medium",
-          status: "rejected",
-          reviewer_id: "current-user",
-          reviewer_reason: reason,
-          reviewer_note: note,
-          created_at: action.createdAt,
-          decided_at: new Date().toISOString(),
-          review_duration_ms: Math.floor(Math.random() * 60000 + 20000),
-        };
-        setAuditRecords((prev) => [newRecord, ...prev]);
-      }
+        );
+      });
     },
-    [actions]
+    []
   );
 
   const editAction = useCallback((id: string, edits: Partial<AIAction>) => {

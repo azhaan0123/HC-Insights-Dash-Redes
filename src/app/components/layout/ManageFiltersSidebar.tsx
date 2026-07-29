@@ -107,7 +107,7 @@ export function ManageFiltersSidebar({ open, onOpenChange, chips, onApply }: Man
             Note: After changing any filters, click Apply to update the results.
           </SheetDescription>
           <div className="flex gap-4 w-full">
-            <Button className="flex-1 bg-[#e11d48] hover:bg-[#be123c] text-white" onClick={handleApply}>
+            <Button className="flex-1" onClick={handleApply}>
               Apply
             </Button>
             <Button variant="outline" className="flex-1" onClick={handleReset}>

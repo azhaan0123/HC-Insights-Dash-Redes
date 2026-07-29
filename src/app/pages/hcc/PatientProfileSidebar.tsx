@@ -2,10 +2,12 @@ import { ReactNode } from "react";
 import { Activity, Stethoscope, FileText, Lightbulb, User, X } from "lucide-react";
 import { Sheet, SheetContent, SheetClose } from "../../components/ui/sheet";
 
+import type { PatientRow } from "../../data/patients";
+
 type PatientProfileSidebarProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  patient: any | null;
+  patient: PatientRow | null;
 };
 
 export function PatientProfileSidebar({ open, onOpenChange, patient }: PatientProfileSidebarProps) {

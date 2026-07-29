@@ -54,7 +54,17 @@ const TASK_CARDS = [
   { id: "overdue", label: "Overdue Outreach", count: 67, trend: 15, trendLabel: "vs last week", icon: AlertTriangle, color: "#dc3545" },
 ];
 
-const TASK_PATIENTS_MAP: Record<string, any[]> = {
+export interface TaskPatient {
+  id: string;
+  name: string;
+  employer: string;
+  condition: string;
+  lastVisit: string;
+  phone: string;
+  email: string;
+}
+
+const TASK_PATIENTS_MAP: Record<string, TaskPatient[]> = {
   annual: [
     { id: "SP-1004", name: "Michael Thompson", employer: "Apex Technologies", condition: "Annual Exam Overdue", lastVisit: "2026-03-10", phone: "(913) 555-0334", email: "mthompson@apex.com" },
     { id: "SP-1008", name: "David Kim", employer: "Apex Technologies", condition: "Annual Exam Overdue", lastVisit: "2026-02-14", phone: "(913) 555-0789", email: "dkim@apex.com" },
@@ -136,12 +146,12 @@ export function SPDashboard() {
   // Task Workflow Modal States
   const [selectedTaskCard, setSelectedTaskCard] = useState<typeof TASK_CARDS[0] | null>(null);
   const [taskStep, setTaskStep] = useState<"queue" | "configure" | "confirm" | "success">("queue");
-  const [selectedTaskPatient, setSelectedTaskPatient] = useState<any>(null);
+  const [selectedTaskPatient, setSelectedTaskPatient] = useState<TaskPatient | null>(null);
   const [outreachChannel, setOutreachChannel] = useState<"email" | "sms" | "call">("email");
-  const [outreachNote, setOutreachNote] = useState("");
+  const [outreachNote, setOutreachNote] = useState<string>("");
   const [completedTaskPatientIds, setCompletedTaskPatientIds] = useState<Set<string>>(new Set());
 
-  const handleOpenTaskCard = (card: typeof TASK_CARDS[0]) => {
+  const handleOpenTaskQueue = (card: typeof TASK_CARDS[0]) => {
     setSelectedTaskCard(card);
     setTaskStep("queue");
     setSelectedTaskPatient(null);
@@ -149,7 +159,7 @@ export function SPDashboard() {
     setOutreachNote("");
   };
 
-  const handleSelectPatientForAction = (patient: any) => {
+  const handleSelectPatientForAction = (patient: TaskPatient) => {
     setSelectedTaskPatient(patient);
     setTaskStep("configure");
     const defaultChannel = selectedTaskCard?.id === "birthdays" || selectedTaskCard?.id === "labs" ? "sms" : "email";

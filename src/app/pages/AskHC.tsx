@@ -1119,7 +1119,7 @@ export default function AskHC() {
                           <YAxis type="category" dataKey="employer" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                           <Tooltip
                             contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "12px", fontSize: "12px" }}
-                            formatter={(val: number, name: string, props: any) => [`${val.toLocaleString()} Patients (${props.payload.percentage}%)`, "Enrolled Members"]}
+                            formatter={(val: number, _name: string, props: { payload?: { percentage?: number } }) => [`${val.toLocaleString()} Patients (${props.payload?.percentage ?? 0}%)`, "Enrolled Members"]}
                           />
                           <Bar dataKey="count" name="Enrolled Patients" fill="#3b82f6" radius={[0, 8, 8, 0]}>
                             {EMPLOYER_DISTRIBUTION.map((_, idx) => (

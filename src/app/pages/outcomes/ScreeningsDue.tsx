@@ -32,27 +32,7 @@ const mockChartData = [
   { name: "AAA", overdue: 60, dueSoon: 40 },
 ].reverse(); // Reverse so that Colon Cancer is at the top in vertical chart
 
-const CustomBarTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="flex flex-col gap-2 rounded-lg border bg-white p-3 shadow-md min-w-[160px]">
-        <p className="text-[13px] font-semibold text-foreground pb-1">{label}</p>
-        <div className="flex flex-col gap-1.5">
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between gap-6">
-              <div className="flex items-center gap-2">
-                <div className="size-3.5 rounded-[3px]" style={{ backgroundColor: entry.color }} />
-                <span className="text-[13px] font-medium text-muted-foreground">{entry.name}</span>
-              </div>
-              <span className="text-[13px] text-foreground">{entry.value}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  return null;
-};
+import { ChartTooltip } from "../../components/dashboard/ChartTooltip";
 
 const mockTableData: ScreeningRow[] = [
   { id: "1", name: "John Sanchez", type: "Bone Density Scan", dueDate: "Sep 06, 2025", status: "Due Soon" },
@@ -126,7 +106,7 @@ export default function ScreeningsDue() {
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
                 <RechartsTooltip 
                   cursor={{ fill: "transparent" }}
-                  content={<CustomBarTooltip />}
+                  content={<ChartTooltip />}
                 />
                 <Legend iconType="square" wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
                 <Bar dataKey="overdue" name="Overdue" stackId="a" fill="#10b981" barSize={16} />

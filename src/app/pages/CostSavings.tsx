@@ -62,7 +62,17 @@ const pieData = rawPieData.map((d, i) => {
   };
 });
 
-const renderActiveShape = (props: any) => {
+interface PieActiveShapeProps {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+}
+
+const renderActiveShape = (props: PieActiveShapeProps) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
   return (
     <g>
@@ -81,7 +91,16 @@ const renderActiveShape = (props: any) => {
 };
 
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = (props: any) => {
+
+interface PieCustomizedLabelProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  outerRadius: number;
+  payload: { name: string; value: number; formattedValue?: string };
+}
+
+const renderCustomizedLabel = (props: PieCustomizedLabelProps) => {
   const {
     cx,
     cy,

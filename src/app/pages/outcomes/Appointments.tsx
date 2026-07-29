@@ -18,27 +18,7 @@ const mockChartData = [
   { month: "Aug 25", scheduled: 480, completed: 0, missed: 0, cancelled: 40 },
 ];
 
-const CustomBarTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="flex flex-col gap-2 rounded-lg border bg-white p-3 shadow-md min-w-[160px]">
-        <p className="text-[13px] font-semibold text-foreground pb-1">{label}</p>
-        <div className="flex flex-col gap-1.5">
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between gap-6">
-              <div className="flex items-center gap-2">
-                <div className="size-3.5 rounded-[3px]" style={{ backgroundColor: entry.color }} />
-                <span className="text-[13px] font-medium text-muted-foreground">{entry.name}</span>
-              </div>
-              <span className="text-[13px] text-foreground">{entry.value}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  return null;
-};
+import { ChartTooltip } from "../../components/dashboard/ChartTooltip";
 
 export default function Appointments() {
   const isLoading = usePageLoading();
@@ -68,7 +48,7 @@ export default function Appointments() {
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
                 <RechartsTooltip 
                   cursor={{ fill: "transparent" }}
-                  content={<CustomBarTooltip />}
+                  content={<ChartTooltip />}
                 />
                 <Legend iconType="square" wrapperStyle={{ fontSize: 12, color: "#64748b", paddingTop: "20px" }} />
                 <Bar dataKey="scheduled" name="Scheduled" stackId="a" fill="#FF6B2B" />
