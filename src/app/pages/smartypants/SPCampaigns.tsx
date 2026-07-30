@@ -61,7 +61,7 @@ export function SPCampaigns() {
 
   const [showSheetModal, setShowSheetModal] = useState(false);
   const [googleSheetUrl, setGoogleSheetUrl] = useState<string>(() => {
-    return localStorage.getItem(SHEET_STORAGE_KEY) || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || "";
+    return import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || localStorage.getItem(SHEET_STORAGE_KEY) || "";
   });
 
   const [isConnected, setIsConnected] = useState(true);
@@ -109,7 +109,7 @@ export function SPCampaigns() {
   }, []);
 
   const handlePullFromSheet = async (silent = false) => {
-    const rawUrl = googleSheetUrl.trim() || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL;
+    const rawUrl = import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || googleSheetUrl.trim();
     if (!silent) setIsSyncing(true);
     setSheetFetchError(null);
 
@@ -134,7 +134,7 @@ export function SPCampaigns() {
   };
 
   const handlePushToSheet = async () => {
-    const rawUrl = googleSheetUrl.trim() || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL;
+    const rawUrl = import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || googleSheetUrl.trim();
     setIsSyncing(true);
     try {
       const result = await syncCampaignsToSheet(rawUrl);
