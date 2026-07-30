@@ -41,62 +41,10 @@ const TABS: { id: TabKey; label: string }[] = [
   { id: "archived", label: "Archived" },
 ];
 
-function parseCsvToCampaigns(csvText: string): SPCampaign[] {
-  const lines = csvText.split(/\r?\n/).filter((l) => l.trim().length > 0);
-  if (lines.length <= 1) return [];
-  const results: SPCampaign[] = [];
+const SHEET_STORAGE_KEY = "smartypants_google_sheet_url";
+const DEFAULT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUBWSEADR_v0k5Ct7KxVrqCKwoEDqUzPtP3XnVtXe9EFRw3FwnE0x6EHRRk7hWXfFp/exec";
 
-  for (let i = 1; i < lines.length; i++) {
-    const rawLine = lines[i].trim();
-    if (!rawLine) continue;
 
-    // Split CSV handling quote escaping
-    const parts: string[] = [];
-    let inQuotes = false;
-    let current = "";
-
-    for (let charIdx = 0; charIdx < rawLine.length; charIdx++) {
-      const char = rawLine[charIdx];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        parts.push(current.replace(/^"|"$/g, '').trim());
-        current = "";
-      } else {
-        current += char;
-      }
-    }
-    parts.push(current.replace(/^"|"$/g, '').trim());
-
-    if (!parts[0] && !parts[1]) continue;
-
-    results.push({
-      id: parts[0] || `CMP-${100 + i}`,
-      name: parts[1] || "Untitled Campaign",
-      type: (parts[2] as any) || "Patient",
-      channel: (parts[3] as any) || "Email",
-      status: (parts[4] as any) || "Active",
-      audience: parseInt(parts[5], 10) || 0,
-      sent: parseInt(parts[6], 10) || 0,
-      delivered: parseInt(parts[7], 10) || 0,
-      opened: parseInt(parts[8], 10) || 0,
-      clicked: parseInt(parts[9], 10) || 0,
-      replies: parseInt(parts[10], 10) || 0,
-      createdAt: parts[11] || new Date().toISOString().slice(0, 10),
-    });
-  }
-  return results;
-}
-
-function getDirectFetchUrl(url: string): string {
-  const trimmed = url.trim();
-  const sheetIdMatch = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-  if (sheetIdMatch && sheetIdMatch[1] && !trimmed.includes("/pub") && !trimmed.includes("gviz/tq")) {
-    const sheetId = sheetIdMatch[1];
-    return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
-  }
-  return trimmed;
-}
 
 export function SPCampaigns() {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
@@ -109,70 +57,102 @@ export function SPCampaigns() {
   const [builderType, setBuilderType] = useState<"Patient" | "Lead" | "Employer">("Patient");
   const [builderChannel, setBuilderChannel] = useState<"Email" | "SMS" | "Multi-Channel">("Email");
 
-  // Fresh live state pulled directly from the sheet on refresh (no localStorage)
+  // Initial state is empty to allow skeleton loading until sqlite syncs
   const [allCampaigns, setAllCampaigns] = useState<SPCampaign[]>([]);
-
-  const DEFAULT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUBWSEADR_v0k5Ct7KxVrqCKwoEDqUzPtP3XnVtXe9EFRw3FwnE0x6EHRRk7hWXfFp/exec";
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const [showSheetModal, setShowSheetModal] = useState(false);
-  const [googleSheetUrl, setGoogleSheetUrl] = useState(DEFAULT_WEBAPP_URL);
+  const [googleSheetUrl, setGoogleSheetUrl] = useState<string>(() => {
+    return localStorage.getItem(SHEET_STORAGE_KEY) || DEFAULT_WEBAPP_URL;
+  });
+
   const [isConnected, setIsConnected] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncedTime, setLastSyncedTime] = useState<string | null>(null);
   const [sheetFetchError, setSheetFetchError] = useState<string | null>(null);
+  const [autoSyncIntervalMs, setAutoSyncIntervalMs] = useState<number>(10000); // 10 seconds real-time fast sync
+
+  // Persist URL to localStorage whenever changed
+  useEffect(() => {
+    if (googleSheetUrl) {
+      localStorage.setItem(SHEET_STORAGE_KEY, googleSheetUrl);
+    }
+  }, [googleSheetUrl]);
 
   const fetchSheetCampaigns = useCallback(async (silent = false) => {
     const rawUrl = googleSheetUrl.trim() || DEFAULT_WEBAPP_URL;
-    const targetUrl = getDirectFetchUrl(rawUrl);
-    if (!targetUrl) return;
 
     if (!silent) setIsSyncing(true);
     setSheetFetchError(null);
 
     try {
-      const res = await fetch(targetUrl);
-      if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
-      const text = await res.text();
-
-      if (text.includes("Script function not found: doGet")) {
-        setSheetFetchError("Google Apps Script requires a doGet(e) function to return rows via Web App URL. Alternatively, paste your Google Sheet URL (https://docs.google.com/spreadsheets/d/...) above.");
-        if (!silent) toast.error("Google Apps Script needs a doGet(e) function or paste your Google Sheet URL!");
-        return;
+      const res = await fetch("/api/campaigns/sync/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ sheetUrl: rawUrl })
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Fetch failed with status ${res.status}`);
       }
-
-      let fetchedCampaigns: SPCampaign[] = [];
-      if (text.trim().startsWith("[") || text.trim().startsWith("{")) {
-        const parsed = JSON.parse(text);
-        fetchedCampaigns = Array.isArray(parsed) ? parsed : [parsed];
-      } else if (!text.includes("<!DOCTYPE html>")) {
-        fetchedCampaigns = parseCsvToCampaigns(text);
-      }
+      const fetchedCampaigns = await res.json();
 
       if (fetchedCampaigns && fetchedCampaigns.length > 0) {
-        setAllCampaigns(fetchedCampaigns);
+        const mappedCampaigns = fetchedCampaigns.map((c: any) => ({
+          id: c.campaignId || c.id || `CMP-${Math.floor(Math.random() * 10000)}`,
+          name: c.name || "Untitled Campaign",
+          type: c.type || "Patient",
+          channel: c.channel || "Email",
+          status: c.status || "Active",
+          audience: c.audienceCount ?? c.audience ?? 0,
+          sent: c.sentCount ?? c.sent ?? 0,
+          delivered: c.deliveredCount ?? c.delivered ?? 0,
+          opened: c.openedCount ?? c.opened ?? 0,
+          clicked: c.clickedCount ?? c.clicked ?? 0,
+          replies: c.repliesCount ?? c.replies ?? 0,
+          createdAt: c.createdAt || new Date().toISOString().slice(0, 10),
+        }));
+        setAllCampaigns(mappedCampaigns);
         setLastSyncedTime(new Date().toLocaleTimeString());
         setIsConnected(true);
-        if (!silent) toast.success(`Synced ${fetchedCampaigns.length} campaigns from Google Sheet!`);
+        if (!silent) toast.success(`Synced ${fetchedCampaigns.length} campaigns via SQLite!`);
       } else {
-        if (!silent) toast.info("No campaign rows parsed from sheet CSV.");
+        if (!silent) toast.info("No campaign rows parsed from sheet.");
       }
     } catch (err: any) {
-      console.warn("Sheet fetch error:", err);
-      setSheetFetchError("Could not fetch data from Google Sheet URL. Ensure sheet sharing or URL is valid.");
-      if (!silent) toast.error("Could not pull fresh data from sheet URL.");
+      console.warn("Sheet sync error:", err);
+      const errMsg = err.message || "Could not pull fresh data from sheet URL.";
+      setSheetFetchError(errMsg);
+      if (!silent) toast.error(errMsg);
     } finally {
       if (!silent) setIsSyncing(false);
+      setIsInitialLoad(false);
     }
   }, [googleSheetUrl]);
 
-  // Pull fresh data immediately on page refresh, and auto-resync every 30 seconds
+  // Real-time polling (every 3 seconds) + immediate fetch on window focus / tab visibility change
   useEffect(() => {
     fetchSheetCampaigns(true);
+
     const interval = setInterval(() => {
       fetchSheetCampaigns(true);
-    }, 30000); // 30 seconds
-    return () => clearInterval(interval);
-  }, [fetchSheetCampaigns]);
+    }, autoSyncIntervalMs);
+
+    const handleFocus = () => {
+      fetchSheetCampaigns(true);
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleFocus);
+    };
+  }, [fetchSheetCampaigns, autoSyncIntervalMs]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -355,6 +335,14 @@ export function SPCampaigns() {
       ]}
       headerActions={
         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-[#e8f5e9] border border-[#a5d6a7] text-xs text-[#2e7d32] font-semibold shadow-2xs">
+            <span className="relative flex size-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4caf50] opacity-75"></span>
+              <span className="relative inline-flex rounded-full size-2 bg-[#2e7d32]"></span>
+            </span>
+            <span>Realtime Sync ({autoSyncIntervalMs / 1000}s)</span>
+          </div>
+
           <button
             onClick={() => fetchSheetCampaigns(false)}
             disabled={isSyncing}
@@ -362,7 +350,7 @@ export function SPCampaigns() {
             title="Fetch latest campaigns from Google Sheet"
           >
             <RefreshCw className={`size-3.5 text-[#28a745] ${isSyncing ? "animate-spin" : ""}`} />
-            <span>{isSyncing ? "Syncing..." : "Refresh Sheet Data"}</span>
+            <span>{isSyncing ? "Syncing..." : "Sync Now"}</span>
           </button>
           <button
             onClick={() => setShowSheetModal(true)}
@@ -373,7 +361,7 @@ export function SPCampaigns() {
             }`}
           >
             <FileSpreadsheet className="size-3.5 text-[#28a745]" />
-            <span>{isConnected ? "Spreadsheet Connected" : "Connect Spreadsheet"}</span>
+            <span>{isConnected ? "Sheet Settings" : "Connect Spreadsheet"}</span>
           </button>
           <button
             onClick={handleExportCSV}
@@ -611,7 +599,24 @@ export function SPCampaigns() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#dee2e6] text-xs text-[#212529]">
-              {filteredCampaigns.length === 0 ? (
+              {isInitialLoad ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-3/4 mb-1"></div><div className="h-3 bg-[#e9ecef] rounded w-1/2"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-16"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-16"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-5 bg-[#e9ecef] rounded w-12"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-10"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-10"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-10"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-10"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-10"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-4 bg-[#e9ecef] rounded w-10"></div></td>
+                    <td className="py-2.5 px-3"><div className="h-3 bg-[#e9ecef] rounded w-20"></div></td>
+                    <td className="py-2.5 px-3 text-right"><div className="h-6 bg-[#e9ecef] rounded w-12 ml-auto"></div></td>
+                  </tr>
+                ))
+              ) : filteredCampaigns.length === 0 ? (
                 <tr><td colSpan={12} className="py-8 text-center text-[#6c757d] italic">No campaigns found for this tab.</td></tr>
               ) : (
                 filteredCampaigns.map((c) => (
@@ -675,10 +680,20 @@ export function SPCampaigns() {
 
             <form onSubmit={handleConnectSheet} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-[#495057] mb-1 flex items-center justify-between">
-                  <span>Google Sheet URL or Web App Endpoint</span>
-                  <span className="text-[10px] text-[#28a745] font-bold bg-[#d4edda] px-1.5 py-0.5 rounded border border-[#c3e6cb]">Live Sync Ready</span>
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-semibold text-[#495057]">Google Sheet URL or Web App Endpoint</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const demoUrl = "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit";
+                      setGoogleSheetUrl(demoUrl);
+                      toast.info("Populated demo public Google Sheet URL");
+                    }}
+                    className="text-[10px] text-[#007bff] hover:underline font-semibold"
+                  >
+                    + Use Demo Sheet URL
+                  </button>
+                </div>
                 <input
                   type="url"
                   placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit"
@@ -691,6 +706,34 @@ export function SPCampaigns() {
                 </p>
               </div>
 
+              <div>
+                <label className="block font-semibold text-[#495057] mb-1">Real-Time Sync Frequency</label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { label: "3s (Real-Time)", val: 3000 },
+                    { label: "5s (Fast)", val: 5000 },
+                    { label: "10s", val: 10000 },
+                    { label: "30s", val: 30000 },
+                  ].map((item) => (
+                    <button
+                      key={item.val}
+                      type="button"
+                      onClick={() => {
+                        setAutoSyncIntervalMs(item.val);
+                        toast.success(`Sync frequency set to ${item.label}`);
+                      }}
+                      className={`py-1.5 px-2 rounded text-[11px] font-semibold border transition-all ${
+                        autoSyncIntervalMs === item.val
+                          ? "bg-[#28a745] text-white border-[#218838] shadow-2xs"
+                          : "bg-white text-[#495057] border-[#dee2e6] hover:bg-[#f8f9fa]"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {sheetFetchError && (
                 <div className="p-3 bg-[#fff3cd] border border-[#ffeeba] text-[#856404] rounded text-[11px] leading-relaxed">
                   <strong>Notice on Web App Sync:</strong> {sheetFetchError}
@@ -700,12 +743,13 @@ export function SPCampaigns() {
               <div className="bg-[#f8f9fa] border border-[#dee2e6] rounded p-3 text-[11px] space-y-2">
                 <div className="font-semibold text-[#343a40] flex items-center gap-1.5">
                   <Link2 className="size-3.5 text-[#007bff]" />
-                  <span>Real-Time Sheet Sync (Every 30s):</span>
+                  <span>Real-Time Sheet Synchronization Features:</span>
                 </div>
                 <ul className="list-disc pl-4 space-y-1 text-[#6c757d]">
-                  <li><strong>Automatic 30-Second Auto-Pull:</strong> Fetches all new rows from your Google Sheet every 30s while page is open.</li>
-                  <li><strong>Zero Frontend Storage:</strong> No localStorage is used — every refresh pulls fresh entries from the sheet.</li>
-                  <li><strong>Direct Google Sheet Import:</strong> Automatically converts standard Google Sheet links to CSV endpoints.</li>
+                  <li><strong>Instant Cache-Busting:</strong> Every pull bypasses browser HTTP caching to fetch fresh edits immediately.</li>
+                  <li><strong>Tab Focus Auto-Trigger:</strong> Refetches immediately as soon as you switch back to this tab after editing your Google Sheet.</li>
+                  <li><strong>Flexible Column Mapping:</strong> Dynamically detects headers (Campaign Name, Type, Channel, Status, Audience, etc.).</li>
+                  <li><strong>Persistent Configuration:</strong> Remembers your connected sheet URL across page refreshes.</li>
                 </ul>
               </div>
 

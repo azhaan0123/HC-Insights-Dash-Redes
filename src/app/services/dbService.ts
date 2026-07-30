@@ -73,7 +73,7 @@ export interface DbAuditRecord {
   decidedAt?: string;
 }
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "/api";
 
 export async function fetchDbStatus(): Promise<DbStatus> {
   try {
