@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder_key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tdduwxjbxmlzshyjwqxa.supabase.co';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZHV3eGpieG1senNoeWp3cXhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzOTMzNjksImV4cCI6MjEwMDk2OTM2OX0.-PDHxOFooYpnIinkeq_nviopMjiUZnhYtW2RyKHZM3Q';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -332,7 +332,7 @@ export async function createAuditRecord(record: Partial<DbAuditRecord>): Promise
  */
 export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ success: boolean; rowsProcessed: number; error?: string }> {
   try {
-    let url = (webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || '').trim();
+    let url = (webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbwJ5-ufootyGfjFhPL3NMlvUzBsYwDdKpA7mOM2LS9qL4tEcNVdeCk1s-Q0kppukx1N/exec').trim();
     if (!url) throw new Error("No Google Sheet Web App URL provided in environment or arguments.");
 
     if (url.includes("docs.google.com/spreadsheets")) {
@@ -417,7 +417,7 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
  */
 export async function syncCampaignsToSheet(webAppUrl?: string): Promise<{ success: boolean; rowsProcessed: number; error?: string }> {
   try {
-    let url = (webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || '').trim();
+    let url = (webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbwJ5-ufootyGfjFhPL3NMlvUzBsYwDdKpA7mOM2LS9qL4tEcNVdeCk1s-Q0kppukx1N/exec').trim();
     if (!url) throw new Error("No Google Sheet Web App URL provided in environment or arguments.");
 
     if (url.includes("docs.google.com/spreadsheets")) {

@@ -61,7 +61,7 @@ export function SPCampaigns() {
 
   const [showSheetModal, setShowSheetModal] = useState(false);
   const [googleSheetUrl, setGoogleSheetUrl] = useState<string>(() => {
-    return import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || localStorage.getItem(SHEET_STORAGE_KEY) || "";
+    return import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || localStorage.getItem(SHEET_STORAGE_KEY) || "https://script.google.com/macros/s/AKfycbwJ5-ufootyGfjFhPL3NMlvUzBsYwDdKpA7mOM2LS9qL4tEcNVdeCk1s-Q0kppukx1N/exec";
   });
 
   const [isConnected, setIsConnected] = useState(true);
