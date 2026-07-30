@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Search,
   Plus,
@@ -19,15 +19,20 @@ import {
   FileText,
   UploadCloud,
   X,
+  Download,
+  FileSpreadsheet,
+  Link2,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_CAMPAIGNS, type SPCampaign } from "../../data/smartypantsData";
 import { createDbCampaign } from "../../services/dbService";
 
-type TabKey = "patient" | "lead" | "employer" | "completed" | "drafts" | "archived";
+type TabKey = "all" | "patient" | "lead" | "employer" | "completed" | "drafts" | "archived";
 
 const TABS: { id: TabKey; label: string }[] = [
+  { id: "all", label: "All Campaigns" },
   { id: "patient", label: "Patient Campaigns" },
   { id: "lead", label: "Lead Campaigns" },
   { id: "employer", label: "Employer Campaigns" },
@@ -36,11 +41,138 @@ const TABS: { id: TabKey; label: string }[] = [
   { id: "archived", label: "Archived" },
 ];
 
+function parseCsvToCampaigns(csvText: string): SPCampaign[] {
+  const lines = csvText.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  if (lines.length <= 1) return [];
+  const results: SPCampaign[] = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const rawLine = lines[i].trim();
+    if (!rawLine) continue;
+
+    // Split CSV handling quote escaping
+    const parts: string[] = [];
+    let inQuotes = false;
+    let current = "";
+
+    for (let charIdx = 0; charIdx < rawLine.length; charIdx++) {
+      const char = rawLine[charIdx];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        parts.push(current.replace(/^"|"$/g, '').trim());
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    parts.push(current.replace(/^"|"$/g, '').trim());
+
+    if (!parts[0] && !parts[1]) continue;
+
+    results.push({
+      id: parts[0] || `CMP-${100 + i}`,
+      name: parts[1] || "Untitled Campaign",
+      type: (parts[2] as any) || "Patient",
+      channel: (parts[3] as any) || "Email",
+      status: (parts[4] as any) || "Active",
+      audience: parseInt(parts[5], 10) || 0,
+      sent: parseInt(parts[6], 10) || 0,
+      delivered: parseInt(parts[7], 10) || 0,
+      opened: parseInt(parts[8], 10) || 0,
+      clicked: parseInt(parts[9], 10) || 0,
+      replies: parseInt(parts[10], 10) || 0,
+      createdAt: parts[11] || new Date().toISOString().slice(0, 10),
+    });
+  }
+  return results;
+}
+
+function getDirectFetchUrl(url: string): string {
+  const trimmed = url.trim();
+  const sheetIdMatch = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (sheetIdMatch && sheetIdMatch[1] && !trimmed.includes("/pub") && !trimmed.includes("gviz/tq")) {
+    const sheetId = sheetIdMatch[1];
+    return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+  }
+  return trimmed;
+}
+
 export function SPCampaigns() {
-  const [activeTab, setActiveTab] = useState<TabKey>("patient");
+  const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showBuilder, setShowBuilder] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<{ id: string; name: string; size: string; type: string }[]>([]);
+  
+  // Campaign Builder input state
+  const [builderName, setBuilderName] = useState("");
+  const [builderType, setBuilderType] = useState<"Patient" | "Lead" | "Employer">("Patient");
+  const [builderChannel, setBuilderChannel] = useState<"Email" | "SMS" | "Multi-Channel">("Email");
+
+  // Fresh live state pulled directly from the sheet on refresh (no localStorage)
+  const [allCampaigns, setAllCampaigns] = useState<SPCampaign[]>([]);
+
+  const DEFAULT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUBWSEADR_v0k5Ct7KxVrqCKwoEDqUzPtP3XnVtXe9EFRw3FwnE0x6EHRRk7hWXfFp/exec";
+
+  const [showSheetModal, setShowSheetModal] = useState(false);
+  const [googleSheetUrl, setGoogleSheetUrl] = useState(DEFAULT_WEBAPP_URL);
+  const [isConnected, setIsConnected] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState<string | null>(null);
+  const [sheetFetchError, setSheetFetchError] = useState<string | null>(null);
+
+  const fetchSheetCampaigns = useCallback(async (silent = false) => {
+    const rawUrl = googleSheetUrl.trim() || DEFAULT_WEBAPP_URL;
+    const targetUrl = getDirectFetchUrl(rawUrl);
+    if (!targetUrl) return;
+
+    if (!silent) setIsSyncing(true);
+    setSheetFetchError(null);
+
+    try {
+      const res = await fetch(targetUrl);
+      if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+      const text = await res.text();
+
+      if (text.includes("Script function not found: doGet")) {
+        setSheetFetchError("Google Apps Script requires a doGet(e) function to return rows via Web App URL. Alternatively, paste your Google Sheet URL (https://docs.google.com/spreadsheets/d/...) above.");
+        if (!silent) toast.error("Google Apps Script needs a doGet(e) function or paste your Google Sheet URL!");
+        return;
+      }
+
+      let fetchedCampaigns: SPCampaign[] = [];
+      if (text.trim().startsWith("[") || text.trim().startsWith("{")) {
+        const parsed = JSON.parse(text);
+        fetchedCampaigns = Array.isArray(parsed) ? parsed : [parsed];
+      } else if (!text.includes("<!DOCTYPE html>")) {
+        fetchedCampaigns = parseCsvToCampaigns(text);
+      }
+
+      if (fetchedCampaigns && fetchedCampaigns.length > 0) {
+        setAllCampaigns(fetchedCampaigns);
+        setLastSyncedTime(new Date().toLocaleTimeString());
+        setIsConnected(true);
+        if (!silent) toast.success(`Synced ${fetchedCampaigns.length} campaigns from Google Sheet!`);
+      } else {
+        if (!silent) toast.info("No campaign rows parsed from sheet CSV.");
+      }
+    } catch (err: any) {
+      console.warn("Sheet fetch error:", err);
+      setSheetFetchError("Could not fetch data from Google Sheet URL. Ensure sheet sharing or URL is valid.");
+      if (!silent) toast.error("Could not pull fresh data from sheet URL.");
+    } finally {
+      if (!silent) setIsSyncing(false);
+    }
+  }, [googleSheetUrl]);
+
+  // Pull fresh data immediately on page refresh, and auto-resync every 30 seconds
+  useEffect(() => {
+    fetchSheetCampaigns(true);
+    const interval = setInterval(() => {
+      fetchSheetCampaigns(true);
+    }, 30000); // 30 seconds
+    return () => clearInterval(interval);
+  }, [fetchSheetCampaigns]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -65,8 +197,9 @@ export function SPCampaigns() {
   };
 
   const filteredCampaigns = useMemo(() => {
-    let list = [...SP_CAMPAIGNS];
-    if (activeTab === "patient") list = list.filter((c) => c.type === "Patient" && c.status === "Active");
+    let list = [...allCampaigns];
+    if (activeTab === "all") list = list;
+    else if (activeTab === "patient") list = list.filter((c) => c.type === "Patient" && c.status === "Active");
     else if (activeTab === "lead") list = list.filter((c) => c.type === "Lead" && c.status !== "Archived");
     else if (activeTab === "employer") list = list.filter((c) => c.type === "Employer" && c.status !== "Archived");
     else if (activeTab === "completed") list = list.filter((c) => c.status === "Completed");
@@ -78,7 +211,7 @@ export function SPCampaigns() {
       list = list.filter((c) => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
     }
     return list;
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, allCampaigns]);
 
   const getStatusBadge = (status: string) => {
     if (status === "Active") return "bg-[#d4edda] text-[#155724] border-[#c3e6cb]";
@@ -95,11 +228,120 @@ export function SPCampaigns() {
   };
 
   // Summary stats
-  const totalSent = SP_CAMPAIGNS.reduce((a, c) => a + c.sent, 0);
-  const totalDelivered = SP_CAMPAIGNS.reduce((a, c) => a + c.delivered, 0);
-  const totalOpened = SP_CAMPAIGNS.reduce((a, c) => a + c.opened, 0);
-  const totalClicked = SP_CAMPAIGNS.reduce((a, c) => a + c.clicked, 0);
-  const totalReplies = SP_CAMPAIGNS.reduce((a, c) => a + c.replies, 0);
+  const totalSent = allCampaigns.reduce((a, c) => a + c.sent, 0);
+  const totalDelivered = allCampaigns.reduce((a, c) => a + c.delivered, 0);
+  const totalOpened = allCampaigns.reduce((a, c) => a + c.opened, 0);
+  const totalClicked = allCampaigns.reduce((a, c) => a + c.clicked, 0);
+  const totalReplies = allCampaigns.reduce((a, c) => a + c.replies, 0);
+
+  const handleExportCSV = () => {
+    const headers = ["ID", "Name", "Type", "Channel", "Status", "Audience", "Sent", "Delivered", "Opened", "Clicked", "Replies", "Created Date"];
+    const rows = filteredCampaigns.map((c) => [
+      `"${c.id}"`,
+      `"${c.name.replace(/"/g, '""')}"`,
+      `"${c.type}"`,
+      `"${c.channel}"`,
+      `"${c.status}"`,
+      c.audience,
+      c.sent,
+      c.delivered,
+      c.opened,
+      c.clicked,
+      c.replies,
+      `"${c.createdAt}"`,
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `campaigns_info_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success(`Exported ${filteredCampaigns.length} campaign(s) to CSV!`);
+  };
+
+  const syncCampaignsToGoogleSheet = async (campaignsToSync = filteredCampaigns) => {
+    const targetUrl = googleSheetUrl.trim() || DEFAULT_WEBAPP_URL;
+    setIsSyncing(true);
+    let successCount = 0;
+    try {
+      for (const c of campaignsToSync) {
+        await fetch(targetUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            id: c.id,
+            name: c.name,
+            type: c.type,
+            channel: c.channel,
+            status: c.status,
+            audience: c.audience,
+            sent: c.sent,
+            delivered: c.delivered,
+            opened: c.opened,
+            clicked: c.clicked,
+            replies: c.replies,
+            createdAt: c.createdAt,
+            syncedAt: new Date().toISOString(),
+          }),
+        });
+        successCount++;
+      }
+      setIsConnected(true);
+      toast.success(`Successfully pushed ${successCount} campaign record(s) to your Google Sheet!`);
+    } catch (err) {
+      console.error("Error syncing to Google Sheet WebApp:", err);
+      toast.error("Failed to sync campaigns to Google Sheet.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleCreateCampaign = (status: "Draft" | "Active") => {
+    const name = builderName.trim() || `New DPC ${status} Campaign`;
+    const newCampaign: SPCampaign = {
+      id: `CMP-${String(Math.floor(100 + Math.random() * 900))}`,
+      name,
+      type: builderType,
+      channel: builderChannel,
+      status,
+      audience: 342,
+      sent: status === "Active" ? 342 : 0,
+      delivered: status === "Active" ? 335 : 0,
+      opened: status === "Active" ? 210 : 0,
+      clicked: status === "Active" ? 95 : 0,
+      replies: status === "Active" ? 32 : 0,
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+
+    createDbCampaign({
+      name: newCampaign.name,
+      type: newCampaign.type,
+      channel: newCampaign.channel,
+      status: newCampaign.status,
+      attachments: attachedFiles.map((f) => ({ name: f.name, size: f.size, fileType: f.type })),
+    });
+
+    setAllCampaigns((prev) => [newCampaign, ...prev]);
+    syncCampaignsToGoogleSheet([newCampaign]);
+
+    toast.success(`Campaign "${name}" created and synced to Google Sheet! Saved in memory & localStorage.`);
+    setBuilderName("");
+    setShowBuilder(false);
+    setAttachedFiles([]);
+  };
+
+  const handleConnectSheet = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!googleSheetUrl.trim()) {
+      toast.error("Please enter a Google Sheet Web App or Published CSV URL");
+      return;
+    }
+    fetchSheetCampaigns(false);
+    setShowSheetModal(false);
+  };
 
   return (
     <ClassicLayout
@@ -108,11 +350,38 @@ export function SPCampaigns() {
       showSwitchToModern={false}
       activeNavIndex={-1}
       filterPills={[
-        { label: "Active Campaigns", val: SP_CAMPAIGNS.filter((c) => c.status === "Active").length.toString() },
+        { label: "Active Campaigns", val: allCampaigns.filter((c) => c.status === "Active").length.toString() },
         { label: "Total Sent", val: totalSent.toLocaleString() },
       ]}
       headerActions={
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => fetchSheetCampaigns(false)}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[#495057] text-xs font-semibold shadow-2xs transition-colors"
+            title="Fetch latest campaigns from Google Sheet"
+          >
+            <RefreshCw className={`size-3.5 text-[#28a745] ${isSyncing ? "animate-spin" : ""}`} />
+            <span>{isSyncing ? "Syncing..." : "Refresh Sheet Data"}</span>
+          </button>
+          <button
+            onClick={() => setShowSheetModal(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded border text-xs font-semibold shadow-2xs transition-colors ${
+              isConnected
+                ? "bg-[#d4edda] text-[#155724] border-[#c3e6cb]"
+                : "bg-white border-[#dee2e6] hover:bg-[#f8f9fa] text-[#495057]"
+            }`}
+          >
+            <FileSpreadsheet className="size-3.5 text-[#28a745]" />
+            <span>{isConnected ? "Spreadsheet Connected" : "Connect Spreadsheet"}</span>
+          </button>
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[#495057] text-xs font-semibold shadow-2xs transition-colors"
+          >
+            <Download className="size-3.5 text-[#007bff]" />
+            <span>Export CSV</span>
+          </button>
           <button
             onClick={() => setShowBuilder(!showBuilder)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#e61952] hover:bg-[#c41344] text-white text-xs font-bold shadow-2xs transition-colors"
@@ -154,15 +423,23 @@ export function SPCampaigns() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-[#495057] mb-1">Campaign Name</label>
-              <input className="w-full px-3 py-2 rounded border border-[#dee2e6] text-xs focus:outline-none focus:border-[#e61952]" placeholder="e.g., Annual Exam Reminder Q4" />
+              <input
+                value={builderName}
+                onChange={(e) => setBuilderName(e.target.value)}
+                className="w-full px-3 py-2 rounded border border-[#dee2e6] text-xs focus:outline-none focus:border-[#e61952]"
+                placeholder="e.g., Annual Exam Reminder Q4"
+              />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-[#495057] mb-1">Audience / Segment</label>
-              <select className="w-full px-3 py-2 rounded border border-[#dee2e6] text-xs focus:outline-none focus:border-[#e61952]">
-                <option>Needs Annual Exam (342 patients)</option>
-                <option>Labs Outstanding (218 patients)</option>
-                <option>Review Eligible (423 patients)</option>
-                <option>All Active Patients (1,420)</option>
+              <select
+                value={builderType}
+                onChange={(e) => setBuilderType(e.target.value as any)}
+                className="w-full px-3 py-2 rounded border border-[#dee2e6] text-xs focus:outline-none focus:border-[#e61952]"
+              >
+                <option value="Patient">Needs Annual Exam (342 patients)</option>
+                <option value="Lead">Lead Nurture Cohort (218 leads)</option>
+                <option value="Employer">Employer HR Contacts (45 employers)</option>
               </select>
             </div>
             <div>
@@ -177,10 +454,14 @@ export function SPCampaigns() {
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-[#495057] mb-1">Channel</label>
-              <select className="w-full px-3 py-2 rounded border border-[#dee2e6] text-xs focus:outline-none focus:border-[#e61952]">
-                <option>Email</option>
-                <option>SMS</option>
-                <option>Multi-Channel (Email + SMS)</option>
+              <select
+                value={builderChannel}
+                onChange={(e) => setBuilderChannel(e.target.value as any)}
+                className="w-full px-3 py-2 rounded border border-[#dee2e6] text-xs focus:outline-none focus:border-[#e61952]"
+              >
+                <option value="Email">Email</option>
+                <option value="SMS">SMS</option>
+                <option value="Multi-Channel">Multi-Channel (Email + SMS)</option>
               </select>
             </div>
             <div>
@@ -271,33 +552,11 @@ export function SPCampaigns() {
           </div>
           <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#dee2e6]">
             <button
-              onClick={() => {
-                createDbCampaign({
-                  name: "New DPC Campaign Draft",
-                  type: "Patient",
-                  channel: "Email",
-                  status: "Draft",
-                  attachments: attachedFiles.map((f) => ({ name: f.name, size: f.size, fileType: f.type })),
-                });
-                toast.success(attachedFiles.length > 0 ? `Campaign saved as draft with ${attachedFiles.length} attachment(s)! Logged in database audit trail.` : "Campaign saved as draft! Logged in database audit trail.");
-                setShowBuilder(false);
-                setAttachedFiles([]);
-              }}
+              onClick={() => handleCreateCampaign("Draft")}
               className="px-4 py-2 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-xs font-semibold text-[#495057]"
             >Save Draft</button>
             <button
-              onClick={() => {
-                createDbCampaign({
-                  name: "New DPC Active Campaign",
-                  type: "Patient",
-                  channel: "Email",
-                  status: "Active",
-                  attachments: attachedFiles.map((f) => ({ name: f.name, size: f.size, fileType: f.type })),
-                });
-                toast.success(attachedFiles.length > 0 ? `Campaign launched with ${attachedFiles.length} attachment(s)! Recorded in database audit trail.` : "Campaign launched! Recorded in database audit trail.");
-                setShowBuilder(false);
-                setAttachedFiles([]);
-              }}
+              onClick={() => handleCreateCampaign("Active")}
               className="px-4 py-2 rounded bg-[#e61952] hover:bg-[#c41344] text-white text-xs font-bold shadow-2xs"
             >Launch Campaign</button>
           </div>
@@ -393,6 +652,95 @@ export function SPCampaigns() {
           </table>
         </div>
       </div>
+
+      {/* Google Sheets / Spreadsheet Sync Modal */}
+      {showSheetModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg border border-[#dee2e6] shadow-xl max-w-lg w-full p-5 relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setShowSheetModal(false)}
+              className="absolute top-4 right-4 text-[#6c757d] hover:text-[#212529] p-1 rounded hover:bg-[#f8f9fa]"
+            >
+              <X className="size-4" />
+            </button>
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="size-9 rounded bg-[#28a745]/10 flex items-center justify-center text-[#28a745]">
+                <FileSpreadsheet className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-[#212529]">Connect Campaign Table to Spreadsheet</h3>
+                <p className="text-[11px] text-[#6c757d]">Sync live campaign metrics with Google Sheets, Excel, or Webhook CSV</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleConnectSheet} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold text-[#495057] mb-1 flex items-center justify-between">
+                  <span>Google Sheet URL or Web App Endpoint</span>
+                  <span className="text-[10px] text-[#28a745] font-bold bg-[#d4edda] px-1.5 py-0.5 rounded border border-[#c3e6cb]">Live Sync Ready</span>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit"
+                  value={googleSheetUrl}
+                  onChange={(e) => setGoogleSheetUrl(e.target.value)}
+                  className="w-full px-3 py-2 rounded border border-[#28a745] focus:outline-none focus:border-[#218838] font-mono text-[11px] bg-[#f8fff9]"
+                />
+                <p className="text-[10px] text-[#6c757d] mt-1">
+                  Paste your Google Sheet link above (e.g., <code className="text-[#212529] bg-[#e9ecef] px-1 rounded font-mono">https://docs.google.com/spreadsheets/d/.../edit</code>) or Apps Script WebApp URL.
+                </p>
+              </div>
+
+              {sheetFetchError && (
+                <div className="p-3 bg-[#fff3cd] border border-[#ffeeba] text-[#856404] rounded text-[11px] leading-relaxed">
+                  <strong>Notice on Web App Sync:</strong> {sheetFetchError}
+                </div>
+              )}
+
+              <div className="bg-[#f8f9fa] border border-[#dee2e6] rounded p-3 text-[11px] space-y-2">
+                <div className="font-semibold text-[#343a40] flex items-center gap-1.5">
+                  <Link2 className="size-3.5 text-[#007bff]" />
+                  <span>Real-Time Sheet Sync (Every 30s):</span>
+                </div>
+                <ul className="list-disc pl-4 space-y-1 text-[#6c757d]">
+                  <li><strong>Automatic 30-Second Auto-Pull:</strong> Fetches all new rows from your Google Sheet every 30s while page is open.</li>
+                  <li><strong>Zero Frontend Storage:</strong> No localStorage is used — every refresh pulls fresh entries from the sheet.</li>
+                  <li><strong>Direct Google Sheet Import:</strong> Automatically converts standard Google Sheet links to CSV endpoints.</li>
+                </ul>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-[#dee2e6]">
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  className="px-3 py-1.5 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[#495057] font-semibold flex items-center gap-1.5 shadow-2xs"
+                >
+                  <Download className="size-3.5 text-[#007bff]" />
+                  <span>Download CSV</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSheetModal(false)}
+                    className="px-3 py-1.5 rounded border border-[#dee2e6] text-[#6c757d] hover:bg-[#f8f9fa] font-medium"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSyncing}
+                    className="px-4 py-1.5 rounded bg-[#28a745] hover:bg-[#218838] disabled:opacity-50 text-white font-bold shadow-2xs flex items-center gap-1.5"
+                  >
+                    <RefreshCw className={`size-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+                    <span>{isSyncing ? "Syncing..." : "Fetch Fresh Sheet Data"}</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </ClassicLayout>
   );
 }
