@@ -27,7 +27,7 @@ import {
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_CAMPAIGNS, type SPCampaign } from "../../data/smartypantsData";
-import { createDbCampaign } from "../../services/dbService";
+import { createDbCampaign, fetchCampaigns, syncCampaignsFromSheet, syncCampaignsToSheet } from "../../services/dbService";
 
 type TabKey = "all" | "patient" | "lead" | "employer" | "completed" | "drafts" | "archived";
 
@@ -42,8 +42,6 @@ const TABS: { id: TabKey; label: string }[] = [
 ];
 
 const SHEET_STORAGE_KEY = "smartypants_google_sheet_url";
-const DEFAULT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUBWSEADR_v0k5Ct7KxVrqCKwoEDqUzPtP3XnVtXe9EFRw3FwnE0x6EHRRk7hWXfFp/exec";
-
 
 
 export function SPCampaigns() {
@@ -63,7 +61,7 @@ export function SPCampaigns() {
 
   const [showSheetModal, setShowSheetModal] = useState(false);
   const [googleSheetUrl, setGoogleSheetUrl] = useState<string>(() => {
-    return localStorage.getItem(SHEET_STORAGE_KEY) || DEFAULT_WEBAPP_URL;
+    return localStorage.getItem(SHEET_STORAGE_KEY) || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || "";
   });
 
   const [isConnected, setIsConnected] = useState(true);
@@ -79,48 +77,52 @@ export function SPCampaigns() {
     }
   }, [googleSheetUrl]);
 
-  const fetchSheetCampaigns = useCallback(async (silent = false) => {
-    const rawUrl = googleSheetUrl.trim() || DEFAULT_WEBAPP_URL;
+  const loadCampaigns = useCallback(async (silent = false) => {
+    if (!silent) setIsSyncing(true);
+    try {
+      const dbCampaigns = await fetchCampaigns();
+      
+      const mappedCampaigns: SPCampaign[] = dbCampaigns.map(c => ({
+        id: c.campaignId,
+        name: c.name,
+        type: c.type,
+        channel: c.channel,
+        status: c.status,
+        audience: c.audienceCount,
+        sent: c.sentCount,
+        delivered: c.deliveredCount,
+        opened: c.openedCount,
+        clicked: c.clickedCount,
+        replies: c.repliesCount,
+        createdAt: new Date().toISOString().slice(0, 10), // mock created_at since it's missing on DbCampaign
+      }));
+      
+      setAllCampaigns(mappedCampaigns);
+      setIsConnected(true);
+    } catch (err: any) {
+      console.error("Failed to load campaigns:", err);
+      if (!silent) toast.error("Failed to load campaigns from DB");
+    } finally {
+      if (!silent) setIsSyncing(false);
+      setIsInitialLoad(false);
+    }
+  }, []);
 
+  const handlePullFromSheet = async (silent = false) => {
+    const rawUrl = googleSheetUrl.trim() || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL;
     if (!silent) setIsSyncing(true);
     setSheetFetchError(null);
 
     try {
-      const res = await fetch("/api/campaigns/sync/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ sheetUrl: rawUrl })
-      });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Fetch failed with status ${res.status}`);
-      }
-      const fetchedCampaigns = await res.json();
-
-      if (fetchedCampaigns && fetchedCampaigns.length > 0) {
-        const mappedCampaigns = fetchedCampaigns.map((c: any) => ({
-          id: c.campaignId || c.id || `CMP-${Math.floor(Math.random() * 10000)}`,
-          name: c.name || "Untitled Campaign",
-          type: c.type || "Patient",
-          channel: c.channel || "Email",
-          status: c.status || "Active",
-          audience: c.audienceCount ?? c.audience ?? 0,
-          sent: c.sentCount ?? c.sent ?? 0,
-          delivered: c.deliveredCount ?? c.delivered ?? 0,
-          opened: c.openedCount ?? c.opened ?? 0,
-          clicked: c.clickedCount ?? c.clicked ?? 0,
-          replies: c.repliesCount ?? c.replies ?? 0,
-          createdAt: c.createdAt || new Date().toISOString().slice(0, 10),
-        }));
-        setAllCampaigns(mappedCampaigns);
-        setLastSyncedTime(new Date().toLocaleTimeString());
-        setIsConnected(true);
-        if (!silent) toast.success(`Synced ${fetchedCampaigns.length} campaigns via SQLite!`);
-      } else {
-        if (!silent) toast.info("No campaign rows parsed from sheet.");
-      }
+      const result = await syncCampaignsFromSheet(rawUrl);
+      if (!result.success) throw new Error(result.error);
+      
+      setLastSyncedTime(new Date().toLocaleTimeString());
+      setIsConnected(true);
+      if (!silent) toast.success(`Synced ${result.rowsProcessed} campaigns from Google Sheet to Database!`);
+      
+      // Reload UI with fresh data from DB
+      await loadCampaigns(true);
     } catch (err: any) {
       console.warn("Sheet sync error:", err);
       const errMsg = err.message || "Could not pull fresh data from sheet URL.";
@@ -128,20 +130,35 @@ export function SPCampaigns() {
       if (!silent) toast.error(errMsg);
     } finally {
       if (!silent) setIsSyncing(false);
-      setIsInitialLoad(false);
     }
-  }, [googleSheetUrl]);
+  };
+
+  const handlePushToSheet = async () => {
+    const rawUrl = googleSheetUrl.trim() || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL;
+    setIsSyncing(true);
+    try {
+      const result = await syncCampaignsToSheet(rawUrl);
+      if (!result.success) throw new Error(result.error);
+      toast.success(`Successfully pushed ${result.rowsProcessed} campaigns to your Google Sheet!`);
+    } catch (err: any) {
+      console.error("Error pushing to sheet:", err);
+      toast.error(err.message || "Failed to push campaigns to Google Sheet.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Real-time polling (every 3 seconds) + immediate fetch on window focus / tab visibility change
   useEffect(() => {
-    fetchSheetCampaigns(true);
+    loadCampaigns(true);
+    handlePullFromSheet(true);
 
     const interval = setInterval(() => {
-      fetchSheetCampaigns(true);
+      handlePullFromSheet(true);
     }, autoSyncIntervalMs);
 
     const handleFocus = () => {
-      fetchSheetCampaigns(true);
+      handlePullFromSheet(true);
     };
 
     window.addEventListener("focus", handleFocus);
@@ -152,7 +169,7 @@ export function SPCampaigns() {
       window.removeEventListener("focus", handleFocus);
       document.removeEventListener("visibilitychange", handleFocus);
     };
-  }, [fetchSheetCampaigns, autoSyncIntervalMs]);
+  }, [loadCampaigns, autoSyncIntervalMs, googleSheetUrl]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -241,45 +258,9 @@ export function SPCampaigns() {
     toast.success(`Exported ${filteredCampaigns.length} campaign(s) to CSV!`);
   };
 
-  const syncCampaignsToGoogleSheet = async (campaignsToSync = filteredCampaigns) => {
-    const targetUrl = googleSheetUrl.trim() || DEFAULT_WEBAPP_URL;
-    setIsSyncing(true);
-    let successCount = 0;
-    try {
-      for (const c of campaignsToSync) {
-        await fetch(targetUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({
-            id: c.id,
-            name: c.name,
-            type: c.type,
-            channel: c.channel,
-            status: c.status,
-            audience: c.audience,
-            sent: c.sent,
-            delivered: c.delivered,
-            opened: c.opened,
-            clicked: c.clicked,
-            replies: c.replies,
-            createdAt: c.createdAt,
-            syncedAt: new Date().toISOString(),
-          }),
-        });
-        successCount++;
-      }
-      setIsConnected(true);
-      toast.success(`Successfully pushed ${successCount} campaign record(s) to your Google Sheet!`);
-    } catch (err) {
-      console.error("Error syncing to Google Sheet WebApp:", err);
-      toast.error("Failed to sync campaigns to Google Sheet.");
-    } finally {
-      setIsSyncing(false);
-    }
-  };
 
-  const handleCreateCampaign = (status: "Draft" | "Active") => {
+
+  const handleCreateCampaign = async (status: "Draft" | "Active") => {
     const name = builderName.trim() || `New DPC ${status} Campaign`;
     const newCampaign: SPCampaign = {
       id: `CMP-${String(Math.floor(100 + Math.random() * 900))}`,
@@ -296,16 +277,23 @@ export function SPCampaigns() {
       createdAt: new Date().toISOString().slice(0, 10),
     };
 
-    createDbCampaign({
+    await createDbCampaign({
       name: newCampaign.name,
       type: newCampaign.type,
       channel: newCampaign.channel,
       status: newCampaign.status,
+      audienceCount: newCampaign.audience,
+      sentCount: newCampaign.sent,
+      deliveredCount: newCampaign.delivered,
+      openedCount: newCampaign.opened,
+      clickedCount: newCampaign.clicked,
+      repliesCount: newCampaign.replies,
       attachments: attachedFiles.map((f) => ({ name: f.name, size: f.size, fileType: f.type })),
     });
 
     setAllCampaigns((prev) => [newCampaign, ...prev]);
-    syncCampaignsToGoogleSheet([newCampaign]);
+    // Push the changes up to the sheet so it's in sync
+    handlePushToSheet();
 
     toast.success(`Campaign "${name}" created and synced to Google Sheet! Saved in memory & localStorage.`);
     setBuilderName("");
@@ -319,7 +307,7 @@ export function SPCampaigns() {
       toast.error("Please enter a Google Sheet Web App or Published CSV URL");
       return;
     }
-    fetchSheetCampaigns(false);
+    handlePullFromSheet(false);
     setShowSheetModal(false);
   };
 
@@ -344,7 +332,7 @@ export function SPCampaigns() {
           </div>
 
           <button
-            onClick={() => fetchSheetCampaigns(false)}
+            onClick={() => handlePullFromSheet(false)}
             disabled={isSyncing}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-[#dee2e6] bg-white hover:bg-[#f8f9fa] text-[#495057] text-xs font-semibold shadow-2xs transition-colors"
             title="Fetch latest campaigns from Google Sheet"
@@ -772,12 +760,21 @@ export function SPCampaigns() {
                     Close
                   </button>
                   <button
+                    type="button"
+                    disabled={isSyncing}
+                    onClick={handlePushToSheet}
+                    className="px-4 py-1.5 rounded bg-[#007bff] hover:bg-[#0056b3] disabled:opacity-50 text-white font-bold shadow-2xs flex items-center gap-1.5"
+                  >
+                    <UploadCloud className="size-3.5" />
+                    <span>Push to Sheet</span>
+                  </button>
+                  <button
                     type="submit"
                     disabled={isSyncing}
                     className="px-4 py-1.5 rounded bg-[#28a745] hover:bg-[#218838] disabled:opacity-50 text-white font-bold shadow-2xs flex items-center gap-1.5"
                   >
                     <RefreshCw className={`size-3.5 ${isSyncing ? "animate-spin" : ""}`} />
-                    <span>{isSyncing ? "Syncing..." : "Fetch Fresh Sheet Data"}</span>
+                    <span>{isSyncing ? "Syncing..." : "Pull from Sheet"}</span>
                   </button>
                 </div>
               </div>
