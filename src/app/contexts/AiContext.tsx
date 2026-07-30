@@ -23,6 +23,7 @@ import {
   type PageContext,
   resolvePageContext,
 } from "../components/ai/aiTypes";
+import { updateDbAiAction } from "../services/dbService";
 import {
   MOCK_ACTIONS,
   MOCK_AUDIT_RECORDS,
@@ -119,6 +120,7 @@ export function AiContextProvider({ children }: { children: ReactNode }) {
 
   const approveAction = useCallback(
     (id: string, finalOutput?: string) => {
+      updateDbAiAction(id, "approved");
       setActions((prev) => {
         const action = prev.find((a) => a.id === id);
         if (action) {
@@ -168,6 +170,7 @@ export function AiContextProvider({ children }: { children: ReactNode }) {
 
   const rejectAction = useCallback(
     (id: string, reason: RejectionReason, note?: string) => {
+      updateDbAiAction(id, "rejected", reason, note);
       setActions((prev) => {
         const action = prev.find((a) => a.id === id);
         if (action) {

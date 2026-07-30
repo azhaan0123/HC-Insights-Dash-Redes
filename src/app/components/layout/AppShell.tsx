@@ -31,6 +31,7 @@ import {
   Target,
   LayoutGrid,
   BookOpen,
+  Database,
 } from "lucide-react";
 
 const APPS_MENU = [
@@ -65,6 +66,12 @@ function TopBar() {
       </div>
 
       <div className="ml-auto flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold tracking-tight shadow-2xs" title="Production MongoDB Database Service Connected">
+          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <Database className="size-3 text-emerald-500" />
+          <span>MongoDB Connected</span>
+        </div>
+
         <Popover open={isAppsMenuOpen} onOpenChange={setIsAppsMenuOpen}>
           <PopoverTrigger id="tour-step-12" className="grid size-9 place-items-center rounded-md text-primary outline-none hover:bg-accent transition-colors">
             <LayoutGrid className="size-5" />

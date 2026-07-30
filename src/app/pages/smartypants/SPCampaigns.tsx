@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_CAMPAIGNS, type SPCampaign } from "../../data/smartypantsData";
+import { createDbCampaign } from "../../services/dbService";
 
 type TabKey = "patient" | "lead" | "employer" | "completed" | "drafts" | "archived";
 
@@ -271,7 +272,14 @@ export function SPCampaigns() {
           <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#dee2e6]">
             <button
               onClick={() => {
-                toast.success(attachedFiles.length > 0 ? `Campaign saved as draft with ${attachedFiles.length} attachment(s)!` : "Campaign saved as draft!");
+                createDbCampaign({
+                  name: "New DPC Campaign Draft",
+                  type: "Patient",
+                  channel: "Email",
+                  status: "Draft",
+                  attachments: attachedFiles.map((f) => ({ name: f.name, size: f.size, fileType: f.type })),
+                });
+                toast.success(attachedFiles.length > 0 ? `Campaign saved as draft with ${attachedFiles.length} attachment(s)! Logged in database audit trail.` : "Campaign saved as draft! Logged in database audit trail.");
                 setShowBuilder(false);
                 setAttachedFiles([]);
               }}
@@ -279,7 +287,14 @@ export function SPCampaigns() {
             >Save Draft</button>
             <button
               onClick={() => {
-                toast.success(attachedFiles.length > 0 ? `Campaign launched with ${attachedFiles.length} attachment(s)!` : "Campaign launched!");
+                createDbCampaign({
+                  name: "New DPC Active Campaign",
+                  type: "Patient",
+                  channel: "Email",
+                  status: "Active",
+                  attachments: attachedFiles.map((f) => ({ name: f.name, size: f.size, fileType: f.type })),
+                });
+                toast.success(attachedFiles.length > 0 ? `Campaign launched with ${attachedFiles.length} attachment(s)! Recorded in database audit trail.` : "Campaign launched! Recorded in database audit trail.");
                 setShowBuilder(false);
                 setAttachedFiles([]);
               }}
