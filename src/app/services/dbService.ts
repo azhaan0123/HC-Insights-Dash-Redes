@@ -85,7 +85,7 @@ export async function fetchDbStatus(): Promise<DbStatus> {
     const { count: patients } = await supabase.from('api_patient').select('*', { count: 'exact', head: true });
     const { count: encounters } = await supabase.from('api_encounter').select('*', { count: 'exact', head: true });
     const { count: claims } = await supabase.from('api_claim').select('*', { count: 'exact', head: true });
-    
+
     return {
       status: "online",
       database: "Supabase (PostgreSQL)",
@@ -110,19 +110,19 @@ export async function fetchDbStatus(): Promise<DbStatus> {
 
 export async function fetchPatients(params?: { employer?: string; search?: string; limit?: number }): Promise<DbPatient[]> {
   let query = supabase.from('api_patient').select('*');
-  
+
   if (params?.employer) {
     query = query.eq('employer', params.employer);
   }
   if (params?.search) {
     query = query.ilike('name', `%${params.search}%`);
   }
-  
+
   // Default limit if not specified
   query = query.limit(params?.limit || 200).order('risk_score', { ascending: false });
 
   const { data, error } = await query;
-  
+
   if (error) {
     console.error("Failed to fetch patients:", error);
     return [];
@@ -147,7 +147,7 @@ export async function fetchPatients(params?: { employer?: string; search?: strin
 
 export async function fetchCampaigns(): Promise<DbCampaign[]> {
   const { data, error } = await supabase.from('api_campaign').select('*').order('created_at', { ascending: false });
-  
+
   if (error) {
     console.error("Failed to fetch campaigns:", error);
     return [];
@@ -171,7 +171,7 @@ export async function fetchCampaigns(): Promise<DbCampaign[]> {
 
 export async function createDbCampaign(campaign: Partial<DbCampaign>): Promise<DbCampaign> {
   const campaign_id = `CMP-${Math.floor(Math.random() * 900 + 100)}`;
-  
+
   const newRow = {
     campaign_id,
     name: campaign.name || "New Campaign",
@@ -190,7 +190,7 @@ export async function createDbCampaign(campaign: Partial<DbCampaign>): Promise<D
   };
 
   const { data, error } = await supabase.from('api_campaign').insert([newRow]).select().single();
-  
+
   if (error) {
     console.error("Failed to create campaign:", error);
     throw new Error(error.message);
@@ -214,7 +214,7 @@ export async function createDbCampaign(campaign: Partial<DbCampaign>): Promise<D
 
 export async function fetchAiActions(): Promise<DbAiAction[]> {
   const { data, error } = await supabase.from('api_aiaction').select('*').order('confidence', { ascending: false });
-  
+
   if (error) {
     console.error("Failed to fetch AI actions:", error);
     return [];
@@ -237,14 +237,14 @@ export async function fetchAiActions(): Promise<DbAiAction[]> {
 
 export async function updateDbAiAction(actionId: string, status: "approved" | "rejected", reason?: string, note?: string): Promise<void> {
   const { error } = await supabase.from('api_aiaction')
-    .update({ 
-      status, 
-      rejection_reason: reason || "", 
+    .update({
+      status,
+      rejection_reason: reason || "",
       rejection_note: note || "",
       updated_at: new Date().toISOString()
     })
     .eq('action_id', actionId);
-    
+
   if (error) {
     console.error("Failed to update AI action:", error);
     throw new Error(error.message);
@@ -253,7 +253,7 @@ export async function updateDbAiAction(actionId: string, status: "approved" | "r
 
 export async function fetchAuditLogs(): Promise<DbAuditRecord[]> {
   const { data, error } = await supabase.from('api_auditlog').select('*').order('decided_at', { ascending: false }).limit(100);
-  
+
   if (error) {
     console.error("Failed to fetch audit logs:", error);
     return [];
@@ -280,7 +280,7 @@ export async function fetchAuditLogs(): Promise<DbAuditRecord[]> {
 
 export async function createAuditRecord(record: Partial<DbAuditRecord>): Promise<DbAuditRecord> {
   const audit_id = `aud-${Date.now()}`;
-  
+
   const newRow = {
     audit_id,
     action_type: record.actionType || "PLATFORM_ACTION",
@@ -301,7 +301,7 @@ export async function createAuditRecord(record: Partial<DbAuditRecord>): Promise
   };
 
   const { data, error } = await supabase.from('api_auditlog').insert([newRow]).select().single();
-  
+
   if (error) {
     console.error("Failed to create audit log:", error);
     throw new Error(error.message);
@@ -338,11 +338,11 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
     if (url.includes("docs.google.com/spreadsheets")) {
       throw new Error("You must use a Google Apps Script Web App URL (https://script.google.com/macros/s/.../exec), not a Google Docs Spreadsheet link.");
     }
-    
+
     const res = await fetch(url, { redirect: 'follow' });
     if (!res.ok) throw new Error(`Failed to fetch from Sheet Web App (Status: ${res.status})`);
     const sheetData = await res.json();
-    
+
     if (!Array.isArray(sheetData) || sheetData.length === 0) {
       return { success: true, rowsProcessed: 0 };
     }
@@ -355,7 +355,7 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
       // Support headers from both database format (campaign_id) and sheet format (Code, id, ID)
       const campaign_id = String(row.campaign_id || row.Code || row.code || row.id || row.ID || "").trim();
       if (!campaign_id) continue;
-      
+
       const name = String(row.name || row.Campaign || row.title || row.Title || "Untitled Campaign").trim();
       const typeRaw = String(row.type || row.Type || "Patient").trim();
       const type = allowedTypes.includes(typeRaw) ? typeRaw : "Patient";
@@ -378,6 +378,17 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
         attachments = [];
       }
 
+      const created_at_raw = row.created_at || row.Created || row.created || row.created_date || row.CreatedDate;
+      let created_at = new Date().toISOString();
+      if (created_at_raw) {
+        try {
+          const parsedDate = new Date(created_at_raw);
+          if (!isNaN(parsedDate.getTime())) {
+            created_at = parsedDate.toISOString();
+          }
+        } catch (e) { }
+      }
+
       validRows.push({
         campaign_id,
         name,
@@ -391,6 +402,7 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
         clicked_count,
         replies_count,
         attachments,
+        created_at,
         updated_at: new Date().toISOString(),
       });
     }
@@ -401,7 +413,7 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
 
     // Upsert to Supabase
     const { error } = await supabase.from('api_campaign').upsert(validRows, { onConflict: 'campaign_id' });
-    
+
     if (error) throw new Error(error.message);
 
     return { success: true, rowsProcessed: validRows.length };
@@ -431,9 +443,9 @@ export async function syncCampaignsToSheet(webAppUrl?: string): Promise<{ succes
       method: "POST",
       body: JSON.stringify(data || []),
     });
-    
+
     if (!res.ok) throw new Error(`Failed to post to Sheet Web App (Status: ${res.status})`);
-    
+
     const result = await res.json();
     return { success: true, rowsProcessed: result.rowsWritten || 0 };
   } catch (err: any) {
