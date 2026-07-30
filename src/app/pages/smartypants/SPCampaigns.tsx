@@ -23,11 +23,12 @@ import {
   FileSpreadsheet,
   Link2,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_CAMPAIGNS, type SPCampaign } from "../../data/smartypantsData";
-import { createDbCampaign, fetchCampaigns, syncCampaignsFromSheet, syncCampaignsToSheet } from "../../services/dbService";
+import { createDbCampaign, deleteDbCampaign, fetchCampaigns, syncCampaignsFromSheet, syncCampaignsToSheet } from "../../services/dbService";
 
 type TabKey = "all" | "patient" | "lead" | "employer" | "completed" | "drafts" | "archived";
 
@@ -145,6 +146,18 @@ export function SPCampaigns() {
       toast.error(err.message || "Failed to push campaigns to Google Sheet.");
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleDeleteCampaign = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete "${name}" (${id})? This will also remove it from Google Sheet.`)) return;
+    try {
+      await deleteDbCampaign(id);
+      toast.success(`Deleted "${name}"`);
+      await loadCampaigns(true);
+      await handlePushToSheet();
+    } catch (err: any) {
+      toast.error(`Failed to delete campaign: ${err.message}`);
     }
   };
 
@@ -633,10 +646,19 @@ export function SPCampaigns() {
                     <td className="py-2.5 px-3 tabular-nums">{c.replies.toLocaleString()}</td>
                     <td className="py-2.5 px-3 text-[#6c757d] font-mono text-[10px]">{c.createdAt}</td>
                     <td className="py-2.5 px-3 text-right">
-                      <button
-                        onClick={() => toast.info(`Viewing analytics for "${c.name}"...`)}
-                        className="px-2.5 py-1 rounded text-[10px] font-semibold bg-white border border-[#dee2e6] hover:bg-[#f8f9fa] text-[#495057] shadow-2xs"
-                      >View</button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => toast.info(`Viewing analytics for "${c.name}"...`)}
+                          className="px-2.5 py-1 rounded text-[10px] font-semibold bg-white border border-[#dee2e6] hover:bg-[#f8f9fa] text-[#495057] shadow-2xs"
+                        >View</button>
+                        <button
+                          onClick={() => handleDeleteCampaign(c.id, c.name)}
+                          className="p-1 rounded text-[10px] font-semibold bg-white border border-[#f5c6cb] hover:bg-[#f8d7da] text-[#dc3545] shadow-2xs"
+                          title="Delete Campaign"
+                        >
+                          <Trash2 className="size-3" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

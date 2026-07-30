@@ -212,6 +212,14 @@ export async function createDbCampaign(campaign: Partial<DbCampaign>): Promise<D
   };
 }
 
+export async function deleteDbCampaign(campaignId: string): Promise<void> {
+  const { error } = await supabase.from('api_campaign').delete().eq('campaign_id', campaignId);
+  if (error) {
+    console.error("Failed to delete campaign from DB:", error);
+    throw new Error(error.message);
+  }
+}
+
 export async function fetchAiActions(): Promise<DbAiAction[]> {
   const { data, error } = await supabase.from('api_aiaction').select('*').order('confidence', { ascending: false });
 
@@ -347,7 +355,7 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
       return { success: true, rowsProcessed: 0 };
     }
 
-    const validRows = [];
+    const rowsMap = new Map<string, any>();
     const allowedStatuses = ["Active", "Draft", "Completed", "Archived", "Paused"];
     const allowedTypes = ["Patient", "Lead", "Employer", "Content", "Event", "Launch", "Newsletter", "Nurture", "Onboarding", "Promo", "Survey", "Webinar"];
 
@@ -389,7 +397,7 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
         } catch (e) { }
       }
 
-      validRows.push({
+      rowsMap.set(campaign_id, {
         campaign_id,
         name,
         type,
@@ -407,14 +415,25 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
       });
     }
 
+    const validRows = Array.from(rowsMap.values());
+
     if (validRows.length === 0) {
       return { success: true, rowsProcessed: 0 };
     }
 
     // Upsert to Supabase
     const { error } = await supabase.from('api_campaign').upsert(validRows, { onConflict: 'campaign_id' });
-
     if (error) throw new Error(error.message);
+
+    // Delete rows in Supabase that were deleted from the Google Sheet
+    const validIdsSet = new Set(validRows.map(r => r.campaign_id));
+    const { data: existingRows } = await supabase.from('api_campaign').select('campaign_id');
+    if (existingRows && existingRows.length > 0) {
+      const idsToDelete = existingRows.map(r => r.campaign_id).filter(id => id && !validIdsSet.has(id));
+      if (idsToDelete.length > 0) {
+        await supabase.from('api_campaign').delete().in('campaign_id', idsToDelete);
+      }
+    }
 
     return { success: true, rowsProcessed: validRows.length };
   } catch (err: any) {
