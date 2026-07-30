@@ -332,11 +332,15 @@ export async function createAuditRecord(record: Partial<DbAuditRecord>): Promise
  */
 export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ success: boolean; rowsProcessed: number; error?: string }> {
   try {
-    const url = webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL;
+    let url = (webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || '').trim();
     if (!url) throw new Error("No Google Sheet Web App URL provided in environment or arguments.");
+
+    if (url.includes("docs.google.com/spreadsheets")) {
+      throw new Error("You must use a Google Apps Script Web App URL (https://script.google.com/macros/s/.../exec), not a Google Docs Spreadsheet link.");
+    }
     
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Failed to fetch from Sheet Web App");
+    const res = await fetch(url, { redirect: 'follow' });
+    if (!res.ok) throw new Error(`Failed to fetch from Sheet Web App (Status: ${res.status})`);
     const sheetData = await res.json();
     
     if (!Array.isArray(sheetData) || sheetData.length === 0) {
@@ -344,13 +348,29 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
     }
 
     const validRows = [];
-    const allowedStatuses = ["Active", "Draft", "Completed", "Archived"];
-    const allowedTypes = ["Patient", "Lead", "Employer"];
+    const allowedStatuses = ["Active", "Draft", "Completed", "Archived", "Paused"];
+    const allowedTypes = ["Patient", "Lead", "Employer", "Content", "Event", "Launch", "Newsletter", "Nurture", "Onboarding", "Promo", "Survey", "Webinar"];
 
     for (const row of sheetData) {
-      // Validate types and constraints
-      if (!row.campaign_id) continue;
+      // Support headers from both database format (campaign_id) and sheet format (Code, id, ID)
+      const campaign_id = String(row.campaign_id || row.Code || row.code || row.id || row.ID || "").trim();
+      if (!campaign_id) continue;
       
+      const name = String(row.name || row.Campaign || row.title || row.Title || "Untitled Campaign").trim();
+      const typeRaw = String(row.type || row.Type || "Patient").trim();
+      const type = allowedTypes.includes(typeRaw) ? typeRaw : "Patient";
+
+      const channel = String(row.channel || row.Channel || "Email").trim();
+      const statusRaw = String(row.status || row.Status || "Draft").trim();
+      const status = allowedStatuses.includes(statusRaw) ? statusRaw : "Draft";
+
+      const audience_count = Number(row.audience_count ?? row.Audience ?? row.audience ?? 0) || 0;
+      const sent_count = Number(row.sent_count ?? row.Sent ?? row.sent ?? 0) || 0;
+      const delivered_count = Number(row.delivered_count ?? row.Delivered ?? row.delivered ?? 0) || 0;
+      const opened_count = Number(row.opened_count ?? row.Opened ?? row.opened ?? 0) || 0;
+      const clicked_count = Number(row.clicked_count ?? row.Clicked ?? row.clicked ?? 0) || 0;
+      const replies_count = Number(row.replies_count ?? row.Replies ?? row.replies ?? 0) || 0;
+
       let attachments = [];
       try {
         attachments = typeof row.attachments === 'string' ? JSON.parse(row.attachments || "[]") : (row.attachments || []);
@@ -359,20 +379,24 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
       }
 
       validRows.push({
-        campaign_id: String(row.campaign_id),
-        name: String(row.name || "Untitled"),
-        type: allowedTypes.includes(row.type) ? row.type : "Patient",
-        channel: String(row.channel || "Email"),
-        status: allowedStatuses.includes(row.status) ? row.status : "Draft",
-        audience_count: Number(row.audience_count) || 0,
-        sent_count: Number(row.sent_count) || 0,
-        delivered_count: Number(row.delivered_count) || 0,
-        opened_count: Number(row.opened_count) || 0,
-        clicked_count: Number(row.clicked_count) || 0,
-        replies_count: Number(row.replies_count) || 0,
-        attachments: attachments,
+        campaign_id,
+        name,
+        type,
+        channel,
+        status,
+        audience_count,
+        sent_count,
+        delivered_count,
+        opened_count,
+        clicked_count,
+        replies_count,
+        attachments,
         updated_at: new Date().toISOString(),
       });
+    }
+
+    if (validRows.length === 0) {
+      return { success: true, rowsProcessed: 0 };
     }
 
     // Upsert to Supabase
@@ -393,8 +417,12 @@ export async function syncCampaignsFromSheet(webAppUrl?: string): Promise<{ succ
  */
 export async function syncCampaignsToSheet(webAppUrl?: string): Promise<{ success: boolean; rowsProcessed: number; error?: string }> {
   try {
-    const url = webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL;
+    let url = (webAppUrl || import.meta.env.VITE_GOOGLE_SHEET_WEBAPP_URL || '').trim();
     if (!url) throw new Error("No Google Sheet Web App URL provided in environment or arguments.");
+
+    if (url.includes("docs.google.com/spreadsheets")) {
+      throw new Error("You must use a Google Apps Script Web App URL (https://script.google.com/macros/s/.../exec), not a Google Docs Spreadsheet link.");
+    }
 
     const { data, error } = await supabase.from('api_campaign').select('*').order('created_at', { ascending: false });
     if (error) throw new Error(error.message);
@@ -404,7 +432,7 @@ export async function syncCampaignsToSheet(webAppUrl?: string): Promise<{ succes
       body: JSON.stringify(data || []),
     });
     
-    if (!res.ok) throw new Error("Failed to post to Sheet Web App");
+    if (!res.ok) throw new Error(`Failed to post to Sheet Web App (Status: ${res.status})`);
     
     const result = await res.json();
     return { success: true, rowsProcessed: result.rowsWritten || 0 };
