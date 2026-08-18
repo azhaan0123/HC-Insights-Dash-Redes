@@ -17,6 +17,20 @@ import {
   Search,
   Settings,
   Users,
+  Sparkles,
+  ShieldCheck,
+  Layers,
+  Lock,
+  Plus,
+  Trash2,
+  Edit3,
+  SlidersHorizontal,
+  Info,
+  AlertTriangle,
+  ChevronRight,
+  type IconVariant,
+  type IconSizePreset,
+  type IconColorMode,
 } from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { Panel } from "../components/dashboard/EmptyState";
@@ -66,9 +80,34 @@ const SHADOWS = [
   { name: "lg", cls: "shadow-lg" },
 ];
 
-const ICONS = [
-  BarChart3, Users, HeartPulse, Receipt, MessageSquare, Megaphone,
-  ClipboardCheck, Search, Filter, Download, Bell, Calendar, Settings, Activity,
+const ICON_VARIANTS: { id: IconVariant; label: string; badge?: string; desc: string }[] = [
+  { id: "TwoTone", label: "TwoTone", badge: "Default", desc: "Dual-tone layered depth with soft accent tints" },
+  { id: "Outline", label: "Outline", desc: "Crisp, balanced single-weight stroke outlines" },
+  { id: "Bold", label: "Bold", desc: "Solid filled silhouettes for maximum visual emphasis" },
+  { id: "Bulk", label: "Bulk", desc: "Duotone flat fills with geometric accent layering" },
+  { id: "Broken", label: "Broken", desc: "Stylized cut-out stroke icons for modern tech aesthetic" },
+  { id: "Linear", label: "Linear", desc: "Minimalist hairline geometry strokes" },
+];
+
+const ICON_SAMPLES = [
+  { name: "BarChart3", icon: BarChart3 },
+  { name: "Users", icon: Users },
+  { name: "HeartPulse", icon: HeartPulse },
+  { name: "Receipt", icon: Receipt },
+  { name: "MessageSquare", icon: MessageSquare },
+  { name: "Megaphone", icon: Megaphone },
+  { name: "ClipboardCheck", icon: ClipboardCheck },
+  { name: "Search", icon: Search },
+  { name: "Filter", icon: Filter },
+  { name: "Download", icon: Download },
+  { name: "Bell", icon: Bell },
+  { name: "Calendar", icon: Calendar },
+  { name: "Settings", icon: Settings },
+  { name: "Activity", icon: Activity },
+  { name: "Sparkles", icon: Sparkles },
+  { name: "ShieldCheck", icon: ShieldCheck },
+  { name: "Layers", icon: Layers },
+  { name: "Lock", icon: Lock },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -166,7 +205,28 @@ function AnimationCurve() {
 }
 
 export default function DesignSystem() {
-  const { primaryColor, computedColors } = useThemeContext();
+  const { 
+    primaryColor, 
+    computedColors, 
+    iconVariant, 
+    setIconVariant,
+    iconSize,
+    setIconSize,
+    iconScale,
+    setIconScale,
+    iconColorMode,
+    setIconColorMode,
+    enableDuotoneMix,
+    setEnableDuotoneMix
+  } = useThemeContext();
+
+  const [copiedIcon, setCopiedIcon] = useState<string | null>(null);
+
+  const handleCopyIcon = (name: string) => {
+    navigator.clipboard?.writeText(`<${name} />`);
+    setCopiedIcon(name);
+    setTimeout(() => setCopiedIcon(null), 1400);
+  };
 
   const BRAND_RAMP = [
     { name: "chart-1", hex: computedColors.chart1 },
@@ -181,6 +241,19 @@ export default function DesignSystem() {
     { name: "accent-foreground", hex: computedColors.accentForeground, fg: "#ffffff" },
     { name: "success", hex: "#16a34a", fg: "#ffffff" },
     { name: "destructive", hex: "#ef4444", fg: "#ffffff" },
+  ];
+
+  const ICON_SIZE_PRESETS: { id: IconSizePreset; label: string; scale: number; approxPx: string }[] = [
+    { id: "sm", label: "SM", scale: 0.85, approxPx: "~16px" },
+    { id: "md", label: "MD", scale: 1.0, approxPx: "~20px (Default)" },
+    { id: "lg", label: "LG", scale: 1.2, approxPx: "~24px" },
+    { id: "xl", label: "XL", scale: 1.4, approxPx: "~28px" },
+  ];
+
+  const ICON_COLOR_MODES: { id: IconColorMode; label: string; desc: string }[] = [
+    { id: "theme", label: "Primary & Secondary Duotone", desc: "Icons inherit brand primary color, with secondary layers in complementary accent colors" },
+    { id: "contextual", label: "Contextual (currentColor)", desc: "Icons inherit parent container text color with subtle opacity layering" },
+    { id: "monochrome", label: "Monochrome / Minimalist", desc: "Clean neutral dark/light high-contrast styling" },
   ];
 
   return (
@@ -329,19 +402,269 @@ export default function DesignSystem() {
             </div>
           </Tile>
 
-          {/* Iconography */}
-          <Tile title="Iconography">
-            <div className="flex flex-wrap gap-3">
-              {ICONS.map((Icon, i) => (
-                <span
-                  key={i}
-                  className="grid size-9 place-items-center rounded-md border bg-card text-muted-foreground"
-                >
-                  <Icon className="size-[18px]" />
+          {/* Iconography & Style Studio */}
+          <Tile title="Iconography · Style & Sizing Studio" className="break-inside-avoid">
+            <div className="flex flex-col gap-4">
+              {/* 1. Variant Selector Tabs */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    1. Style Variant
+                  </span>
+                  <Badge variant="secondary" className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5">
+                    {iconVariant}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1">
+                  {ICON_VARIANTS.map((v) => {
+                    const isActive = iconVariant === v.id;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => setIconVariant(v.id)}
+                        className={cn(
+                          "px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-150 text-center cursor-pointer",
+                          isActive
+                            ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                            : "text-muted-foreground hover:text-foreground hover:bg-background/70"
+                        )}
+                      >
+                        {v.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                  {ICON_VARIANTS.find((v) => v.id === iconVariant)?.desc}
+                </p>
+              </div>
+
+              {/* 2. Icon Sizing Controls */}
+              <div className="border-t pt-3 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <SlidersHorizontal className="size-3.5 text-primary" />
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      2. Icon Size & Scale
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded">
+                      {Math.round(iconScale * 100)}%
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      ({Math.round(20 * iconScale)}px)
+                    </span>
+                  </div>
+                </div>
+
+                {/* Size Presets */}
+                <div className="grid grid-cols-4 gap-1.5">
+                  {ICON_SIZE_PRESETS.map((preset) => {
+                    const isActive = iconSize === preset.id && Math.abs(iconScale - preset.scale) < 0.05;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => setIconSize(preset.id)}
+                        className={cn(
+                          "flex flex-col items-center py-1.5 px-2 rounded-md border text-xs transition-all cursor-pointer",
+                          isActive
+                            ? "border-primary bg-primary text-primary-foreground font-semibold shadow-xs"
+                            : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted"
+                        )}
+                      >
+                        <span className="text-[11px]">{preset.label}</span>
+                        <span className={cn("text-[9px] opacity-75", isActive ? "text-primary-foreground" : "text-muted-foreground")}>
+                          {preset.approxPx.split(" ")[0]}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Fine-grain Scale Slider */}
+                <div className="flex items-center gap-3 bg-muted/40 p-2 rounded-lg border">
+                  <span className="text-[10px] text-muted-foreground shrink-0 font-medium">Scale</span>
+                  <input
+                    type="range"
+                    min="0.75"
+                    max="1.6"
+                    step="0.05"
+                    value={iconScale}
+                    onChange={(e) => setIconScale(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                  <span className="text-[10px] font-mono text-muted-foreground shrink-0 w-9 text-right">
+                    {iconScale.toFixed(2)}x
+                  </span>
+                </div>
+              </div>
+
+              {/* 3. Color Palette & Duotone Mixing Controls */}
+              <div className="border-t pt-3 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-primary" />
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      3. Color Palette & Duotone Mix
+                    </span>
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className="text-[10px] font-mono capitalize border-primary/40 text-primary"
+                  >
+                    {iconColorMode}
+                  </Badge>
+                </div>
+
+                {/* Mode Selector */}
+                <div className="flex flex-col gap-1">
+                  {ICON_COLOR_MODES.map((mode) => {
+                    const isSelected = iconColorMode === mode.id;
+                    return (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => setIconColorMode(mode.id)}
+                        className={cn(
+                          "flex items-start gap-2 p-2 rounded-md border text-left transition-all cursor-pointer",
+                          isSelected
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border bg-card hover:bg-muted/40"
+                        )}
+                      >
+                        <div className="flex items-center gap-1.5 mt-0.5 shrink-0">
+                          <Activity className="size-4" variant={iconVariant} />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs font-semibold text-foreground">{mode.label}</span>
+                          <span className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate sm:whitespace-normal">
+                            {mode.desc}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Duotone Multi-Color Switch */}
+                <div className="flex items-center justify-between p-2 rounded-md border bg-muted/40">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-foreground">Duotone Secondary Layer Blend</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      Applies complementary brand secondary color to TwoTone/Bulk layers
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setEnableDuotoneMix(!enableDuotoneMix)}
+                    className={cn(
+                      "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                      enableDuotoneMix ? "bg-primary" : "bg-input"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out",
+                        enableDuotoneMix ? "translate-x-4" : "translate-x-0"
+                      )}
+                    />
+                  </button>
+                </div>
+
+                {/* Live Palette Swatches Breakdown */}
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <div className="flex flex-col p-2 rounded border bg-card text-center">
+                    <span className="h-4 rounded mb-1.5" style={{ backgroundColor: primaryColor }} />
+                    <span className="text-[10px] font-semibold text-foreground truncate">Primary Contour</span>
+                    <span className="font-mono text-[9px] text-muted-foreground/70">{primaryColor}</span>
+                  </div>
+                  <div className="flex flex-col p-2 rounded border bg-card text-center">
+                    <span className="h-4 rounded mb-1.5" style={{ backgroundColor: computedColors.chart3 }} />
+                    <span className="text-[10px] font-semibold text-foreground truncate">TwoTone Stroke</span>
+                    <span className="font-mono text-[9px] text-muted-foreground/70">{computedColors.chart3}</span>
+                  </div>
+                  <div className="flex flex-col p-2 rounded border bg-card text-center">
+                    <span className="h-4 rounded mb-1.5 border" style={{ backgroundColor: computedColors.secondary }} />
+                    <span className="text-[10px] font-semibold text-foreground truncate">Bulk Duotone Fill</span>
+                    <span className="font-mono text-[9px] text-muted-foreground/70">{computedColors.secondary}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Live Icon Sample Gallery */}
+              <div className="border-t pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    4. Live Sample Grid (Click to copy)
+                  </span>
+                  <span className="text-[10px] text-muted-foreground/70">{ICON_SAMPLES.length} icons</span>
+                </div>
+                <div className="grid grid-cols-6 gap-2">
+                  {ICON_SAMPLES.map((item) => {
+                    const Icon = item.icon;
+                    const isCopied = copiedIcon === item.name;
+                    return (
+                      <button
+                        key={item.name}
+                        type="button"
+                        onClick={() => handleCopyIcon(item.name)}
+                        title={`Click to copy <${item.name} />`}
+                        className={cn(
+                          "group flex flex-col items-center justify-center p-2 rounded-md border bg-card transition-all text-center cursor-pointer",
+                          isCopied 
+                            ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500" 
+                            : "hover:border-primary/50 hover:bg-primary/5 hover:shadow-xs"
+                        )}
+                      >
+                        <div className="grid size-8 place-items-center rounded-md text-foreground group-hover:text-primary transition-colors">
+                          <Icon />
+                        </div>
+                        <span className="mt-1 text-[9px] font-mono text-muted-foreground group-hover:text-foreground truncate max-w-full">
+                          {isCopied ? "Copied!" : item.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 5. Variant Comparison Matrix */}
+              <div className="border-t pt-3 flex flex-col gap-2">
+                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  5. Style Variant Matrix
                 </span>
-              ))}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {ICON_VARIANTS.map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setIconVariant(v.id)}
+                      className={cn(
+                        "flex flex-col items-center p-2 rounded-md border text-center transition-all cursor-pointer",
+                        iconVariant === v.id
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border bg-card hover:bg-muted/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-1.5 py-0.5 text-foreground">
+                        <Activity variant={v.id} />
+                        <ShieldCheck variant={v.id} />
+                        <Sparkles variant={v.id} />
+                      </div>
+                      <span className="mt-1 text-[11px] font-medium text-foreground">{v.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground/70 pt-1">
+                <span>iconsax-react · {iconVariant} · {Math.round(iconScale * 100)}%</span>
+                <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">App-wide Reactive Engine</span>
+              </div>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground/70">iconsax-react · TwoTone</p>
           </Tile>
 
           {/* Buttons */}

@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { AppShell } from "./components/layout/AppShell";
+import { RouteErrorBoundary } from "./components/layout/ErrorBoundary";
 import Onboarding from "./pages/auth/Onboarding";
 import Login from "./pages/auth/Login";
 import SupportPage from "./pages/Support";
@@ -176,6 +177,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     Component: AppShell,
+    ErrorBoundary: RouteErrorBoundary,
     children: [
       { path: "home", Component: Home },
       { path: "action-centre", element: <Navigate to="/utilization-gaps" replace /> },
