@@ -10,7 +10,7 @@
  */
 
 import React from "react";
-import { CheckCircle2, AlertTriangle, ShieldAlert, Info } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ShieldAlert, Info } from "../../lib/icons";
 import { cn } from "../ui/utils";
 import type { ConfidenceTier } from "./aiTypes";
 

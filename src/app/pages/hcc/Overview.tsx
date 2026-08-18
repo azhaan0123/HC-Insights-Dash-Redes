@@ -10,7 +10,7 @@ import {
   ScanSearch,
   BarChart2,
   PieChart as PieChartIcon
-} from "lucide-react";
+} from "../../lib/icons";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import {
@@ -42,9 +42,9 @@ const RISK_SCORE_DATA = [
 ];
 
 const DEMOGRAPHICS_DATA = [
-  { name: "Male", value: 33, count: 167, color: "#FF6B2B" }, // Primary
-  { name: "Female", value: 33, count: 167, color: "#3b82f6" }, // Blue
-  { name: "Other", value: 34, count: 172, color: "#f59e0b" }, // Orange
+  { name: "Male", value: 33, count: 167, color: "var(--primary)" },
+  { name: "Female", value: 33, count: 167, color: "#3b82f6" },
+  { name: "Other", value: 34, count: 172, color: "#f59e0b" },
 ];
 
 import { ChartTooltip } from "../../components/dashboard/ChartTooltip";
@@ -153,24 +153,24 @@ export default function HccOverview() {
             <div className="h-[250px] w-full pt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={RISK_SCORE_DATA} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                   <XAxis 
                     dataKey="range" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 11, fill: "#a1a1aa" }} 
+                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} 
                     dy={10}
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 11, fill: "#a1a1aa" }} 
+                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} 
                   />
                   <RechartsTooltip 
-                    cursor={{ fill: "transparent" }}
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                    cursor={{ fill: "var(--muted)", opacity: 0.3 }}
+                    content={<ChartTooltip valueFormatter={(v) => `${v} Patients`} />}
                   />
-                  <Bar dataKey="count" fill="#FF6B2B" radius={[4, 4, 0, 0]} barSize={40} />
+                  <Bar dataKey="count" fill="var(--primary)" radius={[6, 6, 0, 0]} barSize={40} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -220,7 +220,7 @@ export default function HccOverview() {
                       <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                     ))}
                   </Pie>
-                  <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: "transparent" }} />
+                  <RechartsTooltip content={<ChartTooltip valueFormatter={(v) => `${v}%`} />} cursor={{ fill: "transparent" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>

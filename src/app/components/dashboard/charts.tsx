@@ -104,7 +104,7 @@ export function HorizontalBar({
           label={yLabel ? { value: yLabel, angle: -90, position: "insideLeft", style: axisStyle } : undefined}
         />
         <Tooltip contentStyle={tooltipStyle} />
-        <Bar dataKey="value" fill={color} radius={[0, 4, 4, 0]} barSize={18}>
+        <Bar dataKey="value" fill={color} radius={[0, 4, 4, 0]} barSize={18} isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" animationBegin={200}>
           <LabelList
             dataKey="value"
             position="right"
@@ -136,7 +136,7 @@ export function GroupedBar({
         <Tooltip contentStyle={tooltipStyle} />
         <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 24, fontSize: 12 }} />
         {series.map((s) => (
-          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} radius={[3, 3, 0, 0]} barSize={28}>
+          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} radius={[3, 3, 0, 0]} barSize={28} isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" animationBegin={200}>
             <LabelList dataKey={s.key} position="top" style={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
           </Bar>
         ))}
@@ -177,7 +177,7 @@ export function VerticalBar({
           label={yLabel ? { value: yLabel, angle: -90, position: "insideLeft", style: axisStyle } : undefined}
         />
         <Tooltip contentStyle={tooltipStyle} />
-        <Bar dataKey="value" radius={[3, 3, 0, 0]} barSize={36}>
+        <Bar dataKey="value" radius={[3, 3, 0, 0]} barSize={36} isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" animationBegin={200}>
           {data.map((d, i) => (
             <Cell key={i} fill={d.color ?? colors?.[i % colors.length] ?? "var(--chart-1)"} />
           ))}
@@ -195,16 +195,22 @@ export function AreaTrend({
   height = 320,
   xLabel,
   yLabel,
-  domain,
+  domain = [0, "auto"],
   yTickFormatter,
+  animationDuration = 800,
+  animationEasing = "ease-in-out",
+  animationBegin = 300,
 }: {
   data: Record<string, number | string>[];
   series: { key: string; name: string; color: string }[];
   height?: number;
   xLabel?: string;
   yLabel?: string;
-  domain?: [number, number];
+  domain?: [number | string, number | string];
   yTickFormatter?: (v: number) => string;
+  animationDuration?: number;
+  animationEasing?: "ease" | "ease-in" | "ease-out" | "ease-in-out" | "linear";
+  animationBegin?: number;
 }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -242,8 +248,12 @@ export function AreaTrend({
             dataKey={s.key}
             name={s.name}
             stroke={s.color}
-            strokeWidth={2}
+            strokeWidth={2.5}
             fill={`url(#grad-${s.key})`}
+            isAnimationActive={true}
+            animationDuration={animationDuration}
+            animationEasing={animationEasing}
+            animationBegin={animationBegin}
           >
             <LabelList dataKey={s.key} position="top" style={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
           </Area>
@@ -285,7 +295,7 @@ export function LineTrend({
           label={yLabel ? { value: yLabel, angle: -90, position: "insideLeft", style: axisStyle } : undefined}
         />
         <Tooltip contentStyle={tooltipStyle} />
-        <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={true}>
+        <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2.5} dot={true} isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" animationBegin={300}>
           <LabelList dataKey="value" position="top" style={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
         </Line>
       </LineChart>
@@ -319,6 +329,10 @@ export function PieBreakdown({
           stroke="none"
           label={({ percent }) => percent > 0.03 ? `${(percent * 100).toFixed(0)}%` : ''}
           labelLine={false}
+          isAnimationActive={true}
+          animationDuration={800}
+          animationEasing="ease-in-out"
+          animationBegin={200}
         >
           {data.map((d, i) => (
             <Cell key={i} fill={d.color ?? CHART_COLORS[i % CHART_COLORS.length]} stroke="none" />
@@ -346,7 +360,7 @@ export function Sparkline({
     <div style={{ width, height }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 4, right: 2, bottom: 4, left: 2 }}>
-          <Line type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} dot={false} />
+          <Line type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} dot={false} isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" />
         </LineChart>
       </ResponsiveContainer>
     </div>

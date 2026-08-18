@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
-import { Syringe, HeartPulse, ShieldCheck, Activity, BrainCircuit, AlertOctagon, FileCheck, type LucideIcon, BarChart2, TrendingUp } from "lucide-react";
+import { Syringe, HeartPulse, ShieldCheck, Activity, BrainCircuit, AlertOctagon, FileCheck, type LucideIcon, BarChart2, TrendingUp } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { acoChips } from "../../data/filters";
 import { KpiCard } from "../../components/dashboard/KpiCard";

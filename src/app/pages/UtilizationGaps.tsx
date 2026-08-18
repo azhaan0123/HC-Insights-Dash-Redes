@@ -6,9 +6,12 @@ import {
   Clock,
   MessageSquareOff,
   Search,
-  ArrowUpRight,
-  ArrowDownRight,
+  ArrowUp,
+  ArrowDown,
   ChevronRight,
+  ArrowRight,
+  ArrowLeft,
+  Check,
   Phone,
   Mail,
   MessageSquare,
@@ -17,14 +20,14 @@ import {
   AlertCircle,
   ShieldAlert,
   Send,
+  UserCheck,
   Building2,
   Stethoscope,
   SlidersHorizontal,
   Info,
   AlertTriangle,
-  Layers,
   ExternalLink,
-} from "lucide-react";
+} from "../lib/icons";
 import { toast } from "sonner";
 import { Page } from "../components/layout/Page";
 import { Button } from "../components/ui/button";
@@ -149,6 +152,63 @@ export default function UtilizationGaps() {
   const [selectedMetricOverlay, setSelectedMetricOverlay] = useState<any | null>(null);
   const [metricGraphView, setMetricGraphView] = useState<"WoW" | "MoM">("WoW");
 
+  // Multi-Step Outreach Action Workflow State
+  const [actionStep, setActionStep] = useState<"overview" | "step1" | "step2" | "success">("overview");
+  const [selectedChannel, setSelectedChannel] = useState<"sms" | "email" | "call">("sms");
+  const [actionNote, setActionNote] = useState<string>("");
+  const [assignedStaff] = useState<string>("Dr. Sarah Evans, MD (PCP)");
+  const [outreachError, setOutreachError] = useState<string | null>(null);
+
+  const openPatientDrawerWithStep = (
+    patient: ActionCentrePatientRow,
+    step: "overview" | "step1" | "step2" | "success" = "overview",
+    channel?: "sms" | "email" | "call"
+  ) => {
+    setSelectedPatient(patient);
+    setActionStep(step);
+    setOutreachError(null);
+    const ch = channel || (patient.suggestedActionType === "email" ? "email" : patient.suggestedActionType === "call" ? "call" : "sms");
+    setSelectedChannel(ch);
+
+    const isPhoneAvail = Boolean(patient.contactPhone && patient.contactPhone !== "Unavailable" && patient.contactPhone.replace(/\D/g, "") !== "");
+    const isEmailAvail = Boolean(patient.contactEmail && patient.contactEmail !== "Unavailable" && patient.contactEmail.trim() !== "");
+
+    if (ch === "email" && !isEmailAvail) {
+      setOutreachError("email is unavailable please use other method for outreach");
+    } else if ((ch === "sms" || ch === "call") && !isPhoneAvail) {
+      setOutreachError("phone number is unavailable please use other method for outreach");
+    }
+
+    if (ch === "call") {
+      setActionNote(`Phone Outreach for ${patient.name}: Review ${patient.condition} gap status and explain DPC $0 copay visits & lab work with ${patient.physician}.`);
+    } else if (ch === "email") {
+      setActionNote(`Subject: Care Coordination & DPC Check-in\n\nDear ${patient.name},\nWe noticed an open care gap regarding your ${patient.condition} care plan...`);
+    } else {
+      setActionNote(`SMS Outreach to ${patient.name}: Hi ${patient.name.split(" ")[0]}, your DPC care team noticed an open care gap for ${patient.condition}. Please reply to schedule your $0 copay check-in or lab work.`);
+    }
+  };
+
+  const handleConfirmTwoStepAction = () => {
+    if (!selectedPatient) return;
+
+    const newTouchpoint = {
+      id: `EV-${Date.now().toString().slice(-4)}`,
+      type: selectedChannel === "sms" ? "SMS" : selectedChannel === "email" ? "Email" : "Call",
+      date: "Just now",
+      description: `${selectedPatient.suggestedAction} (${selectedChannel.toUpperCase()}) — ${actionNote.slice(0, 70)}...`,
+      outcome: "Sent & Logged to Practice EHR",
+    };
+
+    selectedPatient.engagementHistory = [newTouchpoint, ...selectedPatient.engagementHistory];
+    setCompletedPatientIds((prev) => new Set(prev).add(selectedPatient.id));
+
+    toast.success(`Action Executed & Logged for ${selectedPatient.name}`, {
+      description: `Outreach via ${selectedChannel.toUpperCase()} successfully logged to EHR.`,
+    });
+
+    setActionStep("success");
+  };
+
   // Filter patients
   const filteredPatients = useMemo(() => {
     let list = ACTION_CENTRE_PATIENTS.filter((p) => p.cohort !== "external-leakage");
@@ -219,17 +279,6 @@ export default function UtilizationGaps() {
       chips={utilizationGapsChips}
       showFilters={true}
       showIconActions={false}
-      actions={
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/utilization-gaps-classic")}
-          className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40 font-semibold"
-        >
-          <Layers className="size-3.5" />
-          <span>Legacy UI</span>
-        </Button>
-      }
     >
       {/* 1. Engagement & Utilization Overview Metric Deck (Clean, No Icons) */}
       <div className="mb-8">
@@ -289,9 +338,9 @@ export default function UtilizationGaps() {
                         title="Week over Week Change"
                       >
                         {card.wowPositive ? (
-                          <ArrowDownRight className="size-3" />
+                          <ArrowDown className="size-3" />
                         ) : (
-                          <ArrowUpRight className="size-3" />
+                          <ArrowUp className="size-3" />
                         )}
                         <span>{card.wowChange}</span>
                       </span>
@@ -436,36 +485,31 @@ export default function UtilizationGaps() {
                   return (
                     <tr
                       key={patient.id}
-                      onClick={() => setSelectedPatient(patient)}
+                      onClick={() => openPatientDrawerWithStep(patient, "overview")}
                       className={cn(
                         "cursor-pointer transition-colors hover:bg-muted/50 group",
                         isDone && "opacity-50 bg-muted/30"
                       )}
                     >
                       {/* Patient Member */}
-                      <td className="py-4 px-5">
+                      <td className="py-3.5 px-5">
                         <div className="flex items-center gap-3">
                           <div className="size-8 rounded-full bg-secondary dark:bg-card border border-border/50 flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
                             {patient.name.split(" ").map((n) => n[0]).join("")}
                           </div>
-                          <div className="min-w-0">
-                            <div className="font-semibold text-foreground truncate flex items-center gap-1.5">
-                              <span>{patient.name}</span>
-                              {isDone && (
-                                <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0 font-normal">
-                                  Actioned
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="text-[11px] text-muted-foreground truncate mt-0.5">
-                              <IdCell id={patient.id} /> • {patient.age}y • {patient.gender}
-                            </div>
+                          <div className="font-semibold text-foreground truncate flex items-center gap-1.5 text-sm">
+                            <span>{patient.name}</span>
+                            {isDone && (
+                              <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0 font-normal">
+                                Actioned
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </td>
 
-                      {/* Diagnosis & Spruce Status (Clean inline pill) */}
-                      <td className="py-4 px-4">
+                      {/* Diagnosis & Spruce Status */}
+                      <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
                           <Tooltip>
                             <TooltipTrigger className="cursor-help underline decoration-dotted underline-offset-4 text-xs font-medium text-foreground">
@@ -483,23 +527,17 @@ export default function UtilizationGaps() {
                         </div>
                       </td>
 
-                      {/* Gap Reason (Clean typography without noisy emojis) */}
-                      <td className="py-4 px-4 max-w-xs">
+                      {/* Gap Reason */}
+                      <td className="py-3.5 px-4 max-w-xs">
                         <div className="text-xs font-medium text-foreground truncate" title={patient.reason}>
                           {patient.reason}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground truncate mt-0.5" title={`${patient.employer} • ${patient.physician}`}>
-                          {patient.employer} • {patient.physician}
                         </div>
                       </td>
 
                       {/* Last Encounter */}
-                      <td className="py-4 px-4 whitespace-nowrap text-xs">
+                      <td className="py-3.5 px-4 whitespace-nowrap text-xs">
                         <div className="font-medium text-foreground">
                           {patient.lastVisitText}
-                        </div>
-                        <div className="text-muted-foreground text-[11px] mt-0.5 truncate max-w-[150px]" title={patient.lastOutreachText}>
-                          {patient.lastOutreachText}
                         </div>
                       </td>
 
@@ -509,7 +547,10 @@ export default function UtilizationGaps() {
                           <Button
                             size="sm"
                             variant={isDone ? "secondary" : "default"}
-                            onClick={(e) => handleTriggerAction(patient, e)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openPatientDrawerWithStep(patient, "step1");
+                            }}
                             className="h-8 text-xs font-medium shadow-2xs gap-1.5 px-3 rounded-lg"
                           >
                             {patient.suggestedActionType === "sms" && <MessageSquare className="size-3.5 shrink-0" />}
@@ -580,32 +621,268 @@ export default function UtilizationGaps() {
               </SheetHeader>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {/* Recommended Action Box */}
-                <Card className="rounded-xl border border-transparent ring-1 ring-primary/30 bg-primary/[0.04] p-4 space-y-3 shadow-2xs">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-primary text-sm">
-                      <AlertCircle className="size-4" />
-                      <span>Recommended Operational Action</span>
+                {/* Multi-Step Outreach Action & Execution Section */}
+                <Card className="rounded-xl border border-border bg-card p-4 space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                    <div className="flex items-center gap-2 font-bold text-foreground text-sm">
+                      <AlertCircle className="size-4 text-primary shrink-0" />
+                      <span>Recommended Outreach Action</span>
                     </div>
-                    <Badge variant="outline" className="bg-background/80 text-xs font-normal">
-                      {selectedPatient.cohort.replace("-", " ").toUpperCase()}
-                    </Badge>
+                    {actionStep !== "overview" && (
+                      <Badge className="bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-0.5">
+                        {actionStep === "step1" ? "Step 1 of 2: Configure" : actionStep === "step2" ? "Step 2 of 2: Confirm" : "Completed ✓"}
+                      </Badge>
+                    )}
                   </div>
-                  <p className="text-sm font-semibold text-foreground">
-                    {selectedPatient.suggestedAction}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Flag Reason:</strong> {selectedPatient.reason}
-                  </p>
-                  <div className="pt-2">
-                    <Button
-                      size="sm"
-                      className="h-8 font-semibold w-full shadow-2xs"
-                      onClick={() => handleTriggerAction(selectedPatient)}
-                    >
-                      <Send className="size-3.5 mr-2" /> Execute Action & Log Outreach
-                    </Button>
-                  </div>
+
+                  {/* STATE 1: OVERVIEW */}
+                  {actionStep === "overview" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between bg-muted/40 p-3 rounded-lg border border-border/60">
+                        <div>
+                          <span className="text-sm font-bold text-foreground block">{selectedPatient.suggestedAction}</span>
+                          <span className="text-xs text-muted-foreground">Reason: {selectedPatient.reason}</span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] font-bold uppercase bg-background">
+                          {selectedPatient.suggestedActionType}
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-xs text-muted-foreground font-medium">
+                          Initiate secure two-step outreach for this care gap.
+                        </span>
+                        <Button
+                          size="sm"
+                          onClick={() => openPatientDrawerWithStep(selectedPatient, "step1", "sms")}
+                          className="h-8 text-xs font-bold gap-1.5 shadow-2xs cursor-pointer"
+                        >
+                          <span>Initiate Action (Step 1 of 2)</span>
+                          <ArrowRight className="size-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STATE 2: STEP 1 (CONFIGURE & REVIEW) */}
+                  {actionStep === "step1" && (() => {
+                    const isPhoneAvail = Boolean(selectedPatient.contactPhone && selectedPatient.contactPhone !== "Unavailable" && selectedPatient.contactPhone.replace(/\D/g, "") !== "");
+                    const isEmailAvail = Boolean(selectedPatient.contactEmail && selectedPatient.contactEmail !== "Unavailable" && selectedPatient.contactEmail.trim() !== "");
+
+                    return (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between text-xs font-semibold text-primary">
+                          <span>Select Channel & Customize Message</span>
+                        </div>
+
+                        {/* Red Error Banner when unavailable contact method is clicked */}
+                        {outreachError && (
+                          <div className="bg-destructive/10 border-2 border-destructive text-destructive p-3 rounded-lg flex items-center justify-between gap-3 text-xs font-semibold shadow-sm animate-in fade-in duration-150">
+                            <div className="flex items-center gap-2">
+                              <ShieldAlert className="size-4 text-destructive shrink-0" />
+                              <span>{outreachError}</span>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setOutreachError(null)}
+                              className="h-7 text-xs font-bold bg-background text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground shrink-0 cursor-pointer"
+                            >
+                              Clear
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className={cn("space-y-4 transition-all duration-200", outreachError && "opacity-40 pointer-events-none select-none")}>
+                          {/* Channel Selector Pills */}
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase text-muted-foreground tracking-wider mb-2">
+                              Outreach Channel
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                              {[
+                                { id: "call" as const, label: "Phone Call", icon: Phone },
+                                { id: "email" as const, label: "Secure Email", icon: Mail },
+                                { id: "sms" as const, label: "Direct SMS", icon: MessageSquare },
+                              ].map((ch) => {
+                                const Icon = ch.icon;
+                                const isSelected = selectedChannel === ch.id;
+                                const isOptionDisabled = ch.id === "email" ? !isEmailAvail : !isPhoneAvail;
+
+                                return (
+                                  <button
+                                    key={ch.id}
+                                    type="button"
+                                    onClick={() => {
+                                      if (isOptionDisabled) {
+                                        const missingType = ch.id === "email" ? "email" : "phone number";
+                                        setOutreachError(`${missingType} is unavailable please use other method for outreach`);
+                                        return;
+                                      }
+                                      setOutreachError(null);
+                                      setSelectedChannel(ch.id);
+                                      if (ch.id === "call") {
+                                        setActionNote(`Phone Outreach for ${selectedPatient.name}: Review ${selectedPatient.condition} gap status and explain DPC $0 copay visits & lab work with ${selectedPatient.physician}.`);
+                                      } else if (ch.id === "email") {
+                                        setActionNote(`Subject: Care Coordination & DPC Check-in\n\nDear ${selectedPatient.name},\nWe noticed an open care gap regarding your ${selectedPatient.condition} care plan...`);
+                                      } else {
+                                        setActionNote(`SMS Outreach to ${selectedPatient.name}: Hi ${selectedPatient.name.split(" ")[0]}, your DPC care team noticed an open care gap for ${selectedPatient.condition}. Please reply to schedule your $0 copay check-in or lab work.`);
+                                      }
+                                    }}
+                                    className={cn(
+                                      "p-2.5 rounded-lg border text-left flex flex-col gap-1.5 transition-all text-xs font-semibold cursor-pointer",
+                                      isOptionDisabled
+                                        ? "border-dashed border-border/80 bg-muted/50 text-muted-foreground opacity-60 cursor-not-allowed"
+                                        : isSelected
+                                        ? "border-primary bg-primary/10 text-primary shadow-2xs ring-1 ring-primary/30"
+                                        : "border-border bg-card text-foreground hover:bg-muted/40"
+                                    )}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <Icon className={cn("size-4", isSelected ? "text-primary" : "text-muted-foreground")} />
+                                      {isOptionDisabled && (
+                                        <span className="text-[9px] font-bold uppercase bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
+                                          Unavailable
+                                        </span>
+                                      )}
+                                      {isSelected && !isOptionDisabled && <span className="size-2 rounded-full bg-primary" />}
+                                    </div>
+                                    <span className="truncate">{ch.label}</span>
+                                    {isOptionDisabled && (
+                                      <span className="text-[10px] font-normal text-muted-foreground">
+                                        {ch.id === "email" ? "No Email ID" : "No Phone #"}
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Editable Message / Note */}
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase text-muted-foreground tracking-wider mb-1.5">
+                              {selectedChannel === "sms" ? "Secure SMS Preview (Editable)" : selectedChannel === "call" ? "Call Script / Clinical Note" : "Email Draft (Editable)"}
+                            </label>
+                            <textarea
+                              rows={3}
+                              value={actionNote}
+                              onChange={(e) => setActionNote(e.target.value)}
+                              className="w-full text-xs text-foreground p-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary font-mono leading-relaxed"
+                            />
+                          </div>
+
+                          {/* Step 1 Action Bar */}
+                          <div className="pt-2 border-t border-border/50 flex items-center justify-between gap-3">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setActionStep("overview")}
+                              className="h-8 text-xs font-medium cursor-pointer"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => setActionStep("step2")}
+                              className="h-8 text-xs font-bold gap-1.5 shadow-2xs cursor-pointer"
+                            >
+                              <span>Proceed to Final Review (Step 2)</span>
+                              <ArrowRight className="size-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* STATE 3: STEP 2 (FINAL REVIEW & CONFIRMATION) */}
+                  {actionStep === "step2" && (
+                    <div className="space-y-3.5 bg-amber-500/5 dark:bg-amber-500/10 border-2 border-amber-500/40 rounded-xl p-4 shadow-sm animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between border-b border-amber-500/30 pb-2">
+                        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-xs">
+                          <ShieldAlert className="size-4" />
+                          <span>Final Confirmation & Execution</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-background rounded-lg border border-amber-500/30 p-3 space-y-2 text-xs">
+                        <div className="flex justify-between border-b border-border/50 pb-1.5">
+                          <span className="text-muted-foreground font-semibold">Patient:</span>
+                          <span className="font-bold text-foreground">{selectedPatient.name} ({selectedPatient.id})</span>
+                        </div>
+                        <div className="flex justify-between border-b border-border/50 pb-1.5">
+                          <span className="text-muted-foreground font-semibold">Action & Channel:</span>
+                          <span className="font-bold text-primary">{selectedPatient.suggestedAction} via {selectedChannel.toUpperCase()}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-border/50 pb-1.5">
+                          <span className="text-muted-foreground font-semibold">Assigned Care Staff:</span>
+                          <span className="font-semibold text-foreground">{assignedStaff}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground font-semibold block mb-1">Logged Note Preview:</span>
+                          <div className="bg-muted/50 p-2 rounded text-[11px] font-mono text-foreground border border-border/60 max-h-[70px] overflow-y-auto">
+                            {actionNote}
+                          </div>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-normal flex items-start gap-1.5">
+                        <span className="text-base leading-none">ℹ️</span>
+                        <span>Confirming will queue this outreach in the practice EHR, dispatch the communication via {selectedChannel.toUpperCase()}, and log a touchpoint timestamp in the patient history.</span>
+                      </p>
+
+                      {/* Step 2 Action Bar */}
+                      <div className="pt-2 border-t border-amber-500/30 flex items-center justify-between gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setActionStep("step1")}
+                          className="h-8 text-xs font-semibold gap-1 cursor-pointer"
+                        >
+                          <ArrowLeft className="size-3.5" />
+                          <span>Back to Edit (Step 1)</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleConfirmTwoStepAction()}
+                          className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 shadow-sm animate-pulse cursor-pointer"
+                        >
+                          <CheckCircle2 className="size-4" />
+                          <span>Confirm & Log Action (Complete Step 2)</span>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STATE 4: SUCCESS */}
+                  {actionStep === "success" && (
+                    <div className="bg-emerald-500/10 border-2 border-emerald-500 rounded-xl p-4 space-y-3 text-emerald-800 dark:text-emerald-300 shadow-sm animate-in zoom-in-95 duration-200">
+                      <div className="flex items-center gap-2 font-bold text-sm">
+                        <Check className="size-5 text-white bg-emerald-600 rounded-full p-0.5 shrink-0" />
+                        <span>Outreach Action Successfully Executed & Logged!</span>
+                      </div>
+                      <p className="text-xs leading-relaxed bg-background/90 p-2.5 rounded-lg border border-emerald-500/30 font-medium text-foreground">
+                        Touchpoint recorded for <strong>{selectedPatient.name}</strong> (`{selectedPatient.id}`) via <strong>{selectedChannel.toUpperCase()}</strong>. Practice task created for {assignedStaff.split(" ")[0]}.
+                      </p>
+                      <div className="flex items-center justify-between pt-2 border-t border-emerald-500/30">
+                        <button
+                          type="button"
+                          onClick={() => setActionStep("overview")}
+                          className="text-xs font-bold underline hover:text-emerald-900 cursor-pointer"
+                        >
+                          View Updated History Below ↓
+                        </button>
+                        <Button
+                          size="sm"
+                          onClick={() => setSelectedPatient(null)}
+                          className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                        >
+                          Done & Close Drawer
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </Card>
 
                 {/* Tabs for Drawer Details */}
@@ -690,9 +967,32 @@ export default function UtilizationGaps() {
                 <span className="text-xs text-muted-foreground">
                   DPC Operational Work Queue • Phase 1
                 </span>
-                <Button size="sm" variant="outline" onClick={() => setSelectedPatient(null)} className="rounded-lg">
-                  Close Drawer
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setSelectedPatient(null)} className="rounded-lg cursor-pointer">
+                    Close Drawer
+                  </Button>
+                  {actionStep === "overview" && (
+                    <Button size="sm" onClick={() => openPatientDrawerWithStep(selectedPatient, "step1")} className="rounded-lg font-semibold gap-1 cursor-pointer">
+                      <span>Initiate 2-Step Action →</span>
+                    </Button>
+                  )}
+                  {actionStep === "step1" && (
+                    <Button size="sm" onClick={() => setActionStep("step2")} className="rounded-lg font-semibold gap-1 cursor-pointer">
+                      <span>Proceed to Step 2 →</span>
+                    </Button>
+                  )}
+                  {actionStep === "step2" && (
+                    <Button size="sm" onClick={() => handleConfirmTwoStepAction()} className="rounded-lg font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1 cursor-pointer">
+                      <CheckCircle2 className="size-3.5" />
+                      <span>Confirm & Log Action</span>
+                    </Button>
+                  )}
+                  {actionStep === "success" && (
+                    <Button size="sm" variant="secondary" onClick={() => setActionStep("overview")} className="rounded-lg font-semibold cursor-pointer">
+                      Return to Overview
+                    </Button>
+                  )}
+                </div>
               </SheetFooter>
             </>
           )}

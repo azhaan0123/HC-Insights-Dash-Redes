@@ -8,13 +8,13 @@ import {
   Megaphone,
   HeartPulse,
   Search,
-  ArrowUpRight,
-  ArrowDownRight,
+  ArrowUp,
+  ArrowDown,
   Download,
   ExternalLink,
   AlertCircle,
   ArrowRight,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   AreaChart,
   Area,
@@ -208,7 +208,7 @@ export function ClassicHome() {
                       card.wowPositive ? "bg-[#d4edda] text-[#155724]" : "bg-[#f8d7da] text-[#721c24]"
                     }`}
                   >
-                    {card.wowPositive ? <ArrowUpRight className="size-3" /> : <ArrowDownRight className="size-3" />}
+                    {card.wowPositive ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
                     <span>{card.wowChange}</span>
                   </span>
                 </div>

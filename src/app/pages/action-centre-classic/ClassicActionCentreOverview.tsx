@@ -22,7 +22,7 @@ import {
   Info,
   X,
   Send,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   ResponsiveContainer,
   AreaChart,

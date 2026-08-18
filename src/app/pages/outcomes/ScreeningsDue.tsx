@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Page } from "../../components/layout/Page";
 import { screeningsChips } from "../../data/filters";
-import { ClipboardCheck, ShieldCheck, Download, Filter } from "lucide-react";
+import { ClipboardCheck, ShieldCheck, Download, Filter } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";

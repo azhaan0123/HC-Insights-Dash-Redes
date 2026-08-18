@@ -7,8 +7,8 @@ import {
   MessageSquareOff,
   Search,
   Filter,
-  ArrowUpRight,
-  ArrowDownRight,
+  ArrowUp,
+  ArrowDown,
   ChevronRight,
   Phone,
   Mail,
@@ -25,7 +25,7 @@ import {
   ExternalLink,
   SlidersHorizontal,
   AlertTriangle,
-} from "lucide-react";
+} from "../../lib/icons";
 import { toast } from "sonner";
 import { Page } from "../../components/layout/Page";
 import { Button } from "../../components/ui/button";
@@ -231,16 +231,6 @@ export default function ActionCentreOverview() {
       subtitle="Phase 1: Operational Visibility — Replace passive reporting with daily actionable patient work queues."
       showFilters={false}
       showIconActions={false}
-      actions={
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/action-centre-classic")}
-          className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40 font-semibold"
-        >
-          <span>Legacy UI</span>
-        </Button>
-      }
     >
       {/* 1. Engagement Overview Cards */}
       <div className="mb-8">
@@ -292,9 +282,9 @@ export default function ActionCentreOverview() {
                         title="Week over Week Change"
                       >
                         {card.wowPositive ? (
-                          <ArrowDownRight className="size-3" />
+                          <ArrowDown className="size-3" />
                         ) : (
-                          <ArrowUpRight className="size-3" />
+                          <ArrowUp className="size-3" />
                         )}
                         <span>{card.wowChange} WoW</span>
                       </span>
@@ -566,21 +556,16 @@ export default function ActionCentreOverview() {
                     >
                       <td className="py-3.5 px-4 font-medium text-foreground">
                         <div className="flex items-center gap-3">
-                          <div className="size-9 rounded-full bg-muted dark:bg-card flex items-center justify-center text-xs font-bold shrink-0 text-foreground/90 dark:text-muted-foreground/50">
+                          <div className="size-8 rounded-full bg-secondary dark:bg-card border border-border/50 flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
                             {patient.name.split(" ").map((n) => n[0]).join("")}
                           </div>
-                          <div>
-                            <div className="font-semibold text-foreground dark:text-foreground flex items-center gap-1.5">
-                              <span>{patient.name}</span>
-                              {isDone && (
-                                <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0">
-                                  Actioned
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              <IdCell id={patient.id} /> • {patient.age} Yrs ({patient.gender})
-                            </div>
+                          <div className="font-semibold text-foreground truncate flex items-center gap-1.5 text-sm">
+                            <span>{patient.name}</span>
+                            {isDone && (
+                              <Badge className="bg-emerald-500/15 text-emerald-600 border-none text-[10px] px-1.5 py-0 font-normal">
+                                Actioned
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </td>

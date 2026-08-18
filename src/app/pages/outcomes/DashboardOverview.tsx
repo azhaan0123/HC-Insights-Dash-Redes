@@ -1,7 +1,7 @@
 import { Page } from "../../components/layout/Page";
 import { outcomesChips } from "../../data/filters";
 import { KpiCard } from "../../components/dashboard/KpiCard";
-import { Users, ShieldAlert, AlertCircle, CalendarClock, Pill, Activity, LayoutDashboard } from "lucide-react";
+import { Users, ShieldAlert, AlertCircle, CalendarClock, Pill, Activity, LayoutDashboard } from "../../lib/icons";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { usePageLoading } from "../../hooks/usePageLoading";
 import { KpiCardSkeleton, PieChartSkeleton } from "../../components/dashboard/SkeletonPrimitives";

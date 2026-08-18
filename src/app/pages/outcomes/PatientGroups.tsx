@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Page } from "../../components/layout/Page";
 import { patientGroupsChips } from "../../data/filters";
 import { Icd10Code } from "../../components/ui/icd10-code";
-import { Users, Download, Filter } from "lucide-react";
+import { Users, Download, Filter } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import { usePageLoading } from "../../hooks/usePageLoading";

@@ -128,3 +128,26 @@ export const employerChips: FilterChip[] = [
   { label: "Cohort Status", value: "Active Manifest", options: ["Active Manifest", "COBRA / Terminated", "All Members"] },
 ];
 
+/**
+ * Filter chips for the Patient Search page (DCMP-3618).
+ *
+ * Inactivity Period is intentionally EXCLUDED — patient search is a lookup tool
+ * that must return results regardless of last_encounter_date or last_message_date.
+ * The DCMP-3616 fix established that applying inactivity filters with AND semantics
+ * causes blank results; this chip set follows the corrected OR approach.
+ */
+export const patientSearchChips: FilterChip[] = [
+  { label: "Employer", value: "All Employers", options: ["All Employers", ...EMPLOYERS] },
+  { label: "DPC", value: "All DPCs", options: ["All DPCs", ...DPCS] },
+  { label: "Physician", value: "All Physicians", options: ["All Physicians", ...PHYSICIANS] },
+  {
+    label: "Engagement Source",
+    value: "All Sources",
+    options: ["All Sources", "Elation EHR", "Hint Core", "Spruce Health", "Claims Feed"],
+  },
+  {
+    label: "Spruce Status",
+    value: "All",
+    options: ["All", "Active (Yes)", "Not Enrolled (No)"],
+  },
+];

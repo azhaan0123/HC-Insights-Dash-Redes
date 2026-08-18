@@ -33,6 +33,29 @@ export interface DbPatient {
   lastVisit?: string;
 }
 
+/**
+ * Extended patient type for the Patient Search feature (DCMP-3618).
+ *
+ * Includes the fields required by the ticket:
+ *   - conditions: ICD-10 codes from Elation EHR
+ *   - engagementSource: which system is the canonical engagement source
+ *   - lastEncounterDate: pe.last_encounter_date from Elation
+ *   - lastMessageDate: pm.last_message_date from Spruce Health
+ *   - hasDuplicateFlag: true when orphaned/deleted linked patient records exist
+ *     (DCMP-3616 deduplication context — the search must never return two rows
+ *      for the same patient; this flag surfaces admin-visible duplicates only)
+ */
+export interface PatientSearchResult extends DbPatient {
+  engagementSource: "Elation EHR" | "Hint Core" | "Spruce Health" | "Claims Feed";
+  lastEncounterDate: string | null;   // pe.last_encounter_date (YYYY-MM-DD)
+  lastMessageDate: string | null;     // pm.last_message_date from Spruce
+  spruce: "Yes" | "No";              // Whether patient has an active Spruce account
+  physician: string;
+  /** True if this patient has >1 linked patient records in the system
+   *  (including deleted/orphaned ones). Surfaces the DCMP-3616 dedup context. */
+  hasDuplicateFlag: boolean;
+}
+
 export interface DbCampaign {
   campaignId: string;
   name: string;
@@ -115,7 +138,8 @@ export async function fetchPatients(params?: { employer?: string; search?: strin
     query = query.eq('employer', params.employer);
   }
   if (params?.search) {
-    query = query.ilike('name', `%${params.search}%`);
+    // DCMP-3618: search by name OR mrn (not just name as before)
+    query = query.or(`name.ilike.%${params.search}%,mrn.ilike.%${params.search}%`);
   }
 
   // Default limit if not specified
@@ -143,6 +167,86 @@ export async function fetchPatients(params?: { employer?: string; search?: strin
     conditions: d.conditions || [],
     lastVisit: d.last_visit,
   }));
+}
+
+/**
+ * Search patients by name or patient ID (MRN) — DCMP-3618.
+ *
+ * Deduplication contract (mirrors the DCMP-3616 fix):
+ *   1. Returns at most one row per MRN (api_patient.mrn is UNIQUE in the DB).
+ *   2. Uses OR semantics for date fields — a patient is a valid result regardless
+ *      of whether their last_encounter_date or last_message_date is old or null.
+ *      (BEFORE the DCMP-3616 fix, the query required BOTH to be past threshold,
+ *      which caused blank clinical data; this function never applies that filter.)
+ *   3. Sets hasDuplicateFlag = true when the patient's linked_records_count > 1
+ *      (i.e., orphaned/deleted records exist for this patient in the system).
+ *
+ * For the production hint_patient table, replace this with a LATERAL join query
+ * that applies DISTINCT ON (hp.id) and filters lpr.status != 'deleted'.
+ */
+export async function searchPatients(searchQuery: string): Promise<PatientSearchResult[]> {
+  if (!searchQuery.trim()) return [];
+
+  const q = searchQuery.trim();
+
+  // Query the api_patient table — dedup by MRN is guaranteed since mrn is UNIQUE
+  const { data, error } = await supabase
+    .from('api_patient')
+    .select('*')
+    // DCMP-3618: search by name OR mrn (never require both)
+    .or(`name.ilike.%${q}%,mrn.ilike.%${q}%`)
+    // Never filter by last_encounter_date or last_message_date here:
+    // the DCMP-3616 fix showed that AND-ing both date filters caused blank results.
+    .limit(20)
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error("Failed to search patients:", error);
+    return [];
+  }
+
+  return (data || []).map((d: any): PatientSearchResult => {
+    // Infer engagement source from available data:
+    // - If patient has a Spruce account (spruce field), primary source = Spruce
+    // - If patient has conditions (Elation ICD-10), primary source = Elation
+    // - Otherwise, fall back to Hint Core (identity/membership source)
+    const hasSpruceAccount = d.spruce === "Yes" || d.spruce === true || d.has_spruce === true;
+    const hasElationData = d.conditions?.length > 0 || d.last_encounter_date;
+    const engagementSource: PatientSearchResult["engagementSource"] =
+      hasSpruceAccount ? "Spruce Health"
+      : hasElationData ? "Elation EHR"
+      : "Hint Core";
+
+    // hasDuplicateFlag: api_patient has a linked_records_count column in production.
+    // If absent, fall back to the has_duplicate_flag column set by the LATERAL join query.
+    const hasDuplicateFlag = Boolean(
+      d.has_duplicate_flag ||
+      (d.linked_records_count !== undefined && d.linked_records_count > 1)
+    );
+
+    return {
+      mrn: d.mrn,
+      name: d.name,
+      age: d.age,
+      gender: d.gender,
+      employer: d.employer || "",
+      riskScore: Number(d.risk_score),
+      classification: d.classification || "Reactive",
+      awvStatus: d.awv_status || "Pending",
+      status: d.status || "N/A",
+      phone: d.phone,
+      email: d.email,
+      conditions: Array.isArray(d.conditions) ? d.conditions : [],
+      lastVisit: d.last_visit,
+      // DCMP-3618 required fields:
+      engagementSource,
+      lastEncounterDate: d.last_encounter_date || d.last_visit || null,
+      lastMessageDate: d.last_message_date || null,
+      spruce: hasSpruceAccount ? "Yes" : "No",
+      physician: d.physician || d.provider || "",
+      hasDuplicateFlag,
+    };
+  });
 }
 
 export async function fetchCampaigns(): Promise<DbCampaign[]> {

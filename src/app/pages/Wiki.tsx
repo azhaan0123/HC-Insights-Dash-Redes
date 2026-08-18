@@ -21,7 +21,7 @@ import {
   Layers,
   Calculator,
   Workflow
-} from 'lucide-react';
+} from "../lib/icons";
 
 const DASHBOARD_GROUPS = [
   'All',

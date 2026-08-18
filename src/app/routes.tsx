@@ -32,6 +32,7 @@ import Marketing from "./pages/Marketing";
 import Survey from "./pages/Survey";
 import DesignSystem from "./pages/DesignSystem";
 import AskHC from "./pages/AskHC";
+import PatientSearch from "./pages/PatientSearch";
 import HccLayout from "./pages/hcc/HccLayout";
 import HccOverview from "./pages/hcc/Overview";
 import HccPatientList from "./pages/hcc/PatientList";
@@ -206,6 +207,7 @@ export const router = createBrowserRouter([
       { path: "design-system", Component: DesignSystem },
       { path: "ask-hc", Component: AskHC },
       { path: "ask-ai", element: <Navigate to="/ask-hc" replace /> },
+      { path: "patient-search", Component: PatientSearch },
       {
         path: "employer",
         Component: EmployerLayout,

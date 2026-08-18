@@ -14,8 +14,7 @@ import {
   Download,
   MoreHorizontal,
   Sparkles,
-  Layers,
-} from "lucide-react";
+} from "../lib/icons";
 import { 
   AreaChart, Area, LineChart, Line, BarChart, Bar, Cell,
   XAxis, YAxis, CartesianGrid, 
@@ -289,17 +288,6 @@ export default function Home() {
     <Page
       title={greeting}
       subtitle={subtitleText}
-      actions={
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/home-classic")}
-          className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40 font-semibold"
-        >
-          <Layers className="size-3.5" />
-          <span>Legacy UI</span>
-        </Button>
-      }
     >
 
 
@@ -410,6 +398,9 @@ export default function Home() {
                     strokeWidth={2.5} 
                     dot={false} 
                     activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--primary)", fill: "var(--background)" }} 
+                    isAnimationActive={true}
+                    animationDuration={800}
+                    animationEasing="ease-in-out"
                   />
                   <Line 
                     type="monotone" 
@@ -418,6 +409,9 @@ export default function Home() {
                     strokeWidth={2.5} 
                     dot={false} 
                     activeDot={{ r: 5, strokeWidth: 2, stroke: "#3b82f6", fill: "var(--background)" }} 
+                    isAnimationActive={true}
+                    animationDuration={800}
+                    animationEasing="ease-in-out"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -485,6 +479,9 @@ export default function Home() {
                     fillOpacity={1} 
                     fill="url(#grad-high)" 
                     activeDot={{ r: 5, strokeWidth: 2, stroke: "#ef4444", fill: "var(--background)" }} 
+                    isAnimationActive={true}
+                    animationDuration={800}
+                    animationEasing="ease-in-out"
                   />
                   <Area 
                     type="monotone" 
@@ -494,6 +491,9 @@ export default function Home() {
                     fillOpacity={1} 
                     fill="url(#grad-atRisk)" 
                     activeDot={{ r: 5, strokeWidth: 2, stroke: "#eab308", fill: "var(--background)" }} 
+                    isAnimationActive={true}
+                    animationDuration={800}
+                    animationEasing="ease-in-out"
                   />
                 </AreaChart>
               </ResponsiveContainer>

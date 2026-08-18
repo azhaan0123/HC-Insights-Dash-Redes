@@ -1,4 +1,4 @@
-import { FileText, Users, CalendarCheck, BarChart3, Download } from "lucide-react";
+import { FileText, Users, CalendarCheck, BarChart3, Download } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { acoChips } from "../../data/filters";
 import { Card } from "../../components/ui/card";

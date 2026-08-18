@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Check } from "lucide-react";
+import { Check } from "../../lib/icons";
 import { cn } from "../ui/utils";
 
 export type ToggleOption = { value: string; label: string; icon?: ReactNode };

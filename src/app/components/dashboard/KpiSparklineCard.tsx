@@ -1,4 +1,4 @@
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "../../lib/icons";
 import { 
   AreaChart, Area, XAxis, CartesianGrid, 
   Tooltip as RechartsTooltip, ResponsiveContainer 
@@ -89,6 +89,9 @@ export function KpiSparklineCard({
               fillOpacity={1} 
               fill={`url(#${gradientId})`} 
               activeDot={{ r: 5, fill: color, strokeWidth: 0 }}
+              isAnimationActive={true}
+              animationDuration={800}
+              animationEasing="ease-in-out"
             />
           </AreaChart>
         </ResponsiveContainer>

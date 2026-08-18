@@ -15,7 +15,7 @@ import {
   MessagesSquare,
   MoonStar,
   Smartphone,
-} from "lucide-react";
+} from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { engagementChips } from "../../data/filters";

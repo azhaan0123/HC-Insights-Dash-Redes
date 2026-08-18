@@ -24,7 +24,7 @@ import {
   Link2,
   RefreshCw,
   Trash2,
-} from "lucide-react";
+} from "../../lib/icons";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_CAMPAIGNS, type SPCampaign } from "../../data/smartypantsData";

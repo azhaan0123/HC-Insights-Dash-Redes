@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronRight, ArrowRight } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { Button } from "../../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog";

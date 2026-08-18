@@ -21,7 +21,7 @@ import {
   ChevronDown,
   ShieldCheck,
   Info,
-} from "lucide-react";
+} from "../../lib/icons";
 import { Button } from "../ui/button";
 import { cn } from "../ui/utils";
 import type { PlanStep, AIAction } from "./aiTypes";

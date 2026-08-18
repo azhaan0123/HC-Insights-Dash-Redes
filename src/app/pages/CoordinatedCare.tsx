@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, DollarSign, Workflow, Wallet, PiggyBank, Percent } from "lucide-react";
+import { FileText, DollarSign, Workflow, Wallet, PiggyBank, Percent } from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { Panel } from "../components/dashboard/EmptyState";

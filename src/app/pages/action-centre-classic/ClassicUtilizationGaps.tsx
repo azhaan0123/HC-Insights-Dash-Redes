@@ -13,8 +13,8 @@ import {
   Stethoscope,
   X,
   Search,
-  ArrowUpRight,
-  ArrowDownRight,
+  ArrowUp,
+  ArrowDown,
   UserPlus,
   MessageSquareOff,
   ShieldAlert,
@@ -23,7 +23,7 @@ import {
   ArrowLeft,
   Mail,
   Check,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   AreaChart,
   Area,
@@ -354,7 +354,7 @@ export function ClassicUtilizationGaps() {
                       card.wowPositive ? "bg-[#d4edda] text-[#155724]" : "bg-[#f8d7da] text-[#721c24]"
                     }`}
                   >
-                    {card.wowPositive ? <ArrowDownRight className="size-3" /> : <ArrowUpRight className="size-3" />}
+                    {card.wowPositive ? <ArrowDown className="size-3" /> : <ArrowUp className="size-3" />}
                     <span>{card.wowChange}</span>
                   </span>
                 </div>

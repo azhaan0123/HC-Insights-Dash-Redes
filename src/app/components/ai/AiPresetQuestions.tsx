@@ -7,7 +7,7 @@
  */
 
 import React from "react";
-import { Sparkles, MessageCircle } from "lucide-react";
+import { Sparkles, MessageCircle } from "../../lib/icons";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";
 import { getPresetsForRoute } from "./aiData";

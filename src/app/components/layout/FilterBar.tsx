@@ -1,4 +1,4 @@
-import { ChevronDown, Filter } from "lucide-react";
+import { ChevronDown, Filter } from "../../lib/icons";
 import {
   DropdownMenu,
   DropdownMenuContent,

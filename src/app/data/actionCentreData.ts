@@ -287,3 +287,40 @@ export const ACTION_CENTRE_PATIENTS: ActionCentrePatientRow[] = Array.from({ len
     ] : [],
   };
 });
+
+/**
+ * Mock patient search for DCMP-3618.
+ *
+ * Follows the DCMP-3616 deduplication contract:
+ *   1. Deduplicates by patient id — never returns two rows for the same patient.
+ *   2. Uses OR semantics: matches on name OR id (never requires both).
+ *   3. Uses OR for date fields: hasDuplicateFlag is checked independently of
+ *      lastVisitDaysAgo and lastOutreachDaysAgo — a patient with only a recent
+ *      message but no recent encounter is still a valid search result.
+ *
+ * In production, this is replaced by dbService.searchPatients() which queries
+ * the Supabase api_patient table with the LATERAL join dedup pattern.
+ */
+export function searchActionCentrePatients(query: string): ActionCentrePatientRow[] {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase().trim();
+
+  // Step 1: filter by name OR id (OR semantics, never AND)
+  const matched = ACTION_CENTRE_PATIENTS.filter(
+    (p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.id.toLowerCase().includes(q) ||
+      p.condition.toLowerCase().includes(q) ||
+      p.employer.toLowerCase().includes(q)
+  );
+
+  // Step 2: deduplicate by id — enforce uniqueness (DCMP-3616 pattern)
+  // In practice mock data has no duplicates, but this guarantees it explicitly.
+  const seen = new Set<string>();
+  return matched.filter((p) => {
+    if (seen.has(p.id)) return false;
+    seen.add(p.id);
+    return true;
+  });
+}
+

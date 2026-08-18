@@ -30,6 +30,7 @@ export function ChartTooltip({ active, payload, colorMap, valueFormatter }: Char
           colorMap?.[entry.dataKey as string] ??
           entry.color ??
           entry.payload?.color ??
+          entry.payload?.fill ??
           "var(--foreground)";
 
         // Use the real `value` field from the payload item if available (handles displayValue trick)
@@ -37,13 +38,18 @@ export function ChartTooltip({ active, payload, colorMap, valueFormatter }: Char
           ? entry.payload.value
           : entry.value;
 
+        const name =
+          (entry.name === "value" || entry.name === "displayValue" || !entry.name) && entry.payload?.name
+            ? entry.payload.name
+            : (entry.name ?? entry.payload?.name ?? "Value");
+
         return (
           <div key={i} className="flex items-center gap-2.5 text-sm font-medium text-popover-foreground whitespace-nowrap">
             <span
               className="size-3 shrink-0 rounded-sm"
               style={{ backgroundColor: color }}
             />
-            <span className="text-muted-foreground">{entry.name}</span>
+            <span className="text-muted-foreground">{name}</span>
             <span className="ml-auto tabular-nums font-semibold">{fmt(displayVal as number)}</span>
           </div>
         );

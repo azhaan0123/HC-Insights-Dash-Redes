@@ -17,7 +17,7 @@ import {
   Building2,
   Stethoscope,
   X,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   ResponsiveContainer,
   AreaChart,

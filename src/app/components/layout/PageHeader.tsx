@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { Download, Share2, SlidersHorizontal } from "lucide-react";
+import { Download, Share2, SlidersHorizontal } from "../../lib/icons";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 

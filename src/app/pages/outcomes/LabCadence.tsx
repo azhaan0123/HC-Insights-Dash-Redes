@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Page } from "../../components/layout/Page";
 import { labCadenceChips } from "../../data/filters";
-import { CalendarDays, Download, Filter, ChevronDown } from "lucide-react";
+import { CalendarDays, Download, Filter, ChevronDown } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import { usePageLoading } from "../../hooks/usePageLoading";

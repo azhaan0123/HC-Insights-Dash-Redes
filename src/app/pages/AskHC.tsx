@@ -32,7 +32,7 @@ import {
   AlertCircle,
   ArrowUpRight,
   Download,
-} from "lucide-react";
+} from "../lib/icons";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -487,8 +487,8 @@ export default function AskHC() {
                               formatter={(val: number) => [`${val.toLocaleString()} Patients`, ""]}
                             />
                             <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
-                            <Area type="monotone" name="Total Contracted Patients" dataKey="total" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#totalPatientGradient)" />
-                            <Area type="monotone" name="Manifest Engaged Patients" dataKey="active" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#activePatientGradient)" />
+                            <Area type="monotone" name="Total Contracted Patients" dataKey="total" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#totalPatientGradient)" isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" />
+                            <Area type="monotone" name="Manifest Engaged Patients" dataKey="active" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#activePatientGradient)" isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" />
                           </AreaChart>
                         </ResponsiveContainer>
                       </div>
@@ -1037,8 +1037,8 @@ export default function AskHC() {
                           <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} domain={[500, 1600]} />
                           <Tooltip contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "12px", fontSize: "12px" }} />
                           <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
-                          <Area type="monotone" name="Total Visit Notes" dataKey="notes" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#notesTotalGrad)" />
-                          <Area type="monotone" name="AI Ambient Scribed Notes" dataKey="aiScribed" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#aiScribedGrad)" />
+                          <Area type="monotone" name="Total Visit Notes" dataKey="notes" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#notesTotalGrad)" isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" />
+                          <Area type="monotone" name="AI Ambient Scribed Notes" dataKey="aiScribed" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#aiScribedGrad)" isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>

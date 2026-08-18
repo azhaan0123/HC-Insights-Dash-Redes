@@ -25,8 +25,8 @@ import {
   Handshake,
   TrendingUp,
   TrendingDown,
-  ArrowUpRight,
-  ArrowDownRight,
+  ArrowUp,
+  ArrowDown,
   Megaphone,
   Upload,
   FileText,
@@ -39,7 +39,7 @@ import {
   Phone,
   ArrowLeft,
   Check,
-} from "lucide-react";
+} from "../../lib/icons";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_ACTIVITIES, SP_EMPLOYERS } from "../../data/smartypantsData";
@@ -236,7 +236,7 @@ export function SPDashboard() {
                       isNeg ? "bg-[#d4edda] text-[#155724]" : "bg-[#f8d7da] text-[#721c24]"
                     }`}
                   >
-                    {isNeg ? <ArrowDownRight className="size-2.5" /> : <ArrowUpRight className="size-2.5" />}
+                    {isNeg ? <ArrowDown className="size-2.5" /> : <ArrowUp className="size-2.5" />}
                     {Math.abs(card.trend)}
                   </span>
                 </div>

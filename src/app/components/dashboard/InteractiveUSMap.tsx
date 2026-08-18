@@ -10,7 +10,7 @@ import {
   Download,
   Sparkles,
   CheckCircle2
-} from "lucide-react";
+} from "../../lib/icons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";

@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react";
+import { Shield } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { AiAuditTab } from "../../components/ai/AiAuditTab";
 

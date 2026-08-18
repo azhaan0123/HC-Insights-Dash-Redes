@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "../components/ui/button";
-import { ChevronLeft, ChevronRight, X, Sparkles, ShieldAlert, CheckCircle2, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Sparkles, ShieldAlert, CheckCircle2, BookOpen } from "../lib/icons";
 import { cn } from "../components/ui/utils";
 
 export interface TourStep {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Page } from "../../components/layout/Page";
 import { vaccinationsChips } from "../../data/filters";
-import { ShieldAlert, Download, Filter } from "lucide-react";
+import { ShieldAlert, Download, Filter } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import { usePageLoading } from "../../hooks/usePageLoading";

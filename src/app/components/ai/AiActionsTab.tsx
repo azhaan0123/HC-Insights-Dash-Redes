@@ -29,7 +29,7 @@ import {
   FileText,
   AlertTriangle,
   Bot,
-} from "lucide-react";
+} from "../../lib/icons";
 import { Button } from "../ui/button";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";

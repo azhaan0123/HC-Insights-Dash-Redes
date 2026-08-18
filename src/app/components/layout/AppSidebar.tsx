@@ -24,7 +24,7 @@ import {
   FileText,
   Shield,
   LayoutGrid,
-} from "lucide-react";
+} from "../../lib/icons";
 import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SMARTYPANTS_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
   Sidebar,

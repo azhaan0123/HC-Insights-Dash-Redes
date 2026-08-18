@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check } from "../../lib/icons";
 import { cn } from "../ui/utils";
 import { motion, AnimatePresence } from "framer-motion";
 

@@ -23,7 +23,7 @@ import {
   Megaphone,
   AlertTriangle,
   RefreshCw,
-} from "lucide-react";
+} from "../../lib/icons";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_AUTOMATIONS, SP_EXECUTION_LOG } from "../../data/smartypantsData";

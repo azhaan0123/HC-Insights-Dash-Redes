@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, UserCheck, UserMinus, CalendarDays, CalendarRange } from "lucide-react";
+import { Users, UserCheck, UserMinus, CalendarDays, CalendarRange } from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { Panel } from "../components/dashboard/EmptyState";

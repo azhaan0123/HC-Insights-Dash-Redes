@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, RefreshCw, Layers, CheckCircle2, AlertCircle } from "lucide-react";
+import { Search, RefreshCw, Layers, CheckCircle2, AlertCircle } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";

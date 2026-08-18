@@ -16,7 +16,7 @@ import {
   AlertTriangle,
   BarChart3,
   X,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   LineChart,
   Line,

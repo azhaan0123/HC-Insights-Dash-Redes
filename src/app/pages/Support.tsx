@@ -5,7 +5,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { CheckCircle2, BookOpen, ExternalLink, Sparkles } from "lucide-react";
+import { CheckCircle2, BookOpen, ExternalLink, Sparkles } from "../lib/icons";
 
 export default function SupportPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);

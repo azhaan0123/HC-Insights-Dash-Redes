@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Smile, Send, TriangleAlert } from "lucide-react";
+import { Star, Smile, Send, TriangleAlert } from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { Panel } from "../components/dashboard/EmptyState";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
-import { BriefcaseMedical, Network } from "lucide-react";
+import { BriefcaseMedical, Network } from "../../../lib/icons";
 import { cn } from "../../../components/ui/utils";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";

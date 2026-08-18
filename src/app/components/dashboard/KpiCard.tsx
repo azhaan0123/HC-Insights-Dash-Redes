@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Info, type LucideIcon } from "lucide-react";
+import { Info, type LucideIcon } from "../../lib/icons";
 import { Card } from "../ui/card";
 import {
   Tooltip,

@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "../lib/icons";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { PanelSkeleton } from "../components/dashboard/SkeletonPrimitives";
 

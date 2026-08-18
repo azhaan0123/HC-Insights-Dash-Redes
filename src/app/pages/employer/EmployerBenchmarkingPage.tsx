@@ -7,7 +7,7 @@ import {
   CheckCircle,
   AlertTriangle,
   AlertCircle
-} from "lucide-react";
+} from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { Card } from "../../components/ui/card";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HeartPulse } from "lucide-react";
+import { HeartPulse } from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { Panel } from "../components/dashboard/EmptyState";

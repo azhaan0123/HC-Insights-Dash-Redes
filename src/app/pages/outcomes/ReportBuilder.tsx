@@ -1,6 +1,6 @@
 import { Page } from "../../components/layout/Page";
 import { outcomesChips } from "../../data/filters";
-import { FilePlus, ChevronDown } from "lucide-react";
+import { FilePlus, ChevronDown } from "../../lib/icons";
 import { Button } from "../../components/ui/button";
 
 export default function ReportBuilder() {

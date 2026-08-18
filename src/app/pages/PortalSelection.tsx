@@ -17,7 +17,7 @@ import {
   Moon,
   ChevronRight,
   ShieldAlert,
-} from "lucide-react";
+} from "../lib/icons";
 import { Button } from "../components/ui/button";
 import { useThemeContext } from "../contexts/ThemeContext";
 import soc2Badge from "../../assets/soc2-compliance.png";

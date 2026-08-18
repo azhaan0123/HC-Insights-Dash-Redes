@@ -1,6 +1,6 @@
 import { Page } from "../../components/layout/Page";
 import { hccChips } from "../../data/filters";
-import { CalendarCheck, Eye } from "lucide-react";
+import { CalendarCheck, Eye } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import { usePageLoading } from "../../hooks/usePageLoading";
@@ -58,8 +58,8 @@ const columns: Column<PatientRow>[] = [
     key: "actions",
     header: "Actions",
     cell: () => (
-      <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs text-muted-foreground">
-        <Eye className="size-3.5" />
+      <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs text-primary hover:bg-primary/5 hover:text-primary border-border">
+        <Eye className="size-3.5 text-primary" />
         View Chart
       </Button>
     ),

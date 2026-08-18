@@ -25,7 +25,7 @@ import {
   Check,
   X,
   ChevronRight
-} from 'lucide-react';
+} from "../../lib/icons";
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 

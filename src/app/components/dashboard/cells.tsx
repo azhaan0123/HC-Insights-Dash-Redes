@@ -2,11 +2,16 @@ import type { ReactNode } from "react";
 import { cn } from "../ui/utils";
 
 /** Opaque record IDs: monospace, truncated, full value on hover. */
-export function IdCell({ id }: { id: string }) {
+export function IdCell({ id, onClick, className }: { id: string; onClick?: () => void; className?: string }) {
   return (
     <span
       title={id}
-      className="block max-w-[120px] truncate font-mono text-xs text-primary"
+      onClick={onClick}
+      className={cn(
+        "block max-w-[120px] truncate font-mono text-xs text-primary transition-colors",
+        onClick && "cursor-pointer hover:underline hover:text-primary/80 font-semibold",
+        className
+      )}
     >
       {id}
     </span>

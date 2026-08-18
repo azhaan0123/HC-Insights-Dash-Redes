@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Calendar, Download, Info, ChevronDown } from "lucide-react";
+import { Calendar, Download, Info, ChevronDown } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";

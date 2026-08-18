@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Outlet, Link, useLocation } from "react-router";
-import { ChevronDown, Search, PanelRight } from "lucide-react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router";
+import { ChevronDown, Search, PanelRight } from "../../lib/icons";
 import { AppSidebar } from "./AppSidebar";
 import { RightAiSidebar } from "../ai/RightAiSidebar";
 import { OnboardingTourProvider } from "../../contexts/OnboardingTourContext";
@@ -31,8 +31,7 @@ import {
   Target,
   LayoutGrid,
   BookOpen,
-  Database,
-} from "lucide-react";
+} from "../../lib/icons";
 
 const APPS_MENU = [
   { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
@@ -46,6 +45,7 @@ const APPS_MENU = [
 ];
 
 function TopBar() {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [isAppsMenuOpen, setIsAppsMenuOpen] = useState(false);
   const { isOpen: isAiSidebarOpen, setIsOpen: setIsAiSidebarOpen, pendingCount } = useAiContext();
@@ -55,23 +55,27 @@ function TopBar() {
       <SidebarTrigger className="text-muted-foreground" />
       <Separator orientation="vertical" className="!h-5" />
 
-      {/* Search */}
+      {/* Search — navigates to Patient Search page (DCMP-3618) */}
       <div className="relative hidden max-w-md flex-1 sm:block">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70" />
         <input
+          id="appshell-global-search"
           type="text"
           placeholder="Search patients, claims, reports…"
           className="h-9 w-full rounded-md border bg-background pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground/70 transition-[border-color] duration-150 focus:border-primary/40"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const q = e.currentTarget.value.trim();
+              if (q) {
+                navigate(`/patient-search?q=${encodeURIComponent(q)}`);
+                e.currentTarget.value = "";
+              }
+            }
+          }}
         />
       </div>
 
       <div className="ml-auto flex items-center gap-2">
-        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold tracking-tight shadow-2xs" title="Production MongoDB Database Service Connected">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <Database className="size-3 text-emerald-500" />
-          <span>MongoDB Connected</span>
-        </div>
-
         <Popover open={isAppsMenuOpen} onOpenChange={setIsAppsMenuOpen}>
           <PopoverTrigger id="tour-step-12" className="grid size-9 place-items-center rounded-md text-primary outline-none hover:bg-accent transition-colors">
             <LayoutGrid className="size-5" />

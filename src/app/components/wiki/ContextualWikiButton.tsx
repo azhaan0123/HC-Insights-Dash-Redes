@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
-import { BookOpen } from 'lucide-react';
+import { BookOpen } from "../../lib/icons";
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { getWikiArticleByRoute } from '../../../lib/wiki';

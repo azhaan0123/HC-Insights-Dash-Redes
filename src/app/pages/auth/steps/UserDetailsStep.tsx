@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "../../../lib/icons";
 import { cn } from "../../../components/ui/utils";
 
 export interface UserDetailsStepProps {

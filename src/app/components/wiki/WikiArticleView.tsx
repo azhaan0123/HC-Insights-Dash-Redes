@@ -17,7 +17,7 @@ import {
   Terminal,
   FileCode2,
   GitBranch
-} from 'lucide-react';
+} from "../../lib/icons";
 import { ALL_WIKI_ARTICLES } from '../../../lib/wiki';
 import { WikiComponentDemo } from './WikiComponentRegistry';
 

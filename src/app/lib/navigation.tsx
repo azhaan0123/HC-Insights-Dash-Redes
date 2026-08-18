@@ -26,8 +26,9 @@ import {
   FileText,
   ShieldCheck,
   UserPlus,
+  Search,
   type LucideIcon,
-} from "lucide-react";
+} from "./icons";
 
 export type NavItem = {
   key: string;
@@ -67,6 +68,7 @@ export const NAV_ITEMS: NavItem[] = [
     ]
   },
   { key: "utilization-gaps", label: "Utilization Gaps", icon: Activity, path: "/utilization-gaps", tourId: "tour-step-3" },
+  { key: "patient-search", label: "Patient Search", icon: Search, path: "/patient-search", tourId: "tour-patient-search" },
   { key: "cost-savings", label: "Cost Savings", icon: BadgeDollarSign, path: "/cost-savings", tourId: "tour-step-6" },
   { key: "chronic-risk", label: "Chronic Risk", icon: HeartPulse, path: "/chronic-risk", tourId: "tour-step-4" },
   { key: "claims", label: "Claims Utilization", icon: ReceiptText, path: "/claims", tourId: "tour-step-7" },

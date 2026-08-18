@@ -16,7 +16,7 @@ import {
   ArrowDownRight,
   Filter,
   User,
-} from "lucide-react";
+} from "../../lib/icons";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 import { SP_PATIENTS, type SPPatient } from "../../data/smartypantsData";

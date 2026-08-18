@@ -367,3 +367,8 @@ html.large-text {
 .stagger-section:nth-child(5) { animation-delay: 400ms; }
 .stagger-section:nth-child(6) { animation-delay: 500ms; }
 .stagger-section:nth-child(n+7) { animation-delay: 600ms; }
+
+/* Iconsax TwoTone styling - smooth transition for secondary opacity paths */
+svg path[opacity] {
+  transition: opacity 150ms ease;
+}

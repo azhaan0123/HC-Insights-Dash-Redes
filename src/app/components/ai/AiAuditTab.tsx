@@ -22,7 +22,7 @@ import {
   Shield,
   AlertTriangle,
   Lock,
-} from "lucide-react";
+} from "../../lib/icons";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";
 import { AGENT_META, type AgentType, type AuditRecord } from "./aiTypes";

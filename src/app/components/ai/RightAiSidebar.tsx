@@ -16,7 +16,7 @@ import {
   Zap,
   X,
   Bot,
-} from "lucide-react";
+} from "../../lib/icons";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";
 import { AGENT_META } from "./aiTypes";

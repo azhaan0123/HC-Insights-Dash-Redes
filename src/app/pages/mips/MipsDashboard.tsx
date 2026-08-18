@@ -17,7 +17,7 @@ import {
   Info,
   ExternalLink,
   Activity
-} from "lucide-react";
+} from "../../lib/icons";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
@@ -284,6 +284,9 @@ export default function MipsDashboard() {
                   strokeWidth={2.5} 
                   fillOpacity={1} 
                   fill="url(#scoreTrendGradient)" 
+                  isAnimationActive={true}
+                  animationDuration={800}
+                  animationEasing="ease-in-out"
                 />
               </AreaChart>
             </ResponsiveContainer>

@@ -20,7 +20,7 @@ import {
   LineChart,
   Sparkles,
   BookOpen,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   Popover,
   PopoverContent,
@@ -146,17 +146,6 @@ export function ClassicLayout({
             <LayoutGrid className="size-3.5" />
             <span>Workspace Portal</span>
           </button>
-
-          {showSwitchToModern && (
-            <button
-              onClick={() => navigate(modernRoute)}
-              className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded bg-[#f8f9fa] hover:bg-[#e9ecef] text-[#495057] border border-[#dee2e6] transition-colors"
-              title="Return to Modern Dashboard Layout"
-            >
-              <ArrowLeftRight className="size-3.5 text-[#6c757d]" />
-              <span>Switch to Modern UI</span>
-            </button>
-          )}
 
           <Popover open={isAppsMenuOpen} onOpenChange={setIsAppsMenuOpen}>
             <PopoverTrigger className="p-1.5 rounded text-[#e61952] hover:bg-[#fff0f4] transition-colors outline-none cursor-pointer">

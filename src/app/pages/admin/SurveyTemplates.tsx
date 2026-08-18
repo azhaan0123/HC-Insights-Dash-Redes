@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Eye, Pencil, Mail } from "lucide-react";
+import { Plus, Trash2, Eye, Pencil, Mail } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { Button } from "../../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog";

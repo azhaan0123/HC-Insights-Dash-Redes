@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle } from "../lib/icons";
 
 export type PatientRow = {
   id: string;

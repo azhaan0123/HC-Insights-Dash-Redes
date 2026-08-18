@@ -1,5 +1,5 @@
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
-import { AlertTriangle, Activity, HeartCrack, TrendingUp, Users, type LucideIcon } from "lucide-react";
+import { AlertTriangle, Activity, HeartCrack, TrendingUp, Users, type LucideIcon } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { acoChips } from "../../data/filters";
 import { KpiCard } from "../../components/dashboard/KpiCard";

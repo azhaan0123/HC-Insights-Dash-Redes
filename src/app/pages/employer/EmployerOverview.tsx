@@ -14,7 +14,7 @@ import {
   BadgeDollarSign,
   HeartPulse,
   LineChart
-} from "lucide-react";
+} from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { Card } from "../../components/ui/card";
@@ -367,7 +367,7 @@ export default function EmployerOverview() {
                     formatter={(val: number) => `${Math.round(val)} Claimants`}
                     contentStyle={{ backgroundColor: "var(--color-card)", borderRadius: "8px", border: "1px solid var(--color-border)", fontSize: "12px" }}
                   />
-                  <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={16}>
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={16} animationDuration={800}>
                     {HCC_DISTRIBUTION_DATA.map((entry, idx) => (
                       <Cell key={`cell-${idx}`} fill={entry.color} />
                     ))}

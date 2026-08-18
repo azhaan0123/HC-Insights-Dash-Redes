@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ListTodo, ClipboardList, CheckCircle2, XCircle } from "lucide-react";
+import { ListTodo, ClipboardList, CheckCircle2, XCircle } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Page } from "../../components/layout/Page";
 import { hccChips } from "../../data/filters";
@@ -73,20 +73,20 @@ export default function HccCodingQueue() {
       cell: (row) => {
         if (row.codingStatus === "Reviewed") {
           return (
-            <span className="inline-flex items-center rounded-full border border-border bg-white px-2.5 py-0.5 text-xs font-medium text-foreground/90">
+            <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
               Reviewed
             </span>
           );
         }
         if (row.codingStatus === "Flagged") {
           return (
-            <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
+            <span className="inline-flex items-center rounded-full bg-destructive px-2.5 py-0.5 text-xs font-medium text-destructive-foreground shadow-xs">
               Flagged
             </span>
           );
         }
         return (
-          <span className="inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
+          <span className="inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground shadow-xs">
             AI Suggested
           </span>
         );
@@ -101,49 +101,46 @@ export default function HccCodingQueue() {
           <div className="group relative flex justify-center">
             <button 
               onClick={() => setSelectedPatientId(row.id)}
-              className="grid size-8 place-items-center rounded-full text-muted-foreground/70 hover:bg-secondary hover:text-muted-foreground transition-colors"
+              className="grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
             >
               <ClipboardList className="size-[18px]" />
             </button>
             <div className="pointer-events-none absolute bottom-full mb-1.5 z-50 flex flex-col items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="whitespace-nowrap rounded bg-card px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+              <span className="whitespace-nowrap rounded-lg bg-popover border border-border px-2.5 py-1 text-xs font-medium text-popover-foreground shadow-md">
                 Review Patient Chart / Edit Codes
               </span>
-              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
             </div>
           </div>
 
           <div className="group relative flex justify-center">
             <button 
               onClick={() => handleUpdateStatus(row.id, "Reviewed")}
-              className={`grid size-8 place-items-center rounded-full transition-colors ${
-                row.codingStatus === "Reviewed" ? "text-green-600 bg-green-100" : "text-green-500 hover:bg-green-50"
+              className={`grid size-8 place-items-center rounded-full transition-colors cursor-pointer ${
+                row.codingStatus === "Reviewed" ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50" : "text-emerald-600/80 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
               }`}
             >
               <CheckCircle2 className="size-[18px]" />
             </button>
             <div className="pointer-events-none absolute bottom-full mb-1.5 z-50 flex flex-col items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="whitespace-nowrap rounded bg-card px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+              <span className="whitespace-nowrap rounded-lg bg-popover border border-border px-2.5 py-1 text-xs font-medium text-popover-foreground shadow-md">
                 Accept AI Suggestions
               </span>
-              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
             </div>
           </div>
 
           <div className="group relative flex justify-center">
             <button 
               onClick={() => handleUpdateStatus(row.id, "Flagged")}
-              className={`grid size-8 place-items-center rounded-full transition-colors ${
-                row.codingStatus === "Flagged" ? "text-red-600 bg-red-100" : "text-red-400 hover:bg-red-50"
+              className={`grid size-8 place-items-center rounded-full transition-colors cursor-pointer ${
+                row.codingStatus === "Flagged" ? "text-destructive bg-destructive/10" : "text-destructive/70 hover:bg-destructive/10"
               }`}
             >
               <XCircle className="size-[18px]" />
             </button>
             <div className="pointer-events-none absolute bottom-full mb-1.5 z-50 flex flex-col items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="whitespace-nowrap rounded bg-card px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+              <span className="whitespace-nowrap rounded-lg bg-popover border border-border px-2.5 py-1 text-xs font-medium text-popover-foreground shadow-md">
                 Flag for Deeper Review
               </span>
-              <div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
             </div>
           </div>
         </div>

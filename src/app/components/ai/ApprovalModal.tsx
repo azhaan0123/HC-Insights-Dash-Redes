@@ -29,7 +29,7 @@ import {
   HelpCircle,
   FileX,
   Stethoscope,
-} from "lucide-react";
+} from "../../lib/icons";
 import { Button } from "../ui/button";
 import {
   Dialog,

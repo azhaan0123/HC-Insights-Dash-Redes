@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Activity, Stethoscope, FileText, Lightbulb, User, X } from "lucide-react";
+import { Activity, Stethoscope, FileText, Lightbulb, User, X } from "../../lib/icons";
 import { Sheet, SheetContent, SheetClose } from "../../components/ui/sheet";
 
 import type { PatientRow } from "../../data/patients";
@@ -15,10 +15,10 @@ export function PatientProfileSidebar({ open, onOpenChange, patient }: PatientPr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:w-[450px] sm:max-w-[450px] p-0 overflow-y-auto bg-white">
-        {/* Hide default close button using CSS or just rely on z-index covering it, but we'll add our own right in the flow */}
-        <div className="sticky top-0 z-20 border-b bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between">
+      <SheetContent className="w-full sm:w-[450px] sm:max-w-[450px] p-0 overflow-y-auto bg-card text-card-foreground border-l border-border shadow-2xl">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur-md p-6 shadow-xs">
+          <div className="flex items-start justify-between pr-8">
             <div>
               <div className="mb-1 flex items-center gap-2">
                 <User className="size-5 text-primary" />
@@ -28,16 +28,12 @@ export function PatientProfileSidebar({ open, onOpenChange, patient }: PatientPr
                 MRN: {patient.mrn} • Age: 74 • Gender: Male
               </p>
             </div>
-            <SheetClose className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden disabled:pointer-events-none">
-              <X className="size-5 text-muted-foreground" />
-              <span className="sr-only">Close</span>
-            </SheetClose>
           </div>
         </div>
 
         <div className="flex flex-col gap-4 p-6">
           {/* General Information */}
-          <div className="rounded-xl border bg-white p-4 shadow-xs">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-xs">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
               <Activity className="size-4 text-primary" />
               General Information
@@ -45,52 +41,52 @@ export function PatientProfileSidebar({ open, onOpenChange, patient }: PatientPr
             <div className="grid grid-cols-[130px_1fr] gap-y-3 text-[13px]">
               <span className="text-muted-foreground">Risk Score</span>
               <div>
-                <span className="inline-flex h-6 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+                <span className="inline-flex h-6 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                   57
                 </span>
               </div>
 
               <span className="text-muted-foreground">Ethnicity</span>
-              <span className="font-medium text-foreground/90">Caucasian</span>
+              <span className="font-medium text-foreground">Caucasian</span>
 
               <span className="text-muted-foreground">Family History</span>
-              <span className="font-medium text-foreground/90">Significant family history of related conditions</span>
+              <span className="font-medium text-foreground">Significant family history of related conditions</span>
 
               <span className="text-muted-foreground">Lifestyle Factors</span>
-              <span className="font-medium text-foreground/90">Current Smoker, Sedentary</span>
+              <span className="font-medium text-foreground">Current Smoker, Sedentary</span>
             </div>
           </div>
 
           {/* Clinical Information */}
-          <div className="rounded-xl border bg-white p-4 shadow-xs">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-xs">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
               <Stethoscope className="size-4 text-primary" />
               Clinical Information
             </h3>
             <div className="grid grid-cols-[130px_1fr] gap-y-3 text-[13px]">
               <span className="text-muted-foreground">Suspected HCC</span>
-              <span className="font-medium text-foreground/90">Chronic Kidney Disease Stage 3-4 / Consider Diabetes</span>
+              <span className="font-medium text-foreground">Chronic Kidney Disease Stage 3-4 / Consider Diabetes</span>
 
               <span className="text-muted-foreground">Classification</span>
               <div>
-                <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-[13px] font-medium text-muted-foreground">
+                <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-[13px] font-medium text-secondary-foreground">
                   Proactive
                 </span>
               </div>
 
               <span className="text-muted-foreground">Clinical Indicators</span>
-              <span className="font-medium text-foreground/90">Indicator A1, Indicator B1, Lab X1 Abnormal</span>
+              <span className="font-medium text-foreground">Indicator A1, Indicator B1, Lab X1 Abnormal</span>
 
               <span className="text-muted-foreground">Comorbidities</span>
-              <span className="font-medium text-foreground/90">Chronic Condition 1, Past Illness 9, Syndrome 15, Chronic Kidney Disease Stage 3-4, Type 2 Diabetes Mellitus</span>
+              <span className="font-medium text-foreground">Chronic Condition 1, Past Illness 9, Syndrome 15, Chronic Kidney Disease Stage 3-4, Type 2 Diabetes Mellitus</span>
 
               <span className="text-muted-foreground">Medications</span>
-              <span className="font-medium text-foreground/90">Medication 1 IR, Drug Class A, ACE Inhibitor</span>
+              <span className="font-medium text-foreground">Medication 1 IR, Drug Class A, ACE Inhibitor</span>
             </div>
           </div>
 
           {/* HCC Metrics & Status */}
-          <div className="rounded-xl border bg-white p-4 shadow-xs">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-xs">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
               <FileText className="size-4 text-primary" />
               HCC Metrics & Status
@@ -98,24 +94,24 @@ export function PatientProfileSidebar({ open, onOpenChange, patient }: PatientPr
             <div className="grid grid-cols-[130px_1fr] gap-y-3 text-[13px]">
               <span className="text-muted-foreground">AWV Status</span>
               <div>
-                <span className="inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-[13px] font-medium text-white">
+                <span className="inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-[13px] font-medium text-primary-foreground">
                   Completed
                 </span>
               </div>
 
               <span className="text-muted-foreground">Last AWV Date</span>
-              <span className="font-medium text-foreground/90">Sep 2, 2025</span>
+              <span className="font-medium text-foreground">Sep 2, 2025</span>
 
               <span className="text-muted-foreground">Doc. Accuracy</span>
-              <span className="font-medium text-foreground/90">73%</span>
+              <span className="font-medium text-foreground">73%</span>
 
               <span className="text-muted-foreground">Risk Adj. Factor</span>
-              <span className="font-medium text-foreground/90">0.823</span>
+              <span className="font-medium text-foreground">0.823</span>
             </div>
           </div>
 
           {/* AI Risk Explanation */}
-          <div className="rounded-xl border bg-white p-4 shadow-xs">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-xs">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
               <Lightbulb className="size-4 text-primary" />
               AI Risk Explanation

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowRight, ArrowLeft, Eye, EyeOff, ShieldCheck, Lock } from "lucide-react";
+import { ArrowRight, ArrowLeft, Eye, EyeOff, ShieldCheck, Lock } from "../../lib/icons";
 import authSideImage from "../../../assets/auth-side-image.webp";
 
 export default function Login() {

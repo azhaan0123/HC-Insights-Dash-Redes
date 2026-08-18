@@ -1,6 +1,6 @@
 import { Page } from "../../components/layout/Page";
 import { labTrendsChips } from "../../data/filters";
-import { LineChart, RotateCcw, ChevronDown } from "lucide-react";
+import { LineChart, RotateCcw, ChevronDown } from "../../lib/icons";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
 import { Button } from "../../components/ui/button";
 import { usePageLoading } from "../../hooks/usePageLoading";

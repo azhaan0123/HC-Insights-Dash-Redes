@@ -1,6 +1,6 @@
 import { Page } from "../../components/layout/Page";
 import { appointmentsChips } from "../../data/filters";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock } from "../../lib/icons";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
 import { usePageLoading } from "../../hooks/usePageLoading";
 import { KpiCardSkeleton, TableSkeleton } from "../../components/dashboard/SkeletonPrimitives";

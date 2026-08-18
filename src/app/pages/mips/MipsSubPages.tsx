@@ -26,7 +26,7 @@ import {
   DollarSign,
   Activity,
   Calendar,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   AreaChart,
   Area,
@@ -399,7 +399,7 @@ export function MipsCostPerformancePage() {
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                   <YAxis domain={[8, 18]} ticks={[8, 12, 16]} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                   <RechartsTooltip content={<ChartTooltip valueFormatter={(v) => `${v.toFixed(1)} pts`} />} />
-                  <Area type="monotone" dataKey="cost" name="Cost Score" stroke="#f43f5e" strokeWidth={2.5} fillOpacity={1} fill="url(#costTrendGradient)" />
+                  <Area type="monotone" dataKey="cost" name="Cost Score" stroke="#f43f5e" strokeWidth={2.5} fillOpacity={1} fill="url(#costTrendGradient)" isAnimationActive={true} animationDuration={800} animationEasing="ease-in-out" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

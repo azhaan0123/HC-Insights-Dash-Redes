@@ -1,5 +1,5 @@
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
-import { ChevronDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ChevronDown, ArrowUp, ArrowDown } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { acoChips } from "../../data/filters";
 import { usePageLoading } from "../../hooks/usePageLoading";

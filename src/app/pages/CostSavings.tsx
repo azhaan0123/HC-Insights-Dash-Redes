@@ -1,6 +1,6 @@
 import { Page } from "../components/layout/Page";
 import { KpiCard } from "../components/dashboard/KpiCard";
-import { Info } from "lucide-react";
+import { Info } from "../lib/icons";
 import { cn } from "../components/ui/utils";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, PieChart, Pie, Sector } from "recharts";
 import { useState } from "react";
@@ -11,16 +11,12 @@ import { usePageLoading } from "../hooks/usePageLoading";
 import { KpiCardSkeleton, ChartSkeleton, PieChartSkeleton, TableSkeleton } from "../components/dashboard/SkeletonPrimitives";
 
 const overviewData = [
-  { name: "Total Value", value: 1652117 },
-  { name: "Employer Investment", value: 75000 },
-  { name: "Total Savings", value: 1577117 },
+  { name: "Total Value", value: 1652117, color: "#3b82f6" },
+  { name: "Employer Investment", value: 75000, color: "#f5a623" },
+  { name: "Total Savings", value: 1577117, color: "#22c55e" },
 ];
 
-const barColors = [
-  "#3b82f6",  // blue — Total Value
-  "#f5a623",  // orange — Employer Investment
-  "#22c55e",  // green — Total Savings
-];
+const barColors = overviewData.map((d) => d.color);
 
 const PIE_COLORS = [
   "#1976d2", // Bright Blue
@@ -63,24 +59,24 @@ const pieData = rawPieData.map((d, i) => {
 });
 
 interface PieActiveShapeProps {
-  cx: number;
-  cy: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
+  cx?: number;
+  cy?: number;
+  innerRadius?: number;
+  outerRadius?: number;
+  startAngle?: number;
+  endAngle?: number;
+  fill?: string;
 }
 
-const renderActiveShape = (props: PieActiveShapeProps) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+const renderActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props as PieActiveShapeProps;
   return (
     <g>
       <Sector
         cx={cx}
         cy={cy}
         innerRadius={innerRadius}
-        outerRadius={outerRadius + 8}
+        outerRadius={(outerRadius ?? 0) + 8}
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
@@ -93,27 +89,29 @@ const renderActiveShape = (props: PieActiveShapeProps) => {
 const RADIAN = Math.PI / 180;
 
 interface PieCustomizedLabelProps {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  outerRadius: number;
-  payload: { name: string; value: number; formattedValue?: string };
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  outerRadius?: number;
+  fill?: string;
+  color?: string;
+  payload?: { name: string; value: number; color?: string; formattedValue?: string };
 }
 
-const renderCustomizedLabel = (props: PieCustomizedLabelProps) => {
+const renderCustomizedLabel = (props: any) => {
   const {
-    cx,
-    cy,
-    midAngle,
-    outerRadius,
+    cx = 0,
+    cy = 0,
+    midAngle = 0,
+    outerRadius = 0,
     payload,
     fill,
     color,
-  } = props;
+  } = props as PieCustomizedLabelProps;
 
-  const actualValue = payload.value;
+  const actualValue = payload?.value ?? 0;
   const formattedLabel = `$${actualValue.toLocaleString()}`;
-  const sliceColor = fill || color || payload.color || "var(--primary)";
+  const sliceColor = fill || color || payload?.color || "var(--primary)";
 
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
@@ -379,10 +377,10 @@ export default function CostSavings() {
                   innerRadius={0}
                   outerRadius={120}
                   dataKey="displayValue"
+                  nameKey="name"
                   label={renderCustomizedLabel}
                   stroke="none"
-                  activeIndex={activeIndex}
-                  activeShape={renderActiveShape}
+                  {...({ activeIndex, activeShape: renderActiveShape } as any)}
                   onMouseEnter={(_, index) => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(undefined)}
                   onClick={(_, index) => setSelectedCategory(selectedCategory === pieData[index].name ? undefined : pieData[index].name)}

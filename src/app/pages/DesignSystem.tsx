@@ -17,7 +17,7 @@ import {
   Search,
   Settings,
   Users,
-} from "lucide-react";
+} from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { Panel } from "../components/dashboard/EmptyState";
 import { KpiCard } from "../components/dashboard/KpiCard";
@@ -341,7 +341,7 @@ export default function DesignSystem() {
                 </span>
               ))}
             </div>
-            <p className="mt-4 text-xs text-muted-foreground/70">lucide-react · 18px · 1.5px stroke</p>
+            <p className="mt-4 text-xs text-muted-foreground/70">iconsax-react · TwoTone</p>
           </Tile>
 
           {/* Buttons */}

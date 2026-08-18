@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link } from "react-router";
-import { Paperclip, Clock, ExternalLink, Users, HelpCircle, Eye } from "lucide-react";
+import { Paperclip, Clock, ExternalLink, Users, HelpCircle, Eye } from "../../lib/icons";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import { PatientRow, PATIENT_DATA } from "../../data/patients";
@@ -8,15 +8,15 @@ import { PatientRow, PATIENT_DATA } from "../../data/patients";
 const getStatusBadge = (status: PatientRow["status"]) => {
   switch (status) {
     case "Open":
-      return <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Open</span>;
+      return <span className="inline-flex items-center rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:text-red-400">Open</span>;
     case "Confirmed":
-      return <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Confirmed</span>;
+      return <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">Confirmed</span>;
     case "Deferred":
-      return <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">Deferred</span>;
+      return <span className="inline-flex items-center rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-600 dark:text-blue-400">Deferred</span>;
     case "Rejected":
-      return <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">Rejected</span>;
+      return <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">Rejected</span>;
     default:
-      return <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">N/A</span>;
+      return <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">N/A</span>;
   }
 };
 

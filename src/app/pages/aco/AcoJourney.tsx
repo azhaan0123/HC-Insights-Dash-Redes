@@ -8,7 +8,7 @@ import {
   AlertTriangle, 
   FlaskConical,
   X
-} from "lucide-react";
+} from "../../lib/icons";
 import { Button } from "../../components/ui/button";
 import { Page } from "../../components/layout/Page";
 import { Card } from "../../components/ui/card";

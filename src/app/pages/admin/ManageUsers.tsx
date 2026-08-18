@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Plus, Pencil, Trash2, Info } from "lucide-react";
+import { Plus, Pencil, Trash2, Info } from "../../lib/icons";
 import { Page } from "../../components/layout/Page";
 import { DataTable, type Column } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";

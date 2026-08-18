@@ -22,7 +22,7 @@ import {
   Lock,
   CheckCircle2,
   Save,
-} from "lucide-react";
+} from "../../lib/icons";
 import { toast } from "sonner";
 import { ClassicLayout } from "../action-centre-classic/ClassicLayout";
 

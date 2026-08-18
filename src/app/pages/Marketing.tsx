@@ -1,4 +1,4 @@
-import { Search, Mail, LineChart, Globe } from "lucide-react";
+import { Search, Mail, LineChart, Globe } from "../lib/icons";
 import { Page } from "../components/layout/Page";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { Panel } from "../components/dashboard/EmptyState";

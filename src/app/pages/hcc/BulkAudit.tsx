@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layers, PlayCircle, History, ChevronDown, CheckCircle2 } from "lucide-react";
+import { Layers, PlayCircle, History, ChevronDown, CheckCircle2 } from "../../lib/icons";
 import { Button } from "../../components/ui/button";
 import { Page } from "../../components/layout/Page";
 import { hccChips } from "../../data/filters";
@@ -135,8 +135,8 @@ export default function HccBulkAudit() {
       cell: (row) => (
         <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
           row.findingType === "Gap" 
-            ? "bg-primary/15 text-primary" 
-            : "bg-emerald-100 text-emerald-700"
+            ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20" 
+            : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
         }`}>
           {row.findingType}
         </span>
@@ -247,7 +247,7 @@ export default function HccBulkAudit() {
 
             {/* KPI Cards */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col gap-1 rounded-xl border bg-muted p-4 shadow-xs">
+              <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs">
                 <span className="text-[13px] font-medium text-muted-foreground">Patients Audited</span>
                 <span className="text-2xl font-medium text-foreground">{auditResult.patientsAudited}</span>
               </div>
@@ -255,9 +255,9 @@ export default function HccBulkAudit() {
                 <span className="text-[13px] font-medium text-muted-foreground">Potential Gaps</span>
                 <span className="text-2xl font-medium text-primary">{auditResult.potentialGaps}</span>
               </div>
-              <div className="flex flex-col gap-1 rounded-xl border border-red-50 bg-red-50/50 p-4 shadow-xs">
+              <div className="flex flex-col gap-1 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 shadow-xs">
                 <span className="text-[13px] font-medium text-muted-foreground">Potential Overcodes/Compliance</span>
-                <span className="text-2xl font-medium text-foreground">{auditResult.potentialCompliance}</span>
+                <span className="text-2xl font-medium text-emerald-600 dark:text-emerald-400">{auditResult.potentialCompliance}</span>
               </div>
             </div>
 

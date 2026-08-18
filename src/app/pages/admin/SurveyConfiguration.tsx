@@ -5,7 +5,7 @@ import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Switch } from "../../components/ui/switch";
 import { cn } from "../../components/ui/utils";
-import { Save, Sliders, Mail, Clock, Send, CheckCircle2 } from "lucide-react";
+import { Save, Sliders, Mail, Clock, Send, CheckCircle2 } from "../../lib/icons";
 
 export default function SurveyConfiguration() {
   // CSAT State

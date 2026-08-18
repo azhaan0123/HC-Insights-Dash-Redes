@@ -17,7 +17,7 @@ import {
   Calendar,
   ExternalLink,
   ArrowRight,
-} from "lucide-react";
+} from "../../lib/icons";
 import {
   BarChart,
   Bar,

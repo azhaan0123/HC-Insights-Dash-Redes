@@ -17,7 +17,7 @@ import {
   FileCode2,
   Terminal,
   FileText
-} from 'lucide-react';
+} from "../../lib/icons";
 import { ALL_WIKI_ARTICLES, searchWikiArticles, WikiArticle } from '../../../lib/wiki';
 import { WikiArticleView } from './WikiArticleView';
 

@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { Check, Loader2, Pause, X, ChevronDown } from "lucide-react";
+import { Check, Loader2, Pause, X, ChevronDown } from "../../lib/icons";
 import { cn } from "../ui/utils";
 import type { PlanStep } from "./aiTypes";
 import { ConfidenceBadge } from "./ConfidenceBadge";
