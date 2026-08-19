@@ -136,23 +136,21 @@ export function ConfidenceBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none transition-all duration-200",
+          "inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-semibold leading-none transition-all duration-200",
           tier === "high" &&
-            "bg-emerald-500/8 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15",
+            "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20",
           tier === "medium" &&
-            "bg-amber-500/8 text-amber-600 dark:text-amber-400 border border-amber-500/15 border-dashed",
+            "bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25",
           tier === "low" &&
-            "bg-red-500/8 text-red-600 dark:text-red-400 border border-red-500/15",
+            "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/25",
           className
         )}
         title={explanation || `${tier === "high" ? "High" : tier === "medium" ? "Medium" : "Low"} confidence — AI outputs should be verified by a clinician`}
       >
-        {tier === "high" && <span className="size-1.5 rounded-full bg-emerald-500" />}
-        {tier === "medium" && <span className="size-1.5 rounded-full bg-amber-500" />}
-        {tier === "low" && <span className="size-1.5 rounded-full bg-red-500 animate-pulse" />}
-        {tier === "high" && "Confident"}
-        {tier === "medium" && "Verify"}
-        {tier === "low" && "Uncertain"}
+        {tier === "high" && <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />}
+        {tier === "medium" && <span className="size-1.5 rounded-full bg-amber-500 shrink-0" />}
+        {tier === "low" && <span className="size-1.5 rounded-full bg-rose-500 shrink-0 animate-pulse" />}
+        <span>{tier === "high" ? "Confident" : tier === "medium" ? "Verify" : "Uncertain"}</span>
       </span>
     );
   }

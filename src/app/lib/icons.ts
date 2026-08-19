@@ -12,37 +12,11 @@
 import React, { type ComponentType, type CSSProperties } from "react";
 import * as IS from "iconsax-react";
 
-export type IconVariant = "TwoTone" | "Outline" | "Bold" | "Bulk" | "Broken" | "Linear";
-export type IconSizePreset = "sm" | "md" | "lg" | "xl";
-export type IconColorMode = "theme" | "contextual" | "monochrome";
-
-export interface IconSettingsContextType {
-  variant: IconVariant;
-  setVariant?: (variant: IconVariant) => void;
-  scale: number;
-  setScale?: (scale: number) => void;
-  size: IconSizePreset;
-  setSize?: (size: IconSizePreset) => void;
-  colorMode: IconColorMode;
-  setColorMode?: (mode: IconColorMode) => void;
-  enableDuotoneMix: boolean;
-  setEnableDuotoneMix?: (enabled: boolean) => void;
-}
-
-export const IconVariantContext = React.createContext<IconSettingsContextType>({
-  variant: "TwoTone",
-  scale: 1,
-  size: "md",
-  colorMode: "theme",
-  enableDuotoneMix: true,
-});
-
 export type IconsaxIconProps = {
   className?: string;
   size?: string | number;
   color?: string;
-  variant?: IconVariant;
-  scale?: number;
+  variant?: "Linear" | "Outline" | "TwoTone" | "Bold" | "Broken" | "Bulk";
   style?: CSSProperties;
   [key: string]: any;
 };
@@ -54,35 +28,15 @@ function wrap(IconComponent: ComponentType<any>): HeroIcon {
   if (!IconComponent) {
     throw new Error("Iconsax component is undefined!");
   }
-  const DynamicIcon = (props: IconsaxIconProps) => {
-    const context = React.useContext(IconVariantContext);
-    const activeVariant = props.variant || context?.variant || "TwoTone";
-    const isDuotone = activeVariant === "TwoTone" || activeVariant === "Bulk";
-    const enableDuotone = context?.enableDuotoneMix ?? true;
-    const isThemeColor = (context?.colorMode ?? "theme") === "theme";
-
-    // Dynamic classes
-    const classes = [
-      "hc-icon",
-      isDuotone && enableDuotone ? "hc-icon-duotone-palette" : "",
-      isThemeColor && !props.color && (!props.className || (!props.className.includes("text-") && !props.className.includes("fill-"))) ? "hc-icon-palette" : "",
-      props.className,
-    ].filter(Boolean).join(" ");
-
-    // Scale calculation if passed explicitly on prop
-    const customStyle = props.scale ? { ...props.style, transform: `scale(${props.scale})` } : props.style;
-
-    return React.createElement(IconComponent, {
-      variant: activeVariant,
-      size: props.size || "24",
-      color: props.color || "currentColor",
+  const TwoToneIcon = (props: IconsaxIconProps) =>
+    React.createElement(IconComponent, {
+      variant: "TwoTone",
+      size: "24",
+      color: "currentColor",
       ...props,
-      className: classes,
-      style: customStyle,
     });
-  };
-  DynamicIcon.displayName = IconComponent.displayName || IconComponent.name || "IconsaxIcon";
-  return DynamicIcon as unknown as HeroIcon;
+  TwoToneIcon.displayName = IconComponent.displayName || IconComponent.name || "IconsaxIcon";
+  return TwoToneIcon as unknown as HeroIcon;
 }
 
 // ── Complete Iconsax TwoTone Mappings ──────────────────────────────────

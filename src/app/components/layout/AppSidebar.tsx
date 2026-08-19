@@ -24,10 +24,6 @@ import {
   FileText,
   Shield,
   LayoutGrid,
-  Sparkles,
-  SlidersHorizontal,
-  type IconVariant,
-  type IconSizePreset,
 } from "../../lib/icons";
 import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SMARTYPANTS_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
@@ -155,10 +151,6 @@ export function AppSidebar() {
 
   const { 
     primaryColor, setPrimaryColor, 
-    iconVariant, setIconVariant,
-    iconSize, setIconSize,
-    iconColorMode, setIconColorMode,
-    enableDuotoneMix, setEnableDuotoneMix,
     isDarkMode, setIsDarkMode, 
     isHighContrast, setIsHighContrast, 
     isLargeText, setIsLargeText 
@@ -359,57 +351,6 @@ export function AppSidebar() {
                           />
                         </div>
                       </div>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <Sparkles className="mr-2" />
-                    Icon Style ({iconVariant})
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent className="w-[185px]">
-                      {(["TwoTone", "Outline", "Bold", "Bulk", "Broken", "Linear"] as IconVariant[]).map((variant) => (
-                        <DropdownMenuItem
-                          key={variant}
-                          className="flex items-center justify-between cursor-pointer"
-                          onClick={() => setIconVariant(variant)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Activity className="size-4" variant={variant} />
-                            <span>{variant}</span>
-                          </div>
-                          {iconVariant === variant && <Check className="size-4 text-primary" />}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <SlidersHorizontal className="mr-2" />
-                    Icon Size ({iconSize.toUpperCase()})
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent className="w-[180px]">
-                      {[
-                        { id: "sm", label: "Small (~16px)" },
-                        { id: "md", label: "Medium (~20px)" },
-                        { id: "lg", label: "Large (~24px)" },
-                        { id: "xl", label: "Extra Large (~28px)" },
-                      ].map((s) => (
-                        <DropdownMenuItem
-                          key={s.id}
-                          className="flex items-center justify-between cursor-pointer"
-                          onClick={() => setIconSize(s.id as IconSizePreset)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Activity className="size-4" />
-                            <span>{s.label}</span>
-                          </div>
-                          {iconSize === s.id && <Check className="size-4 text-primary" />}
-                        </DropdownMenuItem>
-                      ))}
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>

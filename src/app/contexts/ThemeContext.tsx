@@ -1,24 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { 
-  type IconVariant, 
-  type IconSizePreset, 
-  type IconColorMode, 
-  IconVariantContext 
-} from "../lib/icons";
 
 interface ThemeContextType {
   primaryColor: string;
   setPrimaryColor: (color: string) => void;
-  iconVariant: IconVariant;
-  setIconVariant: (variant: IconVariant) => void;
-  iconSize: IconSizePreset;
-  setIconSize: (size: IconSizePreset) => void;
-  iconScale: number;
-  setIconScale: (scale: number) => void;
-  iconColorMode: IconColorMode;
-  setIconColorMode: (mode: IconColorMode) => void;
-  enableDuotoneMix: boolean;
-  setEnableDuotoneMix: (enabled: boolean) => void;
   isDarkMode: boolean;
   setIsDarkMode: (value: boolean) => void;
   isHighContrast: boolean;
@@ -90,82 +74,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("hc-theme-large-text") === "true";
   });
 
-  const SIZE_PRESETS: Record<IconSizePreset, number> = {
-    sm: 0.85,
-    md: 1.0,
-    lg: 1.2,
-    xl: 1.4,
-  };
-
-  const [iconVariant, setIconVariantState] = useState<IconVariant>(() => {
-    const saved = localStorage.getItem("hc-theme-icon-variant") as IconVariant | null;
-    const validVariants: IconVariant[] = ["TwoTone", "Outline", "Bold", "Bulk", "Broken", "Linear"];
-    return saved && validVariants.includes(saved) ? saved : "TwoTone";
-  });
-
-  const [iconSize, setIconSizeState] = useState<IconSizePreset>(() => {
-    const saved = localStorage.getItem("hc-theme-icon-size") as IconSizePreset | null;
-    const validSizes: IconSizePreset[] = ["sm", "md", "lg", "xl"];
-    return saved && validSizes.includes(saved) ? saved : "md";
-  });
-
-  const [iconScale, setIconScaleState] = useState<number>(() => {
-    const saved = localStorage.getItem("hc-theme-icon-scale");
-    const parsed = saved ? parseFloat(saved) : 1.0;
-    return !isNaN(parsed) && parsed >= 0.6 && parsed <= 2.0 ? parsed : 1.0;
-  });
-
-  const [iconColorMode, setIconColorModeState] = useState<IconColorMode>(() => {
-    const saved = localStorage.getItem("hc-theme-icon-color-mode") as IconColorMode | null;
-    const validModes: IconColorMode[] = ["theme", "contextual", "monochrome"];
-    return saved && validModes.includes(saved) ? saved : "theme";
-  });
-
-  const [enableDuotoneMix, setEnableDuotoneMixState] = useState<boolean>(() => {
-    const saved = localStorage.getItem("hc-theme-icon-duotone-mix");
-    return saved !== null ? saved === "true" : true;
-  });
-
   const setPrimaryColor = (color: string) => {
     setPrimaryColorState(color);
     localStorage.setItem("hc-theme-color", color);
-  };
-
-  const setIconVariant = (variant: IconVariant) => {
-    setIconVariantState(variant);
-    localStorage.setItem("hc-theme-icon-variant", variant);
-  };
-
-  const setIconSize = (size: IconSizePreset) => {
-    setIconSizeState(size);
-    const newScale = SIZE_PRESETS[size] || 1.0;
-    setIconScaleState(newScale);
-    localStorage.setItem("hc-theme-icon-size", size);
-    localStorage.setItem("hc-theme-icon-scale", String(newScale));
-  };
-
-  const setIconScale = (scale: number) => {
-    const clamped = Math.max(0.7, Math.min(1.8, Number(scale.toFixed(2))));
-    setIconScaleState(clamped);
-    localStorage.setItem("hc-theme-icon-scale", String(clamped));
-    // Find closest preset label if matches
-    const matched = (Object.keys(SIZE_PRESETS) as IconSizePreset[]).find(
-      (k) => Math.abs(SIZE_PRESETS[k] - clamped) < 0.05
-    );
-    if (matched) {
-      setIconSizeState(matched);
-      localStorage.setItem("hc-theme-icon-size", matched);
-    }
-  };
-
-  const setIconColorMode = (mode: IconColorMode) => {
-    setIconColorModeState(mode);
-    localStorage.setItem("hc-theme-icon-color-mode", mode);
-  };
-
-  const setEnableDuotoneMix = (enabled: boolean) => {
-    setEnableDuotoneMixState(enabled);
-    localStorage.setItem("hc-theme-icon-duotone-mix", String(enabled));
   };
 
   const setIsDarkMode = (value: boolean) => {
@@ -225,22 +136,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     style.setProperty("--chart-4", chart4);
     style.setProperty("--chart-5", chart5);
 
-    // Icon Palette & Duotone Mixing
-    const iconPrimary = iconColorMode === "monochrome" 
-      ? (isDarkMode ? "#ffffff" : "#171717") 
-      : primaryColor;
-    const iconSecondary = iconColorMode === "monochrome"
-      ? (isDarkMode ? "#a3a3a3" : "#737373")
-      : (isDarkMode ? mixWithWhite(primaryColor, 35) : mixWithBlack(primaryColor, 25));
-    const iconSecondaryBg = iconColorMode === "monochrome"
-      ? (isDarkMode ? "#262626" : "#e5e5e5")
-      : (isDarkMode ? mixWithBlack(primaryColor, 40) : mixWithWhite(primaryColor, 75));
-
-    style.setProperty("--icon-scale", String(iconScale));
-    style.setProperty("--icon-primary", iconPrimary);
-    style.setProperty("--icon-secondary", iconSecondary);
-    style.setProperty("--icon-secondary-bg", iconSecondaryBg);
-
     // Update global classes for accessibility options
     if (isDarkMode) root.classList.add("dark");
     else root.classList.remove("dark");
@@ -251,7 +146,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (isLargeText) root.classList.add("large-text");
     else root.classList.remove("large-text");
 
-  }, [primaryColor, isDarkMode, isHighContrast, isLargeText, iconScale, iconColorMode, enableDuotoneMix]);
+  }, [primaryColor, isDarkMode, isHighContrast, isLargeText]);
 
   // Expose computed colors for JS usage if needed
   const computedColors = {
@@ -268,16 +163,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     <ThemeContext.Provider value={{ 
       primaryColor, 
       setPrimaryColor, 
-      iconVariant,
-      setIconVariant,
-      iconSize,
-      setIconSize,
-      iconScale,
-      setIconScale,
-      iconColorMode,
-      setIconColorMode,
-      enableDuotoneMix,
-      setEnableDuotoneMix,
       computedColors,
       isDarkMode,
       setIsDarkMode,
@@ -286,20 +171,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       isLargeText,
       setIsLargeText
     }}>
-      <IconVariantContext.Provider value={{ 
-        variant: iconVariant, 
-        setVariant: setIconVariant,
-        size: iconSize,
-        setSize: setIconSize,
-        scale: iconScale,
-        setScale: setIconScale,
-        colorMode: iconColorMode,
-        setColorMode: setIconColorMode,
-        enableDuotoneMix,
-        setEnableDuotoneMix
-      }}>
-        {children}
-      </IconVariantContext.Provider>
+      {children}
     </ThemeContext.Provider>
   );
 }

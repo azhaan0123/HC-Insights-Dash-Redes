@@ -17,17 +17,13 @@ import {
   TrendingDown,
   Minus,
   Sparkles,
-  Zap,
-  Bot,
   ThumbsUp,
   ThumbsDown,
 } from "../../lib/icons";
-import { Button } from "../ui/button";
 import { cn } from "../ui/utils";
 import { useAiContext } from "../../contexts/AiContext";
 import { getInsightsForRoute } from "./aiData";
 import { ConfidenceBadge } from "./ConfidenceBadge";
-import { AGENT_META } from "./aiTypes";
 import type { AIInsight } from "./aiTypes";
 
 interface AiInsightsTabProps {
@@ -36,31 +32,42 @@ interface AiInsightsTabProps {
 
 export function AiInsightsTab({ className }: AiInsightsTabProps) {
   const { pageContext } = useAiContext();
-  const insights = getInsightsForRoute(pageContext.route);
+  const rawInsights = getInsightsForRoute(pageContext.route);
+
+  // Priority sorting: critical > high > medium > low
+  const priorityOrder: Record<string, number> = {
+    critical: 4,
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+  const insights = [...rawInsights].sort(
+    (a, b) => (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0)
+  );
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      {/* Context Header */}
-      <div className="px-4 py-3 border-b border-border shrink-0">
+      {/* Clean Section Subheader */}
+      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/60 bg-muted/20 shrink-0">
         <div className="flex items-center gap-2">
           <Sparkles className="size-3.5 text-[#e32168]" />
           <span className="text-xs font-semibold text-foreground">
             Insights for {pageContext.pageName}
           </span>
         </div>
-        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-          {pageContext.contextDescription}
-        </p>
+        <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/50 tabular-nums">
+          {insights.length} {insights.length === 1 ? "insight" : "insights"}
+        </span>
       </div>
 
       {/* Insights List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+      <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 min-h-0">
         {insights.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="grid size-12 place-items-center rounded-xl bg-muted/50 mb-3 ai-empty-float">
               <Sparkles className="size-5 text-muted-foreground/30" />
             </div>
-            <p className="text-sm font-medium text-foreground/50">
+            <p className="text-sm font-medium text-foreground/60">
               No active insights
             </p>
             <p className="text-xs text-muted-foreground/50 mt-1 max-w-[220px]">
@@ -82,7 +89,8 @@ export function AiInsightsTab({ className }: AiInsightsTabProps) {
 function InsightCard({ insight, index }: { insight: AIInsight; index: number }) {
   const [expanded, setExpanded] = useState(false);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
-  const agentMeta = AGENT_META[insight.agentType];
+
+  const isUrgent = insight.priority === "critical" || insight.priority === "high";
 
   const TrendIcon =
     insight.metric?.trend === "up"
@@ -94,122 +102,113 @@ function InsightCard({ insight, index }: { insight: AIInsight; index: number }) 
   return (
     <div
       className={cn(
-        "ai-stagger-item ai-insight-lift rounded-xl border overflow-hidden",
-        insight.priority === "critical"
-          ? "border-red-500/25 bg-red-500/[0.02]"
-          : "border-border/60"
+        "ai-stagger-item ai-insight-lift rounded-xl border transition-all duration-200 overflow-hidden",
+        isUrgent
+          ? "border-border/80 bg-card shadow-xs"
+          : "border-border/60 bg-card/70"
       )}
     >
-      {/* Header */}
-      <div className="px-4 py-3">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div
-              className="size-2 rounded-full shrink-0"
-              style={{ backgroundColor: agentMeta.color }}
-            />
-            <span className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider truncate">
-              {agentMeta.label}
+      {/* Card Header: Priority Pill + Confidence Badge */}
+      <div className="px-4 pt-3.5 pb-2">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          {isUrgent ? (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/25 uppercase tracking-wide">
+              <span className="size-1.5 rounded-full bg-amber-500" />
+              High Impact
             </span>
-          </div>
+          ) : (
+            <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">
+              Advisory
+            </span>
+          )}
           <ConfidenceBadge tier={insight.confidenceTier} compact />
         </div>
 
-        <h3 className="text-xs font-bold text-foreground leading-snug">
+        {/* 1 & 5: Strong Headline */}
+        <h3 className="text-[13.5px] font-bold text-foreground leading-snug tracking-tight">
           {insight.title}
         </h3>
 
-        <p className="text-[11px] text-muted-foreground/70 mt-1.5 leading-relaxed">
-          {insight.description}
-        </p>
-
-        {/* Metric card */}
+        {/* 1: Hero Metric Callout (Darkened/Crisp container, 2-3x font size) */}
         {insight.metric && (
-          <div
-            className="flex items-center gap-3 mt-3 rounded-lg px-3 py-2 transition-colors"
-            style={{ backgroundColor: `${agentMeta.color}06` }}
-          >
-            <span
-              className="text-lg font-bold tabular-nums"
-              style={{ color: agentMeta.color }}
-            >
-              {insight.metric.value}
-            </span>
-            <div className="flex-1">
-              <span className="text-[10px] text-muted-foreground/60">
+          <div className="my-2.5 p-3 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border/60 flex items-center justify-between gap-3">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] font-semibold text-muted-foreground/75 uppercase tracking-wider truncate">
                 {insight.metric.label}
               </span>
-              {insight.metric.trendValue && (
-                <div className="flex items-center gap-1 mt-0.5">
-                  <TrendIcon
-                    className={cn(
-                      "size-3",
-                      insight.metric.trend === "up" && "text-red-500",
-                      insight.metric.trend === "down" && "text-emerald-500",
-                      insight.metric.trend === "flat" && "text-muted-foreground"
-                    )}
-                  />
-                  <span className="text-[10px] text-muted-foreground/60 tabular-nums">
-                    {insight.metric.trendValue}
-                  </span>
-                </div>
-              )}
+              <span className="text-2xl sm:text-[26px] font-extrabold text-foreground tabular-nums tracking-tight leading-tight mt-0.5">
+                {insight.metric.value}
+              </span>
             </div>
+            {insight.metric.trendValue && (
+              <div
+                className={cn(
+                  "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold shrink-0 tabular-nums border",
+                  insight.metric.trend === "down"
+                    ? "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20"
+                    : insight.metric.trend === "up"
+                      ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20"
+                      : "bg-muted text-muted-foreground border-border"
+                )}
+              >
+                <TrendIcon className="size-3" />
+                <span>{insight.metric.trendValue}</span>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Cross-module badge */}
-        {insight.isCrossModule && (
-          <div className="flex items-center gap-1.5 mt-2">
-            <Zap className="size-3 text-amber-500" />
-            <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400">
-              Cross-module pattern detected
-            </span>
-          </div>
-        )}
+        {/* 5: Softened Supporting Description */}
+        <p className="text-[11px] text-muted-foreground/75 leading-relaxed font-normal mt-1">
+          {insight.description}
+        </p>
       </div>
 
-      {/* Reasoning (Progressive Disclosure) */}
+      {/* Clinical Rationale (Progressive Disclosure) */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] font-medium text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-all duration-200 border-t border-border/40 cursor-pointer"
+        className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] font-medium text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/30 transition-all duration-200 border-t border-border/40 cursor-pointer"
       >
         <ChevronDown
           className={cn(
-            "size-3 transition-transform duration-300",
+            "size-3 transition-transform duration-200",
             !expanded && "-rotate-90"
           )}
         />
-        {expanded ? "Hide reasoning" : "Show reasoning"}
+        <span>{expanded ? "Hide clinical rationale" : "Show clinical rationale"}</span>
       </button>
       {expanded && (
-        <div className="px-4 pb-3 ai-expand-enter">
-          <p className="text-xs text-muted-foreground/70 leading-relaxed">
+        <div className="px-4 pb-3 pt-1.5 ai-expand-enter bg-muted/20 border-t border-border/30">
+          <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-normal">
             {insight.reasoning}
           </p>
         </div>
       )}
 
-      {/* Actions + Feedback */}
-      <div className="flex items-center gap-1.5 px-4 pb-3">
-        {/* Actions */}
+      {/* 4: Distinct Primary vs. Secondary CTAs + Feedback */}
+      <div className="flex items-center justify-between gap-2 px-4 py-2.5 border-t border-border/40 bg-muted/10">
         {insight.actions.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 flex-1">
-            {insight.actions.map((action, i) => (
-              <Button
-                key={action.label}
-                size="sm"
-                variant={i === 0 ? "default" : "outline"}
-                className={cn(
-                  "text-[11px] h-7 transition-all duration-200 active:scale-95",
-                  i === 0 &&
-                    "bg-[#e32168] hover:bg-[#ca0055] text-white shadow-sm hover:shadow-md"
-                )}
-              >
-                {action.label}
-                {i === 0 && <ArrowUpRight className="size-3 ml-1" />}
-              </Button>
-            ))}
+          <div className="flex items-center gap-2 flex-wrap">
+            {insight.actions.map((action, i) =>
+              i === 0 ? (
+                /* Primary CTA: Solid Brand Pink */
+                <button
+                  key={action.label}
+                  className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold h-7 px-3 rounded-lg bg-[#e32168] hover:bg-[#ca0055] text-white shadow-xs hover:shadow-sm active:scale-95 transition-all cursor-pointer"
+                >
+                  <span>{action.label}</span>
+                  <ArrowUpRight className="size-3" />
+                </button>
+              ) : (
+                /* Secondary CTA: Plain Text Link */
+                <button
+                  key={action.label}
+                  className="text-[11px] font-medium text-muted-foreground hover:text-foreground hover:underline underline-offset-2 transition-colors px-1 py-1 bg-transparent border-0 cursor-pointer"
+                >
+                  {action.label}
+                </button>
+              )
+            )}
           </div>
         )}
 

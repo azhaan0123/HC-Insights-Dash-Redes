@@ -52,22 +52,11 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
       )}
     >
       {/* Header */}
-      <div
-        className="shrink-0 border-b border-border ai-glass-header"
-        style={{
-          background: `linear-gradient(135deg, ${agentMeta.color}06, ${agentMeta.color}02, transparent)`,
-        }}
-      >
+      <div className="shrink-0 border-b border-border bg-card">
         {/* Top bar */}
-        <div className="flex items-center justify-between px-4 pt-3.5 pb-2.5">
+        <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
           <div className="flex items-center gap-2.5">
-            <div
-              className="grid size-8 place-items-center rounded-xl text-white shadow-sm"
-              style={{
-                backgroundColor: agentMeta.color,
-                boxShadow: `0 2px 8px -2px ${agentMeta.color}40`,
-              }}
-            >
+            <div className="grid size-8 place-items-center rounded-xl text-white shadow-xs bg-[#e32168]">
               <Sparkles className="size-4" />
             </div>
             <div>
@@ -95,19 +84,11 @@ export function RightAiSidebar({ className }: RightAiSidebarProps) {
           </button>
         </div>
 
-        {/* Context Banner — HIG: "Set clear expectations" */}
+        {/* Context Meta-line — HIG: "Set clear expectations" */}
         <div className="px-4 pb-2.5">
-          <div
-            className="rounded-lg px-3 py-1.5 text-[10px] text-foreground/60 leading-relaxed flex items-start gap-1.5"
-            style={{ backgroundColor: `${agentMeta.color}06` }}
-          >
-            <span
-              className="font-semibold shrink-0"
-              style={{ color: agentMeta.color }}
-            >
-              Active:
-            </span>
-            <span>{pageContext.contextDescription}</span>
+          <div className="flex items-center gap-2 text-[11px] text-muted-foreground/90 bg-muted/40 rounded-lg px-2.5 py-1.5 border border-border/50">
+            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
+            <span className="truncate">{pageContext.contextDescription}</span>
           </div>
         </div>
 

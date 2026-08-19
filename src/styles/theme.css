@@ -368,54 +368,7 @@ html.large-text {
 .stagger-section:nth-child(6) { animation-delay: 500ms; }
 .stagger-section:nth-child(n+7) { animation-delay: 600ms; }
 
-/* ── Dynamic Iconsax Palette & Duotone Mixing ─────────────────────── */
-:root {
-  --icon-scale: 1;
-  --icon-primary: var(--primary);
-  --icon-secondary: var(--chart-3);
-  --icon-secondary-bg: var(--secondary);
-}
-
-.hc-icon {
-  display: inline-block;
-  vertical-align: middle;
-  transform: scale(var(--icon-scale, 1));
-  transform-origin: center;
-  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms ease, opacity 180ms ease;
-}
-
-/* TwoTone duotone secondary layer styling (strokes) */
-.hc-icon-duotone-palette path[opacity][stroke],
-.hc-icon-duotone-palette circle[opacity][stroke],
-.hc-icon-duotone-palette rect[opacity][stroke],
-.hc-icon-duotone-palette [opacity][stroke] {
-  stroke: var(--icon-secondary, var(--chart-3, #2563eb)) !important;
-  opacity: 0.85 !important;
-  transition: stroke 180ms ease, opacity 180ms ease;
-}
-
-/* Bulk duotone secondary layer styling (fills) */
-.hc-icon-duotone-palette path[opacity][fill],
-.hc-icon-duotone-palette circle[opacity][fill],
-.hc-icon-duotone-palette rect[opacity][fill],
-.hc-icon-duotone-palette [opacity][fill] {
-  fill: var(--icon-secondary-bg, var(--secondary, #93c5fd)) !important;
-  opacity: 0.75 !important;
-  transition: fill 180ms ease, opacity 180ms ease;
-}
-
-/* Fallback for general opacity paths in duotone mode */
-.hc-icon-duotone-palette path[opacity]:not([stroke]):not([fill]),
-.hc-icon-duotone-palette [opacity]:not([stroke]):not([fill]) {
-  color: var(--icon-secondary, var(--chart-3, #2563eb)) !important;
-  opacity: 0.85 !important;
-}
-
-/* When in theme palette mode, default icon color to primary if not overridden by parent */
-.hc-icon-palette {
-  color: var(--icon-primary, var(--primary));
-}
-
+/* Iconsax TwoTone styling - smooth transition for secondary opacity paths */
 svg path[opacity] {
-  transition: opacity 150ms ease, stroke 150ms ease, fill 150ms ease;
+  transition: opacity 150ms ease;
 }
