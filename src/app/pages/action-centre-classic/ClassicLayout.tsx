@@ -50,6 +50,7 @@ interface ClassicLayoutProps {
   filterPills?: { label: string; val: string }[];
   filterBar?: React.ReactNode;
   headerActions?: React.ReactNode;
+  contentClassName?: string;
 }
 
 export function ClassicLayout({
@@ -64,6 +65,7 @@ export function ClassicLayout({
   filterPills,
   filterBar,
   headerActions,
+  contentClassName,
 }: ClassicLayoutProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -330,7 +332,7 @@ export function ClassicLayout({
         )}
 
         {/* Page Children */}
-        <div className="flex-1 flex flex-col gap-6 mt-1">
+        <div className={`flex-1 flex flex-col ${contentClassName || "gap-4 mt-1"}`}>
           {children}
         </div>
       </main>

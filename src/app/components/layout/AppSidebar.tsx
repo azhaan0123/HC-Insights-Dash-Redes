@@ -23,7 +23,6 @@ import {
   ClipboardList,
   FileText,
   Shield,
-  LayoutGrid,
 } from "../../lib/icons";
 import { NAV_ITEMS, HCC_NAV_ITEMS, ACO_NAV_ITEMS, OUTCOMES_NAV_ITEMS, MIPS_NAV_ITEMS, EMPLOYER_NAV_ITEMS, SMARTYPANTS_NAV_ITEMS, SYSTEM_NAV_ITEMS, type NavItem } from "../../lib/navigation";
 import {
@@ -198,19 +197,6 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup className="pb-0">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Workspace Portal">
-                <Link to="/" className="text-primary font-bold hover:bg-primary/10 transition-colors">
-                  <LayoutGrid className="size-4 text-primary" />
-                  <span>Workspace Portal</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-
         {isMips && !collapsed && (
           <div className="px-3 pt-2">
             <select className="w-full text-xs font-semibold bg-muted/50 border border-border rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary">

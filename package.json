@@ -78,5 +78,11 @@
     "@vitejs/plugin-react": "4.7.0",
     "tailwindcss": "4.1.12",
     "vite": "6.3.5"
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "@tailwindcss/oxide": true,
+      "esbuild": true
+    }
   }
 }

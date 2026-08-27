@@ -98,6 +98,7 @@ import LabCadence from "./pages/outcomes/LabCadence";
 import ReportBuilder from "./pages/outcomes/ReportBuilder";
 import { ClassicUtilizationGaps } from "./pages/action-centre-classic/ClassicUtilizationGaps";
 import { ClassicHome } from "./pages/action-centre-classic/ClassicHome";
+import { ClassicChronicRisk } from "./pages/action-centre-classic/ClassicChronicRisk";
 
 // SmartyPants DPC Imports
 import { SPDashboard } from "./pages/smartypants/SPDashboard";
@@ -111,16 +112,10 @@ import { SPEmployerAnalytics } from "./pages/smartypants/SPEmployerAnalytics";
 import { SPAutomations } from "./pages/smartypants/SPAutomations";
 import { SPReports } from "./pages/smartypants/SPReports";
 import { SPSettings } from "./pages/smartypants/SPSettings";
-import PortalSelection from "./pages/PortalSelection";
-
 export const router = createBrowserRouter([
   {
-    path: "/",
-    Component: PortalSelection,
-  },
-  {
     path: "/portal",
-    Component: PortalSelection,
+    element: <Navigate to="/home" replace />,
   },
   {
     path: "/support",
@@ -151,6 +146,10 @@ export const router = createBrowserRouter([
     Component: ClassicHome,
   },
   {
+    path: "/chronic-risk-classic",
+    Component: ClassicChronicRisk,
+  },
+  {
     path: "/smartypants",
     element: <Navigate to="/smartypants/dashboard" replace />,
   },
@@ -179,6 +178,7 @@ export const router = createBrowserRouter([
     Component: AppShell,
     ErrorBoundary: RouteErrorBoundary,
     children: [
+      { index: true, element: <Navigate to="/home" replace /> },
       { path: "home", Component: Home },
       { path: "action-centre", element: <Navigate to="/utilization-gaps" replace /> },
       { path: "engagement", Component: EngagementOverview },

@@ -62,8 +62,16 @@ Welcome to the comprehensive Design System documentation for the **HealthCompile
 
 ---
 
+### [Legacy UI Design System Specification](./legacy-ui-design-system.md)
+* **Classic Layout & Shell**: Standalone specification for the high-density Action Centre Classic and SmartyPants interfaces.
+* **Tokens & CSS Variables**: Direct copy-paste CSS variables and Tailwind configuration for transferring the Legacy UI to other projects.
+* **Component Suite**: Ready-to-use TypeScript/React implementations for `ClassicLayout`, `ClassicKpiCard`, `ClassicDataTable`, `ClassicPatientDrawer`, and `ClassicTrendChart`.
+
+---
+
 ## Design Principles
 
 1. **Healthcare-Grade Clarity & Scannability**: Medical metrics, financial figures, and clinical gaps must be instantly recognizable without cognitive overload.
 2. **Dynamic & Responsive Interaction**: Interactive states, hover cards, keyboard navigation (`Enter`/`Space` activation), and subtle micro-transitions ensure the app feels alive and polished.
 3. **Accessibility (a11y) First**: Built upon Radix UI primitives ensuring WAI-ARIA compliance, screen reader support, focus trapping, and proper color contrast ratios across light and dark themes.
+
