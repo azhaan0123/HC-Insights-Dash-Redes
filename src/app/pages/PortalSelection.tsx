@@ -276,10 +276,11 @@ export default function PortalSelection() {
               <div className="space-y-3 mb-8">
                 <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70 border-b border-border/40 pb-1.5">
                   <span>Included Modules</span>
-                  <span>4 Views</span>
+                  <span>5 Views</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {[
+                    { label: "Classic Chronic Risk", icon: HeartPulse },
                     { label: "Classic Gaps Tracker", icon: Layers },
                     { label: "Classic Action Centre", icon: Activity },
                     { label: "Classic Home Dashboard", icon: BarChart3 },

@@ -161,7 +161,7 @@ export function ClassicActionCentreOverview() {
     <ClassicLayout
       title="Utilization Gaps"
       subtitleNote="Note: Click a card to view details, cards without data are not clickable."
-      activeNavIndex={1}
+      activeNavIndex={2}
     >
       {/* SECTION 1: OPERATIONAL SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">

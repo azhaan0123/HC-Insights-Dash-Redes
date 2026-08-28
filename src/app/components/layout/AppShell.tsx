@@ -34,8 +34,10 @@ import {
 } from "../../lib/icons";
 
 const APPS_MENU = [
-  { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
+  { label: "Workspace Portal", icon: LayoutGrid, to: "/portal", matchPath: "/portal" },
+  { label: "Dashboards", icon: LayoutDashboard, to: "/home", matchPath: "/home" },
   { label: "SmartyPants Hub", icon: Users, to: "/smartypants/dashboard", matchPath: "/smartypants" },
+  { label: "Legacy UI", icon: Target, to: "/utilization-gaps-classic", matchPath: "/utilization-gaps-classic" },
   { label: "HCC Insights", icon: BarChart, to: "/hcc", matchPath: "/hcc" },
   { label: "ACO Insights", icon: ClipboardCheck, to: "/aco", matchPath: "/aco" },
   { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes", matchPath: "/outcomes" },

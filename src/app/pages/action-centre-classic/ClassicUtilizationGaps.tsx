@@ -316,7 +316,7 @@ export function ClassicUtilizationGaps() {
       title="Utilization Gaps"
       subtitleNote="Note: Click a card or tab to filter the actionable queue. Click Patient ID to view full clinical details and execute outreach."
       modernRoute="/utilization-gaps"
-      activeNavIndex={1}
+      activeNavIndex={2}
       headerActions={headerActionsNode}
     >
       {/* 1. OPERATIONAL SUMMARY CARDS (Clean Legacy Design exactly like Action Centre Classic) */}

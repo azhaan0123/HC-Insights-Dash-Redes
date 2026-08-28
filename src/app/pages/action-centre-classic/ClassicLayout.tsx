@@ -20,6 +20,7 @@ import {
   LineChart,
   Sparkles,
   BookOpen,
+  Layers,
 } from "../../lib/icons";
 import {
   Popover,
@@ -28,8 +29,10 @@ import {
 } from "../../components/ui/popover";
 
 const APPS_MENU = [
-  { label: "Dashboards", icon: LayoutDashboard, to: "/engagement", matchPath: "/engagement" },
+  { label: "Workspace Portal", icon: LayoutGrid, to: "/portal", matchPath: "/portal" },
+  { label: "Dashboards", icon: LayoutDashboard, to: "/home", matchPath: "/home" },
   { label: "SmartyPants Hub", icon: Users, to: "/smartypants/dashboard", matchPath: "/smartypants" },
+  { label: "Legacy UI", icon: Layers, to: "/utilization-gaps-classic", matchPath: "/utilization-gaps-classic" },
   { label: "HCC Insights", icon: BarChart, to: "/hcc", matchPath: "/hcc" },
   { label: "ACO Insights", icon: ClipboardCheck, to: "/aco", matchPath: "/aco" },
   { label: "Patient Outcomes", icon: Stethoscope, to: "/outcomes", matchPath: "/outcomes" },
@@ -75,13 +78,7 @@ export function ClassicLayout({
     { icon: LayoutDashboard, label: "Home Dashboard", path: "/home-classic" },
     { icon: Users, label: "SmartyPants DPC Hub", path: "/smartypants/dashboard" },
     { icon: Users, label: "Utilization Gaps", path: "/utilization-gaps-classic" },
-    { icon: Activity, label: "Engagement & Utilization", path: "/engagement" },
-    { icon: FileText, label: "Claims Utilization", path: "/claims" },
-    { icon: BadgeDollarSign, label: "Cost Savings", path: "/cost-savings" },
-    { icon: ClipboardCheck, label: "Outcomes", path: "/outcomes/dashboard" },
-    { icon: MessageSquare, label: "Communication", path: "/communication" },
-    { icon: LayoutDashboard, label: "ACO Insights", path: "/aco/overview" },
-    { icon: Share2, label: "Coordinated Care", path: "/coordinated-care" },
+    { icon: Activity, label: "Chronic Risk Legacy", path: "/chronic-risk-classic" },
   ];
 
   const defaultPills = [
@@ -119,7 +116,9 @@ export function ClassicLayout({
             const isSelected =
               pathname === item.path ||
               (item.path === "/home-classic" && pathname.startsWith("/home-classic")) ||
+              (item.path === "/smartypants/dashboard" && pathname.startsWith("/smartypants")) ||
               (item.path === "/utilization-gaps-classic" && (pathname.startsWith("/utilization-gaps-classic") || pathname.startsWith("/action-centre-classic"))) ||
+              (item.path === "/chronic-risk-classic" && pathname.startsWith("/chronic-risk-classic")) ||
               (activeNavIndex !== undefined && idx === activeNavIndex && !navIcons.some(n => pathname.startsWith(n.path)));
             return (
               <button
@@ -141,8 +140,8 @@ export function ClassicLayout({
         {/* Right Controls matching screenshots */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/")}
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded bg-[#e61952] text-white hover:bg-[#c41344] transition-colors shadow-2xs"
+            onClick={() => navigate("/portal")}
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded bg-[#e61952] text-white hover:bg-[#c41344] transition-colors shadow-2xs cursor-pointer"
             title="Return to Workspace Portal Selection"
           >
             <LayoutGrid className="size-3.5" />

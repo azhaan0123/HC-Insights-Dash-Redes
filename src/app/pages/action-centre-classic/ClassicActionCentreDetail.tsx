@@ -101,7 +101,7 @@ export function ClassicActionCentreDetail() {
       onBack={() => navigate("/utilization-gaps-classic")}
       backTitle="Utilization Gaps"
       subtitleNote=""
-      activeNavIndex={1}
+      activeNavIndex={2}
     >
       {/* Summary Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

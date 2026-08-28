@@ -622,7 +622,7 @@ export function ClassicChronicRisk() {
       title="Calculate Chronic Risk By"
       subtitleNote={null}
       modernRoute="/chronic-risk"
-      activeNavIndex={2}
+      activeNavIndex={3}
       filterPills={FILTER_PILLS}
       headerActions={headerActionsNode}
       contentClassName="gap-3 mt-0"

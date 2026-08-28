@@ -112,10 +112,16 @@ import { SPEmployerAnalytics } from "./pages/smartypants/SPEmployerAnalytics";
 import { SPAutomations } from "./pages/smartypants/SPAutomations";
 import { SPReports } from "./pages/smartypants/SPReports";
 import { SPSettings } from "./pages/smartypants/SPSettings";
+import PortalSelection from "./pages/PortalSelection";
+
 export const router = createBrowserRouter([
   {
+    path: "/",
+    Component: PortalSelection,
+  },
+  {
     path: "/portal",
-    element: <Navigate to="/home" replace />,
+    Component: PortalSelection,
   },
   {
     path: "/support",
@@ -174,12 +180,10 @@ export const router = createBrowserRouter([
     Component: WikiPage,
   },
   {
-    path: "/",
     Component: AppShell,
     ErrorBoundary: RouteErrorBoundary,
     children: [
-      { index: true, element: <Navigate to="/home" replace /> },
-      { path: "home", Component: Home },
+      { path: "/home", Component: Home },
       { path: "action-centre", element: <Navigate to="/utilization-gaps" replace /> },
       { path: "engagement", Component: EngagementOverview },
       { path: "engagement/active-patients", Component: ActivePatients },
